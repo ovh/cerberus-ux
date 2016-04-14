@@ -27,7 +27,7 @@ angular
         ctrl.currentPage = parseInt($location.search().page, 10) || 1;
         ctrl.resultsPerPage = 10;
         ctrl.showFilters = true;
-        ctrl.sortBy = { field: "creationDate", order:  1 };
+        ctrl.sortBy = { field: "creationDate", order:  -1 };
         ctrl.round = Math.round;
         ctrl.ceil = Math.ceil;
         ctrl.filtersExpanded = true;
