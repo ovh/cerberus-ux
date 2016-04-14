@@ -7,6 +7,10 @@
             <md-tooltip>Administration</md-tooltip>
             <md-icon md-font-icon="zmdi zmdi-settings white zmdi-hc-2x"></md-icon>
         </md-button>
+        <md-button class="md-icon-button" ui-sref="campaign" aria-label="Campaign" data-ng-if="Auth.isAdmin()">
+            <md-tooltip>Campaign</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-phone-in-talk white zmdi-hc-2x"></md-icon>
+        </md-button>
         <md-button class="md-icon-button" ui-sref="search({filters: '{}'})" aria-label="Search">
             <md-tooltip>Search</md-tooltip>
             <md-icon md-font-icon class="zmdi zmdi-search white zmdi-hc-2x"></md-icon>

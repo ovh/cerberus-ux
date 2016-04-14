@@ -1,0 +1,84 @@
+<md-toolbar class="md-medium">
+    <div class="md-toolbar-tools">
+        <md-button data-ng-click="goBackState()" aria-label="Back" class="md-icon-button">
+            <md-icon md-font-icon="zmdi zmdi-arrow-back zmdi-hc-2x white"></md-icon>
+        </md-button>
+        <h2>Campaign</h2>
+        <span flex></span>
+        <md-button data-ng-href="dashboard"  aria-label="Dashboard" title="Dashboard" class="md-icon-button">
+            <md-icon md-font-icon="zmdi zmdi-view-dashboard white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button ui-sref="admin.people"  aria-label="Administration" title="Administation" class="md-icon-button"
+                   data-ng-if="Auth.isAdmin()">
+            <md-icon md-font-icon="zmdi zmdi-settings white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button aria-label="Search" ui-sref="search({filters: '{}'})" title="Search" class="md-icon-button">
+            <md-icon md-font-icon="zmdi zmdi-search white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button class="md-icon-button" ui-sref="diaporama" aria-label="Diaporama">
+            <md-tooltip>Diaporama</md-tooltip>
+            <md-icon md-font-icon class="zmdi zmdi-slideshow white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button class="md-icon-button" data-ng-click="logout()" aria-label="Logout">
+            <md-tooltip>Logout</md-tooltip>
+            <md-icon md-font-icon class="zmdi zmdi-power white zmdi-hc-2x"></md-icon>
+        </md-button>
+    </div>
+</md-toolbar>
+
+
+<md-content id="campaign-view" class="md-padding" data-ng-init="ctrl.init()" data-ng-if="ctrl.view !== 'new'">
+
+    <div layout="row" layout-align="end center" class="sticky" hide-xs hide-sm>
+        <md-button data-ng-click="ctrl.view = 'new'" aria-label="New Campaign">
+            <i class="zmdi zmdi-plus grey"></i>
+            New Campaign
+        </md-button>
+    </div>
+
+    <div class="mt20" layout="row" layout-sm="column" layout-xs="column"
+        layout-padding layout-margin>
+
+        <div flex>
+            <table class="table table-medium table-hover table-mc-indigo">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>State</th>
+                        <th>IPs count</th>
+                        <th>Tickets count</th>
+                        <th>Date</th>
+                        <th>Author</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody data-ng-show="!ctrl.loaders.history">
+                    <tr data-ng-repeat="campaign in ctrl.campaigns">
+                        <td>{{campaign.campaignName}}</td>
+                        <td>{{campaign.category}}</td>
+                        <td>{{campaign.result.state}}</td>
+                        <td>{{campaign.ipsCount}}</td>
+                        <td>{{campaign.ticketsCount}}</td>
+                        <td>{{campaign.date * 1000 | amDateFormat:'DD/MM/YY HH:mm'}}</td>
+                        <td>{{campaign.user}}</td>
+                        <td>
+                            <a data-ng-href="{{ctrl.searchTickets(campaign)}}">
+                                <i class="zmdi zmdi-search"></i>
+                                <md-tooltip>Search tickets</md-tooltip>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div layout="row" layout-sm="column" layout-align="center" data-ng-show="ctrl.loaders.history">
+                <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+            </div>
+        </div>
+    </div>
+</md-content>
+
+<md-content id="new-campaign-view" class="md-padding" data-ng-if="ctrl.view === 'new'">
+    <div data-ng-include="'app/campaign/new-campaign.html'"></div>
+</md-content>

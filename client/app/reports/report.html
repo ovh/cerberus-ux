@@ -13,6 +13,10 @@
                    data-ng-if="Auth.isAdmin()">
             <md-icon md-font-icon="zmdi zmdi-settings white zmdi-hc-2x"></md-icon>
         </md-button>
+        <md-button class="md-icon-button" ui-sref="campaign" aria-label="Campaign" data-ng-if="Auth.isAdmin()">
+            <md-tooltip>Campaign</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-phone-in-talk white zmdi-hc-2x"></md-icon>
+        </md-button>
         <md-button aria-label="Search" ui-sref="search({filters: '{}'})" title="Search" class="md-icon-button">
             <md-icon md-font-icon="zmdi zmdi-search white zmdi-hc-2x"></md-icon>
         </md-button>

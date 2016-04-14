@@ -1,0 +1,62 @@
+<md-card>
+    <div layout="row" layout-align="space-between center" hide-xs hide-sm layout-margin>
+        <h4>New campaign</h4>
+        <md-button data-ng-click="ctrl.view = 'history'" class="md-icon-button" aria-label="Close">
+            <md-tooltip>Close</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-close"></md-icon>
+        </md-button>
+    </div>
+
+    <div layout="row" layout-sm="column" layout-align="center" data-ng-show="ctrl.loaders.newForm">
+        <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+    </div>
+
+    <div class="mt20" layout="row" layout-sm="column" layout-xs="column" data-ng-show="!ctrl.loaders.newForm"
+         layout-padding layout-margin>
+
+        <md-content layout="column" flex>
+            <md-input-container>
+                <label>Campaign name</label>
+                <input type="text" data-ng-model="ctrl.campaignDraft.campaignName">
+            </md-input-container>
+
+            <md-input-container>
+                <label>Category</label>
+                <md-select data-ng-model="ctrl.campaignDraft.category" aria-label="Category">
+                    <md-option data-ng-repeat="category in ctrl.categories" data-ng-value="category.name"
+                               data-ng-bind="category.label">
+                    </md-option>
+                </md-select>
+            </md-input-container>
+
+            <div layout="row" flex>
+                <md-input-container flex>
+                    <label>IPs</label>
+                    <input type="text" disabled="disabled" data-ng-model="ctrl.ipsFieldValue">
+                </md-input-container>
+                <md-button data-ng-click="ctrl.enterIPs($event)">Enter IPs</md-button>
+            </div>
+
+            <md-divider></md-divider>
+            
+            <md-input-container>
+                <label>Mail subject</label>
+                <input type="text" data-ng-model="ctrl.campaignDraft.email.subject">
+            </md-input-container>
+
+            <md-input-container>
+                <label>Mail body</label>
+                <textarea data-ng-model="ctrl.campaignDraft.email.body"></textarea>
+            </md-input-container>
+        </md-content>
+    </div>
+
+    <md-content layout="row" layout-align="end center" flex>
+        <md-button data-ng-click="ctrl.view = 'history'">Cancel</md-button>
+        <md-button data-ng-click="ctrl.sendCampaign()"
+                   data-ng-disabled="!ctrl.campaignDraft.campaignName || !ctrl.campaignDraft.category || !ctrl.campaignDraft.ips.length
+                                  || !ctrl.campaignDraft.email.subject || !ctrl.campaignDraft.email.body">
+            Go !
+        </md-button>
+    </md-content>
+</md-card>
