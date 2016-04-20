@@ -234,8 +234,8 @@
                                            data-ng-disabled="data.action.codename !== 'waiting_answer_then_action'"
                                            class="no-margin" aria-label="Action" flex>
                                     <md-option data-ng-repeat="action in actions"
-                                               data-ng-value="action.id"
-                                               data-ng-bind="::action.name">
+                                               data-ng-value="action.id">
+                                        {{action.level}} - {{action.name}}
                                     </md-option>
                                 </md-select>
                                 <span>on</span>
@@ -267,8 +267,8 @@
                                            data-ng-disabled="data.action.codename !== 'waiting_answer_then_action_and_close'"
                                            flex class="no-margin" aria-label="Action">
                                     <md-option data-ng-repeat="action in actions"
-                                               data-ng-value="action.id"
-                                               data-ng-bind="action.name">
+                                               data-ng-value="action.id">
+                                        {{action.level}} - {{action.name}}
                                     </md-option>
                                 </md-select>
                                 <span>on</span>
@@ -303,8 +303,8 @@
                                            data-ng-disabled="data.action.codename !== 'action_then_waiting_answer'"
                                            flex class="no-margin" aria-label="Action">
                                     <md-option data-ng-repeat="action in actions"
-                                               data-ng-value="action.id"
-                                               data-ng-bind="action.name">
+                                               data-ng-value="action.id">
+                                        {{action.level}} - {{action.name}}
                                     </md-option>
                                 </md-select>
                                 <span>on</span>
@@ -337,8 +337,8 @@
                                            data-ng-disabled="data.action.codename !== 'action_then_close'"
                                            flex class="no-margin" aria-label="Action">
                                     <md-option data-ng-repeat="action in actions"
-                                               data-ng-value="action.id"
-                                               data-ng-bind="action.name">
+                                               data-ng-value="action.id">
+                                        {{action.level}} - {{action.name}}
                                     </md-option>
                                 </md-select>
                                 <span>on</span>
