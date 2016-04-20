@@ -1,6 +1,6 @@
 <md-card>
     <div layout="row" layout-align="space-between center" hide-xs hide-sm layout-margin>
-        <h4>New campaign</h4>
+        <h3>New campaign</h3>
         <md-button data-ng-click="ctrl.view = 'history'" class="md-icon-button" aria-label="Close">
             <md-tooltip>Close</md-tooltip>
             <md-icon md-font-icon="zmdi zmdi-close"></md-icon>
@@ -11,8 +11,10 @@
         <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
     </div>
 
-    <div class="mt20" layout="row" layout-sm="column" layout-xs="column" data-ng-show="!ctrl.loaders.newForm"
+    <div class="mt20" layout="column" layout-sm="column" layout-xs="column" data-ng-show="!ctrl.loaders.newForm"
          layout-padding layout-margin>
+
+         <h4>Campaign information</h4> 
 
         <md-content layout="column" flex>
             <md-input-container>
@@ -38,6 +40,17 @@
             </div>
 
             <md-divider></md-divider>
+
+            <h4>Campaign email</h4>
+
+            <md-input-container>
+                <label>Email template</label>
+                <md-select data-ng-model="ctrl.choosenTemplate" aria-label="Email tempalte">
+                    <md-option data-ng-repeat="template in ctrl.templates" data-ng-value="template"
+                               data-ng-bind="template.name">
+                    </md-option>
+                </md-select>
+            </md-input-container>
             
             <md-input-container>
                 <label>Mail subject</label>

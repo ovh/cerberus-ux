@@ -74,21 +74,16 @@ angular
             );
         };
 
-        ctrl.getCampaignTemplate = function () {
+        ctrl.getEmailTemplates = function () {
             var filter = {
                 where: {
-                    in: [{ "codename": ["mass_contact"] }]
+                    in: [{ "recipientType": ["MassContact"] }]
                 }
             };
 
             return EmailTemplates.query({ filters: filter }).$promise.then(
-                function (template) {
-                    if (template.length !== 1) {
-                        Toast.error("A single template is required to use this feature.");
-                        return;
-                    }
-
-                    ctrl.template = template[0];
+                function (templates) {
+                    ctrl.templates = templates;
                 },
                 function (err) {
                     Toast.error(err);
@@ -160,13 +155,13 @@ angular
 
                     $q.all([
                         ctrl.getCategories(),
-                        ctrl.getCampaignTemplate()
+                        ctrl.getEmailTemplates()
                     ]).then(function () {
                         ctrl.campaignDraft = {
                             ips: [],
                             email: {
-                                subject: ctrl.template.subject,
-                                body: ctrl.template.body
+                                /*subject: ctrl.template.subject,
+                                body: ctrl.template.body*/
                             }
                         };
 
@@ -176,11 +171,22 @@ angular
                     ctrl.campaignDraft = {
                         ips: [],
                         email: {
-                            subject: ctrl.template.subject,
-                            body: ctrl.template.body
+                            /*subject: ctrl.template.subject,
+                            body: ctrl.template.body*/
                         }
                     };
                 }
             }
+        });
+
+        $scope.$watch("ctrl.choosenTemplate", function (newVal) {
+            if (!newVal) {
+                return;
+            }
+
+            ctrl.campaignDraft.email = {
+                subject: newVal.subject,
+                body: newVal.body
+            };
         });
     });
