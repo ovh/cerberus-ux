@@ -1,0 +1,78 @@
+#search-view {
+  md-content {
+    margin-bottom: 10px;
+  }
+
+  form[name="filtersForm"] {
+    overflow: hidden;
+  }
+
+  ul {
+    list-style: none;
+    -webkit-padding-start: 0;
+
+    &.count-infos {
+      margin: 4px 4px 4px 0;
+      li {
+        font-size: 12px;
+      }
+    }
+  }
+
+  th {
+    padding : 15px 0 !important;
+    margin: 0 !important;
+
+    a {
+      color: #757575;
+      text-decoraton: none;
+      font-weight: normal;
+    }
+  }
+
+  td {
+    padding : 5px 0  !important;
+    margin: 0 !important;
+    height: 50px !important;
+  }
+
+  tr {
+    padding : 0 !important;
+    margin: 0 !important;
+  }
+
+  md-radio-button {
+    float: left;
+  }
+
+  .sticky-actions {
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+    margin-bottom: 0px;
+    margin-left: -7px;
+    border-top: 1px black solid;
+    padding: 5px;
+  }
+
+  #filters-view {
+    overflow: hidden;
+
+    md-radio-button, .md-switch-thumb {
+      margin: 5px;
+    }
+
+    .filter-menu {
+      /** Hack pas genial **/
+      .md-button:extend(.md-input) {
+        color: @md-grey;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        opacity: 0.65;
+
+        text-transform: none;
+        font-family: RobotoDraft,Roboto,"Helvetica Neue",sans-serif;
+        font-size: 16px;
+      }
+    }
+  }
+}

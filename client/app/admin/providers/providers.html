@@ -1,0 +1,72 @@
+<div role="tabpanel" id="tab-presets">
+    <div layout="column" layout-fill>
+        <md-content class="md-padding" flex="">
+            <md-toolbar md-theme="white" class="no-shadow">
+                <h3 class="md-toolbar-tools" layout="row">
+                    <i class="zmdi zmdi-format-list-bulleted grey"></i>
+                    <span flex>Sources</span>
+                </h3>
+            </md-toolbar>
+
+            <md-divider></md-divider>
+
+            <md-content class="md-padding" layout-margin>
+                <md-input-container md-no-float>
+                    <md-icon md-font-icon="zmdi zmdi-search primary mdi-2x"></md-icon>
+                    <input type="text" data-ng-model="ctrlProviders.searchText" data-ng-change="ctrlProviders.getProviders()"
+                           placeholder="Search ..." />
+                </md-input-container>
+            </md-content>
+
+            <md-list>
+                <md-list-item data-ng-repeat="provider in ctrlProviders.providers.providers">
+                    <div class="md-tile-left">
+                        <span class="badge success" data-ng-if="provider.trusted">
+                            <i class="zmdi zmdi-check white" alt="Provider trusted"></i>
+                            trust
+                        </span>
+                        <span class="badge error" data-ng-if="!provider.trusted">
+                            Not trust
+                        </span>
+                    </div>
+                    <div class="md-tile-content" style="margin-left:10px">
+                        <h3>{{provider.email ? provider.email : provider.name}}</h3>
+                    </div>
+                    <span flex></span>
+                    <div layout="row">
+                        <md-button data-ng-click="ctrlProviders.updateProvider($event,provider)"
+                                   class="md-icon-button"
+                                   aria-label="Update provider">
+                            <md-tooltip>Update provider</md-tooltip>
+                            <md-icon class="zmdi zmdi-edit grey"></md-icon>
+                        </md-button>
+                    </div>
+                </md-list-item>
+            </md-list>
+            <div layout="row" layout-align="space-around"
+                 data-ng-if="!ctrlProviders.search">
+                <paging
+                    class="small"
+                    page="ctrlProviders.providersPagination.currentPage"
+                    page-size="ctrlProviders.providersPagination.resultsPerPage"
+                    total="ctrlProviders.providers.providersCount"
+                    adjacent="2"
+                    dots="..."
+                    scroll-top="true"
+                    hide-if-empty="true"
+                    ul-class="pagination"
+                    active-class="active"
+                    disabled-class="disabled"
+                    show-prev-next="true"
+                    paging-action="ctrlProviders.goProvidersPage(page)">
+                </paging>
+                <div flex></div>
+                <input type="number"
+                       data-ng-model="ctrlProviders.providersPagination.currentPage"
+                       data-ng-change="ctrlProviders.goProvidersPage(ctrlProviders.providersPagination.currentPage)"
+                       data-ng-model-options="{debounce: {'default': 500}}"
+                       max="{{ctrlProviders.providers.providersCount / ctrlProviders.providersPagination.resultsPerPage}}" min="1" />
+            </div>
+        </md-content>
+    </div>
+</div>

@@ -1,0 +1,257 @@
+<div id="report-items" data-ng-controller="ReportItemsCtrl" data-ng-init="ctrlItems.init()" style="width: 100%;">
+
+    <h4>Items</h4>
+    <md-button data-ng-click="ctrlItems.addNewReportItemMode()"
+               data-ng-disabled="ctrlItems.addItemMode">
+        + Add new item
+    </md-button>
+
+    <md-button data-ng-click="ctrlItems.showDialogPasteAndParse()">
+        <md-icon md-font-icon="zmdi zmdi-copy"></md-icon>&nbsp;Paste &amp; Parse
+    </md-button>
+
+    <div layout="row" style="width: 100%"
+         data-ng-if="!ctrlItems.loaders.items && ctrlItems.items.items.length > 1">
+        <md-input-container md-no-float flex>
+            <md-icon md-font-icon="zmdi zmdi-search zmdi-hc-2x grey"></md-icon>
+            <input  type="text" placeholder="Filter" data-ng-model="ctrlItems.txtFilterItems"
+                    data-ng-model-options="{debounce: {'default': 500}}"
+                    data-ng-change="ctrlItems.getItems()" />
+        </md-input-container>
+    </div>
+
+
+    <table class="table table-medium table-hover table-items table-mc-indigo">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Item</th>
+                <th>Date</th>
+                <th>Reputation</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody data-ng-if="ctrlItems.loaders.items">
+            <tr>
+                <td colspan="5">
+                    <div layout="row" layout-fill layout-align="center">
+                        <md-progress-circular md-mode="indeterminate" class="md-accent">
+                        </md-progress-circular>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+        <tbody data-ng-show="!ctrlItems.loaders.items && ctrlItems.items.itemsCount <= 0">
+            <tr>
+                <td colspan="5">
+                    <div layout="row" layout-fill layout-align="center">
+                        No item
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+        <tbody  data-ng-if="!ctrlItems.loaders.items">
+            <tr data-ng-show="ctrlItems.addItemMode">
+                <td>
+                    <select data-ng-model="ctrlItems.newItem.itemType">
+                        <option value="IP">IP</option>
+                        <option value="URL">URL</option>
+                        <option value="FQDN">FQDN</option>
+                    </select>
+                </td>
+                <td>
+                    <a href="#"
+                       editable-text="ctrlItems.newItem.rawItem"
+                       onaftersave="ctrlItems.addNewReportItem()"
+                       buttons="no">
+                        <md-tooltip>Click to edit this item</md-tooltip>
+                        {{ ctrlItems.newItem.rawItem | limitTo: 90 }}{{ctrlItems.newItem.rawItem.length > 90 ? '...' : ''}}
+                    </a>
+                </td>
+                <td colspan="2"></td>
+                <td>
+                    <md-button data-ng-click="ctrlItems.addItemMode = false;ctrlItems.newItem = null"
+                               class="md-icon-button"
+                               aria-label="Add item">
+                        <md-tooltip>Cancel</md-tooltip>
+                        <i class="zmdi zmdi-close grey"></i>
+                    </md-button>
+                </td>
+            </tr>
+        </tbody>
+
+        <tbody data-ng-repeat="item in ctrlItems.items.items">
+            <tr data-ng-repeat="history in item.history">
+                <td data-ng-bind="item.itemType"></td>
+                <td>
+                    <a href="#" title="Click to edit"
+                       editable-text="item.rawItem"
+                       onaftersave="ctrlItems.updateReportItem(item)"
+                       buttons="no"
+                       data-ng-if="item.history.length === 1">
+                        <md-tooltip>Click to edit this item</md-tooltip>
+                        {{ history.rawItem | limitTo: 50 }}{{item.rawItem.length > 50 ? '...' : ''}}
+                    </a>
+                    <span data-ng-if="item.history.length > 1">
+                        {{ item.rawItem | limitTo: 50 }}{{item.rawItem.length > 50 ? '...' : ''}}
+                    </span>
+                    <span data-ng-if="item.itemType !== 'IP'" class="badge"
+                          data-ng-class="{info: history.ipCategory === 'managed',
+                                          warning: history.ipCategory === 'cloudlfare'}">
+                        {{history.ip}}
+                    </span>
+                </td>
+                <td>
+                    {{ history.date * 1000 | date: 'yyyy-MM-dd HH:mm' }}
+                </td>
+                <td data-ng-if="history.ipCategory !== 'managed'">
+                </td>
+                <td data-ng-if="history.ipCategory === 'managed'">
+                    <div layout="row" layout-sm="row"layout-align="start start" layout-fill class="no-margin">
+
+                        <!-- RBL data -->
+                        <md-fab-speed-dial md-direction="left" class="md-scale reputation">
+                            <md-fab-trigger>
+                                <md-button aria-label="menu" class="md-raised md-mini"
+                                           ng-class="{'md-warn': !ctrlItems.isReputationClean('rbl', history.ip)}">
+                                    RBL  <md-progress-circular data-ng-show="!ctrlItems.rbl[history.ip]"
+                                                               md-mode="indeterminate" class="md-hue-2"
+                                                               md-diameter="10"></md-progress-circular>
+                                </md-button>
+                            </md-fab-trigger>
+                            <md-fab-actions class="left">
+                                <span data-ng-repeat="rbl in ctrlItems.rbl[history.ip]" class="badge ml5"
+                                      data-ng-class="{success: !rbl.result, error: rbl.result}">
+                                    <md-tooltip>{{rbl.fullName}}</md-tooltip>
+                                    {{rbl.shortName}}
+                                </span>
+                            </md-fab-actions>
+                        </md-fab-speed-dial>
+
+                        <!-- Phishing -->
+                        <md-fab-speed-dial md-direction="left" class="md-scale reputation" data-ng-show="item.itemType === 'URL'">
+                            <md-fab-trigger>
+                                <md-button aria-label="menu" class="md-raised md-mini"
+                                           ng-class="{'md-warn': !ctrlItems.isReputationClean('checks', history.ip)}">
+                                    Phishing  <md-progress-circular data-ng-show="!ctrlItems.checks[item.rawItem]"
+                                                        md-mode="indeterminate" class="md-hue-2" md-diameter="10">
+                                </md-button>
+                            </md-fab-trigger>
+                            <md-fab-actions class="right">
+                                <span data-ng-repeat="check in ctrlItems.checks[item.rawItem]" class="badge ml5"
+                                      data-ng-class="{success: !check.result, error: check.result}">
+                                    <md-tooltip>{{check.fullName}}</md-tooltip>
+                                    {{check.shortName}}
+                                </span>
+                            </md-fab-actions>
+                        </md-fab-speed-dial>
+                    </div>
+                    <div layout="row" layout-sm="row" layout-align="start start"layout-fill class="no-margin">
+                        <!-- External system data -->
+                        <md-fab-speed-dial md-direction="right" class="md-scale reputation">
+                            <md-fab-trigger>
+                                <md-button aria-label="menu" class="md-raised md-mini"
+                                           ng-class="{'md-warn': !ctrlItems.isReputationClean('external', history.ip)}">
+                                    External  <md-progress-circular data-ng-show="!ctrlItems.external[history.ip]" md-mode="indeterminate" class="md-hue-2" md-diameter="10">
+                                </md-button>
+                            </md-fab-trigger>
+                            <md-fab-actions class="left">
+                                <span data-ng-repeat="external in ctrlItems.external[history.ip]" class="badge ml5"
+                                      data-ng-class="{success: external.result === 0, error: external.result > 0}"
+                                      data-ng-click="ctrlItems.showDialogReputation($event,history,external.shortName)"
+                                      style="cursor: pointer;">
+                                    <md-tooltip>{{external.fullName}}</md-tooltip>
+                                    {{external.shortName}}({{external.result | number:0}})
+                                </span>
+                            </md-fab-actions>
+                        </md-fab-speed-dial>
+
+                        <!-- Internal system data -->
+                        <md-fab-speed-dial md-direction="right" class="md-scale reputation">
+                            <md-fab-trigger>
+                                <md-button aria-label="menu" class="md-raised md-mini"
+                                           ng-class="{'md-warn': !ctrlItems.isReputationClean('internal', history.ip)}">
+                                    Internal <md-progress-circular data-ng-show="!ctrlItems.internal[history.ip]" md-mode="indeterminate" class="md-hue-2" md-diameter="10">
+                                </md-button>
+                            </md-fab-trigger>
+                            <md-fab-actions class="right">
+                                <span data-ng-repeat="internal in ctrlItems.internal[history.ip]" class="badge ml5"
+                                    data-ng-class="{success: !internal.blacklisted && internal.result === 0,
+                                                    info: !internal.blacklisted && internal.result > 0,
+                                                    error: internal.blacklisted}">
+                                    <md-tooltip>Last event: {{internal.lastEvent}}</md-tooltip>
+                                    {{internal.shortName}} ({{internal.result}})
+                                </span>
+                            </md-fab-actions>
+                        </md-fab-speed-dial>
+                    </div>
+                    <div layout="row" layout-sm="row" layout-align="start start" layout-fill class="no-margin">
+                        <!-- Tool links -->
+                        <md-fab-speed-dial md-direction="left" class="md-scale reputation">
+                            <md-fab-trigger>
+                                <md-button aria-label="menu" class="md-raised md-mini">
+                                    Tools  <md-progress-circular data-ng-show="!ctrlItems.tools[history.ip]" md-mode="indeterminate" class="md-hue-2" md-diameter="10">
+                                </md-button>
+                            </md-fab-trigger>
+                            <md-fab-actions class="right">
+                                <span data-ng-repeat="tool in ctrlItems.tools[history.ip]" class="ml5">
+                                    <a ng-href="{{tool.uri}}" target="_blank">{{tool.shortName}}</a>
+                                </span>
+                            </md-fab-actions>
+                        </md-fab-speed-dial>
+                    </div>
+                </td>
+                <td>
+                    <md-icon md-font-icon="zmdi zmdi-eye" data-ng-if="item.hasOwnProperty('viewed')"
+                             data-ng-class="{grey: !item.viewed, primary: item.viewed}">
+                        <md-tooltip data-ng-if="item.viewed">Has been viewed.</md-tooltip>
+                        <md-tooltip data-ng-if="!item.viewed">Not viewed yet by the defendant.</md-tooltip>
+                    </md-icon>
+                    <a href="" data-ng-click="ctrlItems.removeReportItem(item)" aria-label="Remove item" class="action-icon">
+                        <md-tooltip>Remove this item</md-tooltip>
+                        <md-icon md-font-icon="zmdi zmdi-delete grey"></md-icon>
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <div class="pagination" layout="row" layout-align="space-around">
+        <paging class="small"
+                page="ctrlItems.rootCtrl.currentPageItems"
+                page-size="ctrlItems.rootCtrl.resultsItemsPerPage"
+                total="ctrlItems.items.itemsCount"
+                adjacent="5"
+                dots="..."
+                scroll-top="true"
+                hide-if-empty="true"
+                ul-class="pagination"
+                active-class="active"
+                disabled-class="disabled"
+                show-prev-next="true"
+                paging-action="ctrlItems.rootCtrl.currentPageItems = page; ctrlItems.getItems()">
+        </paging>
+        <div flex></div>
+        <input type="number"
+               data-ng-model="ctrlItems.rootCtrl.currentPageItems"
+               data-ng-change="ctrlItems.getItems()"
+               data-ng-model-options="{debounce: {'default': 500}}"
+               data-ng-if="ctrlItems.rootCtrl.round(ctrlItems.items.itemsCount / ctrlItems.rootCtrl.resultsItemsPerPage) > 1"
+               max="{{ctrlItems.rootCtrl.round(ctrlItems.items.itemsCount / ctrlItems.rootCtrl.resultsItemsPerPage)}}"
+               min="1"  />
+        <md-select data-ng-model="ctrlItems.rootCtrl.resultsItemsPerPage"
+                   aria-label="Items by page"
+                   data-ng-change="ctrlItems.getItems()"
+                   data-ng-if="ctrlItems.rootCtrl.round(ctrlItems.items.itemsCount / ctrlItems.rootCtrl.resultsItemsPerPage) > 1">
+            <md-option data-ng-show="ctrlItems.items.itemsCount >= 10" value="10">10</md-option>
+            <md-option data-ng-show="ctrlItems.items.itemsCount >= 15" value="15">15</md-option>
+            <md-option data-ng-show="ctrlItems.items.itemsCount >= 20" value="20">20</md-option>
+            <md-option data-ng-show="ctrlItems.items.itemsCount >= 50" value="50">50</md-option>
+            <md-option data-ng-show="ctrlItems.items.itemsCount >= 100" value="100">100</md-option>
+        </md-select>
+    </div>
+
+    <md-divider></md-divider>
+
+</div>

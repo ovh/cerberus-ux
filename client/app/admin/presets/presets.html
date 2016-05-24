@@ -1,0 +1,49 @@
+<div role="tabpanel" id="tab-presets" data-ng-init="ctrlPresets.init()">
+    <div layout="column" layout-fill>
+        <md-content class="md-padding" flex="">
+            <md-toolbar md-theme="white" class="no-shadow">
+                <h3 class="md-toolbar-tools" layout="row">
+                    <i class="zmdi zmdi-folder-star-alt grey"></i>&nbsp;<span flex>Presets</span>
+                    <md-button data-ng-click="ctrlPresets.addPreset()"
+                               data-ng-if="ctrlPresets.view === 'list'"
+                               class="md-icon-button"
+                               aria-label="Add new preset">
+                        <md-tooltip>Add new preset</md-tooltip>
+                        <md-icon md-font-icon="zmdi zmdi-plus zmdi-hc-2x grey"></md-icon>
+                    </md-button>
+                </h3>
+            </md-toolbar>
+
+            <md-divider></md-divider>
+
+            <md-content data-ng-if="ctrlPresets.loading" layout="row" layout-align="center center">
+                    <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+            </md-content>
+
+            <md-content layout="column" layout-align="center center" layout-wrap layout-fill
+                        data-ng-if="!ctrlPresets.loading && ctrlPresets.view === 'list'">
+                <md-content layout="row" layout-align="center center">
+                    <i class="zmdi zmdi-delete zmdi-hc-5x trash" data-dnd-list="ctrlPresets.toBeRemoved"></i>
+                </md-content>
+                <md-content layout="row" layout-align="space-around center" layout-wrap layout-padding
+                            data-ng-repeat="group in ctrlPresets.groups"
+                            data-dnd-list="ctrlPresets.groups[$index].presets" class="group">
+                    <md-content data-ng-repeat="preset in group.presets track by preset.id"
+                               data-ng-bind="::preset.name"
+                               data-ng-click="ctrlPresets.editPreset(preset)"
+                               class="md-raised md-button"
+                               aria-label="::preset.name"
+                               data-dnd-draggable="preset"
+                               data-dnd-moved="ctrlPresets.onMovePreset($index, preset, group)"
+                               data-dnd-effect-allowed="move"></md-content>
+                </md-content>
+
+            </md-content>
+
+            <md-content data-ng-if="!ctrlPresets.loading && ctrlPresets.view !== 'list'">
+                <div data-ng-include="'app/admin/presets/edit/preset-edit.html'"></div>
+            </md-content>
+
+        </md-content>
+    </div>
+</div>

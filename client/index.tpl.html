@@ -1,0 +1,38 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <base href="<%= baseUrl %>" />
+        <title>OVH - Abuse</title>
+        <meta name="description" content="OVH - Abuse">
+        <meta name="viewport" content="width=device-width">
+        <!-- build:css(client) app/vendor.css -->
+        <!-- bower:css -->
+        <!-- endbower -->
+        <!-- endbuild -->
+        <!-- build:css({.tmp,client}) app/app.css -->
+        <link rel="stylesheet" href="app/app.css">
+        <!-- injector:css -->
+        <!-- endinjector -->
+        <!-- endbuild -->
+      </head>
+      <body data-ng-app="abuseApp" data-ng-cloak class="ng-cloak" layout="row" data-ng-controller="AppCtrl">
+
+        <!-- Add your site or application content here -->
+        <md-content role="main" layout="column" flex ui-view=""></md-content>
+
+        <!-- build:js({client,node_modules}) app/vendor.js -->
+          <!-- bower:js -->
+          <!-- endbower -->
+        <!-- endbuild -->
+        <!-- build:js({.tmp,client}) app/app.js -->
+          <script src="app/app.js"></script>
+          <!-- injector:js -->
+          <!-- endinjector -->
+        <!-- endbuild -->
+    </body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "expr": true,
+  "node": true,
+  "esnext": true,
+  "bitwise": true,
+  "eqeqeq": true,
+  "immed": true,
+  "latedef": "nofunc",
+  "quotmark": "double",
+  "newcap": true,
+  "noarg": true,
+  "undef": true,
+  "smarttabs": true,
+  "asi": true,
+  "debug": true
+}

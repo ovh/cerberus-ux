@@ -1,0 +1,23 @@
+<md-dialog  aria-label="Add category">
+    <md-dialog-content class="md-dialog-content">
+        <h2>Add {{tag.tagType}} tag</h2>
+        <div layout="row" layout-fill layout-align="center" data-ng-show="loaders.add">
+            <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+        </div>
+
+        <md-input-container data-show="!loaders.add">
+            <label>Name</label>
+            <input data-ng-model="tag.name">
+        </md-input-container>
+        
+        <md-input-container data-show="!loaders.add">
+            <label>Weight</label>
+            <input data-ng-model="tag.level">
+        </md-input-container>
+        
+    </md-dialog-content>
+    <md-dialog-actions layout="horizontal" layout-align="end end">
+        <md-button  ng-click="cancel()" aria-label="Cancel">Cancel</md-button>
+        <md-button  class="md-primary" ng-click="hide()" aria-label="Save">Save</md-button>
+    </md-dialog-actions>
+</md-dialog>

@@ -1,0 +1,111 @@
+<md-toolbar class="md-medium">
+    <div class="md-toolbar-tools">
+        <md-button data-ng-click="goBack()" aria-label="Back" class="md-icon-button">
+            <md-icon md-font-icon="zmdi zmdi-arrow-back zmdi-hc-2x white"></md-icon>
+        </md-button>
+        <h2>Administration</h2>
+        <div flex></div>
+        <div data-ng-include="'components/menu-shortcuts/menu-shortcuts.html'"></div>
+        <md-button data-ng-href="dashboard"  aria-label="Dashboard" title="Dashboard"
+                   class="md-icon-button">
+            <md-icon md-font-icon="zmdi zmdi-view-dashboard white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button ui-sref="admin.people" aria-label="Administration" title="Administration"
+                   class="md-icon-button"
+                   data-ng-if="Auth.isAdmin()">
+            <md-icon md-font-icon="zmdi zmdi-settings white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button aria-label="Search" ui-sref="search({filters: '{}'})" title="Search"
+                   class="md-icon-button">
+            <md-icon md-font-icon="zmdi zmdi-search white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button class="md-icon-button" ui-sref="diaporama" aria-label="Diaporama">
+            <md-tooltip>Diaporama</md-tooltip>
+            <md-icon md-font-icon class="zmdi zmdi-slideshow white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button class="md-icon-button" data-ng-click="logout()" aria-label="Logout">
+            <md-tooltip>Logout</md-tooltip>
+            <md-icon md-font-icon class="zmdi zmdi-power white zmdi-hc-2x"></md-icon>
+        </md-button>
+    </div>
+</md-toolbar>
+
+<md-content id="admin-user-view" class="md-padding" data-ng-init="ctrl.init()">
+
+    <md-content flex class="md-whiteframe-z1">
+        <md-toolbar md-theme="white" class="no-shadow">
+            <h3 class="md-toolbar-tools" layout="row" layout-align="space-between">
+                <span class="zmdi zmdi-info-outline"></span>
+                <span flex>User informations</span>
+            </h3>
+        </md-toolbar>
+        <md-divider></md-divider>
+
+        <md-content layout="row" class="md-padding" layout-align="start start">
+            <ul class="user-infos">
+                <li>
+                    <span>Name: </span>
+                    <strong>{{ctrl.user.username}}</strong>
+                </li>
+                <li data-ng-if="ctrl.user.email">
+                    <span>Email: </span>
+                    <a data-ng-href="mailto:{{ctrl.user.email}}">{{ctrl.user.email}}</a>
+                </li>
+                <li>
+                    <span>Role: </span>
+                    <strong data-ng-bind="ctrl.user.isSuperuser ? 'Admin' : 'User'"></strong>
+                </li>
+            </ul>
+
+        </md-content>
+
+
+        <div layout="row" layout-align="center" data-ng-show="ctrl.loaders.init">
+            <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+        </div>
+
+        <md-content layout="column" class="md-padding" data-ng-hide="ctrl.loaders.init">
+            <h4>Permissions</h4>
+
+            <strong data-ng-if="ctrl.user.permissions.length <=0">
+                No permissions
+            </strong>
+
+            <table class="table table-hover table-mc-indigo">
+                <thead>
+                    <tr>
+                        <th>Categories</th>
+                        <th data-ng-repeat="permission in ::ctrl.permissions"
+                            data-ng-bind="::permission.name">
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background: #eee">
+                        <td><em>(Un)select all</em></td>
+                        <td data-ng-repeat="permission in ctrl.permissions track by $index">
+                            <md-checkbox data-ng-model="ctrl.allCategories[permission.name]"
+                                         data-ng-click="ctrl.selectAllCategories(permission)"
+                                         aria-label="Select / Unselect all">
+                            </md-checkbox>
+                        </td>
+
+                    </tr>
+                    <tr data-ng-repeat="profile in ctrl.user.profiles">
+                        <th data-ng-bind="::profile.category"></th>
+                        <td data-ng-repeat="permission in ctrl.permissions">
+                            <md-checkbox data-ng-checked="ctrl.isSelected(profile, permission)"
+                                         data-ng-click="ctrl.toggleSelection(profile, permission)"
+                                         aria-label="{{category.name}} - {{permission.name}}">
+                            </md-checkbox>
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
+            <md-button class="md-raised md-primary" aria-label="Save" data-ng-click="ctrl.savePermissions()">
+                Save
+            </md-button>
+        </md-content>
+    </md-content>
+</md-content>

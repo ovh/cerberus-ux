@@ -1,0 +1,16 @@
+node_modules
+public
+client/app/config/custom.constants.js
+client/app/config/environment
+.tmp
+client/app/app.less
+client/index.html
+karma.conf.js
+.idea
+client/bower_components
+dist
+/server/config/local.env.js
+npm-debug.log
+*.orig
+dist.tar.gz
+.yo-rc.json

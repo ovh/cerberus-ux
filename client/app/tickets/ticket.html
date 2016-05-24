@@ -1,0 +1,644 @@
+<md-toolbar class="md-medium"
+            data-ng-class="{'md-red-theme': ctrl.ticket.status === 'WaitingAnswer' || ctrl.ticket.status === 'Answered'}">
+    <div class="md-toolbar-tools" data-ng-if="!ctrl.loaders.ticket && ctrl.hasTicketCountdown()">
+        <md-button data-ng-click="goBackState()" aria-label="Back" class="md-icon-button">
+            <md-tooltip>Go back</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-arrow-back zmdi-hc-2x white"></md-icon>
+        </md-button>
+
+        <h2>Ticket <strong data-ng-bind="::ctrl.ticket.id"></strong></h2>
+        <div data-ng-if="ctrl.ticket.status === 'WaitingAnswer' || ctrl.ticket.status === 'Answered' && ctrl.countdown > 0" flex class="center header-countdown">
+            <timer interval="1000" countdown="ctrl.countdown">
+                <strong>{{hourUnit}}</strong>
+            </timer><br />
+            <span data-ng-bind="ctrl.ticket.action.name"></span>
+        </div>
+
+        <div data-ng-if="ctrl.ticket.status === 'Paused' && ctrl.countdownPaused > 0" flex class="center header-countdown">
+            <timer interval="1000" countdown="ctrl.countdownPaused">
+                <strong>{{hourUnit}}</strong>
+            </timer><br />
+            <span>Pause</span>
+        </div>
+
+        <div flex data-ng-include="'components/menu-shortcuts/menu-shortcuts.html'"></div>
+
+        <md-button data-ng-href="dashboard" aria-label="Dashboard"
+                   class="md-icon-button">
+            <md-tooltip>Dashboard</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-view-dashboard white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button ui-sref="admin.people"  aria-label="Administration"
+                   class="md-icon-button"
+                   data-ng-if="Auth.isAdmin()">
+            <md-tooltip>Administration</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-settings white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button aria-label="Search" ui-sref="search({filters: '{}'})"
+                   class="md-icon-button">
+            <md-tooltip>Search</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-search white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button class="md-icon-button" ui-sref="diaporama" aria-label="Diaporama">
+            <md-tooltip>Diaporama</md-tooltip>
+            <md-icon md-font-icon class="zmdi zmdi-slideshow white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button class="md-icon-button" data-ng-click="logout()" aria-label="Logout">
+            <md-tooltip>Logout</md-tooltip>
+            <md-icon md-font-icon class="zmdi zmdi-power white zmdi-hc-2x"></md-icon>
+        </md-button>
+    </div>
+
+    <div class="md-toolbar-tools" data-ng-if="!ctrl.loaders.ticket && !ctrl.hasTicketCountdown()">
+        <md-button data-ng-click="goBackState()" aria-label="Back" class="md-icon-button">
+            <md-tooltip>Go back</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-arrow-back zmdi-hc-2x white"></md-icon>
+        </md-button>
+
+        <h2>Ticket <strong data-ng-bind="::ctrl.ticket.id"></strong></h2>
+
+        <span flex></span>
+
+        <div data-ng-include="'components/menu-shortcuts/menu-shortcuts.html'"></div>
+
+        <md-button data-ng-href="dashboard" aria-label="Dashboard"
+                   class="md-icon-button">
+            <md-tooltip>Dashboard</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-view-dashboard white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button ui-sref="admin.people"  aria-label="Administration"
+                   class="md-icon-button"
+                   data-ng-if="Auth.isAdmin()">
+            <md-tooltip>Administration</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-settings white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button aria-label="Search" ui-sref="search({filters: '{}'})"
+                   class="md-icon-button">
+            <md-tooltip>Search</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-search white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button class="md-icon-button" ui-sref="diaporama" aria-label="Diaporama">
+            <md-tooltip>Diaporama</md-tooltip>
+            <md-icon md-font-icon class="zmdi zmdi-slideshow white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button class="md-icon-button" data-ng-click="logout()" aria-label="Logout">
+            <md-tooltip>Logout</md-tooltip>
+            <md-icon md-font-icon class="zmdi zmdi-power white zmdi-hc-2x"></md-icon>
+        </md-button>
+    </div>
+</md-toolbar>
+
+<md-fab-speed-dial md-direction="left" class="md-scale md-fab-top-right mt40"
+                   hide-md hide-gt hide-gt-md hide-lg>
+    <md-fab-trigger>
+        <md-button aria-label="menu" class="md-fab md-accent">
+            <md-tooltip md-direction="top">Actions</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-menu zmdi-hc-2x white" aria-label="Actions"></md-icon>
+        </md-button>
+    </md-fab-trigger>
+    <md-fab-actions>
+
+        <md-button data-ng-click="ctrl.showDialogInteract($event)"
+                   class="md-fab md-raised md-mini"
+                   aria-label="Interact">
+            <i class="zmdi zmdi-accounts grey"></i>
+            <md-tooltip> Interact</md-tooltip>
+        </md-button>
+
+        <md-button data-ng-click="ctrl.setPause($event)"
+                   class="md-fab md-raised md-mini"
+                   data-ng-if="ctrl.ticket.status !== 'Paused'"
+                   aria-label="Pause">
+            <i class="zmdi zmdi-pause grey"></i>
+            <md-tooltip>Pause</md-tooltip>
+        </md-button>
+
+        <md-button data-ng-click="ctrl.setUnpause()"
+                   class="md-fab md-raised md-mini"
+                   data-ng-if="ctrl.ticket.status === 'Paused'"
+                   aria-label="Wake up">
+            <i class="zmdi zmdi-pause-circle-outline grey"></i>
+            <md-tooltip>Unpaused</md-tooltip>
+        </md-button>
+
+        <md-button aria-label="Action status"
+                   class="md-fab md-raised md-mini"
+                   data-ng-click="ctrl.showDialogActionStatus($event)"
+                   data-ng-if="ctrl.ticket.jobs.length > 0">
+            <i class="zmdi zmdi-minus-circle grey"></i>
+            <md-tooltip>Action status</md-tooltip>
+        </md-button>
+
+        <md-button  data-ng-click="ctrl.showDialogChangeDelay($event)"
+                    class="md-fab md-raised md-mini"
+                    data-ng-if="ctrl.ticket.status === 'WaitingAnswer'"
+                    aria-label="Change delay">
+            <i class="zmdi zmdi-alarm grey"></i>
+            <md-tooltip>Change delay</md-tooltip>
+        </md-button>
+
+        <md-button  data-ng-click="ctrl.setPauseDuration($event)"
+                    class="md-fab md-raised md-mini"
+                    data-ng-if="ctrl.ticket.status === 'Paused'"
+                    aria-label="Change pause delay">
+            <i class="zmdi zmdi-alarm grey"></i>
+            <md-tooltip>Change delay</md-tooltip>
+        </md-button>
+
+        <md-button  data-ng-if="ctrl.ticket.status === 'Closed'"
+                    class="md-fab md-raised md-mini"
+                    data-ng-click="ctrl.setStatus({label: 'Reopened'})"
+                    aria-label="Reopen ticket">
+            <i class="zmdi zmdi-open-in-browser grey"></i>
+            <md-tooltip>Reopen</md-tooltip>
+        </md-button>
+
+        <md-button data-ng-click="ctrl.ticket.escalated = true; ctrl.updateTicket()"
+                   class="md-fab md-raised md-mini"
+                   data-ng-if="!ctrl.ticket.escalated"
+                   aria-label="Request escalade">
+            <i class="zmdi zmdi-accounts-add grey"></i>
+            <md-tooltip>Escalated</md-tooltip>
+        </md-button>
+
+        <md-button data-ng-click="ctrl.ticket.escalated = false; ctrl.updateTicket()"
+                   class="md-fab md-raised md-mini"
+                   data-ng-if="ctrl.ticket.escalated"
+                   aria-label="Unescalade">
+            <i class="zmdi zmdi-account grey"></i>
+            <md-tooltip>Unescalade</md-tooltip>
+        </md-button>
+
+        <md-button data-ng-click="ctrl.ticket.moderation = false; ctrl.updateTicket()"
+                   class="md-fab md-raised md-mini"
+                   data-ng-if="ctrl.ticket.moderation && !ctrl.isBeginner()"
+                   aria-label="Moderation">
+            <i class="zmdi zmdi-fire grey"></i>
+            <md-tooltip>Moderation</md-tooltip>
+        </md-button>
+
+        <md-button  data-ng-if="!ctrl.isMyTicket()" data-ng-click="ctrl.assignToMe()"
+                    class="md-fab md-raised md-mini"
+                    aria-label="Assign ticket to me">
+            <i class="zmdi zmdi-assignment-account grey"></i>
+            <md-tooltip>Assign to me</md-tooltip>
+        </md-button>
+    </md-fab-actions>
+</md-fab-speed-dial>
+
+<md-content id="ticket-view" class="md-padding" data-ng-init="ctrl.init()">
+
+    <div layout="row" layout-align="center" data-ng-if="ctrl.loaders.ticket">
+        <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+    </div>
+
+    <!-- actions bar -->
+    <div layout="row" layout-align="space-between" class="sticky" data-ng-if="!ctrl.loaders.ticket && ctrl.ticket" hide-xs hide-sm>
+        <md-button data-ng-show="ctrl.prevTicketId" ui-sref="ticket.activities({id: ctrl.prevTicketId})"
+                   class="md-icon-button"
+                   aria-label="Go to previous ticket">
+            <md-tooltip>Go to previous ticket</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-chevron-left zmdi-hc-2x grey"></md-icon>
+        </md-button>
+
+        <md-button class="md-raised md-primary" data-ng-click="ctrl.showDialogInteract($event)" aria-label="Interact">
+            <i class="zmdi zmdi-accounts white"></i>
+            Interact
+        </md-button>
+
+        <md-button class="md-raised md-accent" data-ng-click="ctrl.setPause($event)"
+                   data-ng-if="ctrl.ticket.status !== 'Paused'"
+                   aria-label="Pause">
+            <i class="zmdi zmdi-pause white"></i>
+            Pause
+        </md-button>
+
+        <md-button class="md-raised md-accent" data-ng-click="ctrl.setUnpause()"
+                   data-ng-if="ctrl.ticket.status === 'Paused'"
+                   aria-label="Wake up">
+            <i class="zmdi zmdi-pause-circle-outline white"></i>
+            Unpaused
+        </md-button>
+
+        <md-button class="md-warn md-raised" aria-label="Action status"
+                   data-ng-click="ctrl.showDialogActionStatus($event)"
+                   data-ng-if="ctrl.ticket.jobs.length > 0">
+            <i class="zmdi zmdi-minus-circle white"></i>
+            Action status
+        </md-button>
+
+        <md-button  class="md-raised md-accent" data-ng-click="ctrl.showDialogChangeDelay($event)"
+                    data-ng-if="ctrl.ticket.status === 'WaitingAnswer'"
+                    aria-label="Change delay">
+            <i class="zmdi zmdi-alarm white"></i>
+            Change delay
+        </md-button>
+
+        <md-button  class="md-raised md-accent" data-ng-click="ctrl.setPauseDuration($event)"
+                    data-ng-if="ctrl.ticket.status === 'Paused'"
+                    aria-label="Change pause delay">
+            <i class="zmdi zmdi-alarm white"></i>
+            Change delay
+        </md-button>
+
+        <md-button  data-ng-if="ctrl.ticket.status === 'Closed'"
+                    data-ng-click="ctrl.setStatus({label: 'Reopened'})"
+                    aria-label="Reopen ticket">
+            <i class="zmdi zmdi-open-in-browser grey"></i>
+            Reopen
+        </md-button>
+
+        <md-button data-ng-click="ctrl.ticket.escalated = true; ctrl.updateTicket()"
+                   data-ng-if="!ctrl.ticket.escalated"
+                   aria-label="Request escalade">
+            <i class="zmdi zmdi-accounts-add grey"></i>
+            Escalated
+        </md-button>
+
+        <md-button data-ng-click="ctrl.ticket.escalated = false; ctrl.updateTicket()"
+                   data-ng-if="ctrl.ticket.escalated"
+                   aria-label="Unescalade">
+            <i class="zmdi zmdi-account grey"></i>
+            Unescalade
+        </md-button>
+
+        <md-button data-ng-click="ctrl.ticket.moderation = false; ctrl.updateTicket()"
+                   data-ng-if="ctrl.ticket.moderation && !ctrl.isBeginner()"
+                   aria-label="Moderation">
+            <i class="zmdi zmdi-fire grey"></i>
+            Moderation
+        </md-button>
+
+        <md-button  data-ng-if="!ctrl.isMyTicket()" data-ng-click="ctrl.assignToMe()"
+                    aria-label="Assign ticket to me">
+            <i class="zmdi zmdi-assignment-account grey"></i>
+            Assign to me
+        </md-button>
+
+        <md-button  ui-sref="ticket.activities({id: ctrl.nextTicketId})"
+                    data-ng-show="ctrl.nextTicketId"
+                    aria-label="Go to next ticket"
+                    class="md-icon-button">
+            <md-tooltip>Go to next ticket</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-chevron-right zmdi-hc-2x grey"></md-icon>
+        </md-button>
+    </div>
+
+    <!-- INFORMATIONS  -->
+    <div class="md-padding ticket-header mt40" layout="row" layout-xs="column" layout-sm="column"
+         data-ng-if="!ctrl.loaders.ticket && ctrl.ticket"
+         layout-margin>
+        <div flex>
+            <h3>Informations</h3>
+            <div layout="row" layout-algin="space-between center">
+                <ul flex>
+                    <li>
+                        <span>PublicId :</span>
+                        <strong data-ng-bind="ctrl.ticket.publicId"></strong>
+                    </li>
+                    <li data-ng-if="ctrl.ticket.mailerId">
+                        <span>Mailer Id :</span>
+                        <strong data-ng-bind="ctrl.ticket.mailerId"></strong>
+                    </li>
+                    <li>
+                        <span>Category :</span>
+                        <strong>
+                            <a href="#"
+                               editable-select="ctrl.ticket.category"
+                               buttons="no"
+                               e-ng-options="category.name as category.name for category  in ctrl.categories"
+                               onaftersave="ctrl.updateTicket()">
+                                <md-tooltip>Click to change the category</md-tooltip>
+                                {{ctrl.ticket.category}}
+                            </a>
+                        </strong>
+                    </li>
+
+                    <li>
+                        <span>Status : </span>
+                        <strong data-ng-bind="ctrl.ticket.status"></strong>
+                    </li>
+
+                    <li>
+                        <span>Date : </span>
+                        <strong data-ng-bind="ctrl.ticket.creationDate | amDateFormat:'DD/MM/YY HH:mm'"></strong>
+                    </li>
+
+                    <li>
+                        <span>Reports : </span>
+                        <strong data-ng-bind="ctrl.ticket.attachedReportsCount"></strong>
+                    </li>
+
+                    <li>
+                        <span>Sources : </span>
+                        <em ng-show="ctrl.loaders.providerReports">
+                            loading ...
+                        </em>
+                        <strong ng-hide="ctrl.loaders.providerReports">
+                            <span class="badge success" data-ng-if="ctrl.trustedSources.length > 0"
+                                  style="margin-right:5px">
+                                <i class="zmdi zmdi-check white" alt="Provider trusted"></i>
+                                trust ({{ctrl.trustedSources.length}})
+                                <md-tooltip class="tooltip-lg">
+                                    <ul>
+                                        <li data-ng-repeat="source in ctrl.trustedSources"
+                                            data-ng-bind="::source"></li>
+                                    </ul>
+                                </md-tooltip>
+                            </span>
+                            <span class="badge error" data-ng-if="ctrl.unTrustedSources.length > 0">
+                                Not trust ({{ctrl.unTrustedSources.length}})
+                                <md-tooltip class="tooltip-lg">
+                                    <ul>
+                                        <li data-ng-repeat="source in ctrl.unTrustedSources"
+                                            data-ng-bind="::source"></li>
+                                    </ul>
+                                </md-tooltip>
+                            </span>
+                        </strong>
+                    </li>
+
+                    <li>
+                        <tags-input class="ngTags" data-ng-model="ctrl.ticket.tags"
+                                    display-property="name"
+                                    min-length="2"
+                                    add-from-autocomplete-only="false"
+                                    replace-spaces-with-dashes="false"
+                                    on-tag-added="ctrl.addTicketTag($tag)"
+                                    on-tag-removed="ctrl.removeTicketTag($tag)">
+                            <auto-complete source="ctrl.ticketTags"
+                                           min-length="0"
+                                           select-first-match="false"
+                                           loadOnDownArrow="true"
+                                           debounce-delay="0">
+                            </auto-complete>
+                        </tags-input>
+                    </li>
+
+                </ul>
+
+                <ul flex>
+                    <li>
+                        <span>Assign to : </span>
+                        <a href="#"
+                           editable-select="ctrl.ticket.treatedBy"
+                           buttons="no"
+                           e-ng-options="user.username as user.username for user  in ctrl.users"
+                           onaftersave="ctrl.updateTicket()"
+                           data-ng-bind="ctrl.ticket.treatedBy || 'nobody'">
+                            <md-tooltip>Click to change the assignee</md-tooltip>
+                        </a>
+                    </li>
+
+                    <li>
+                        <span>Priority :</span>
+                        <strong class="badge" data-ng-class="{'error': ctrl.ticket.priority === 'High',
+                                                             'info': ctrl.ticket.priority === 'Normal',
+                                                             'success' : ctrl.ticket.priority === 'Low'}">
+                            <a href="#"
+                               editable-select="ctrl.ticket.priority"
+                               buttons="no"
+                               e-ng-options="priority.label as priority.label for priority  in ctrl.priorities"
+                               onaftersave="ctrl.updateTicket()"
+                               data-ng-bind="ctrl.ticket.priority">
+                                <md-tooltip>Click to change the priority</md-tooltip>
+                            </a>
+                        </strong>
+                    </li>
+                    <li>
+                        <span data-ng-if="ctrl.ticket.service">Domain :</span>
+                        <em data-ng-bind="ctrl.ticket.service.name"></em>
+                    </li>
+                    <li>
+                        <md-checkbox data-ng-model="ctrl.ticket.confidential" aria-label="Confidential"
+                                     style="margin-left:0"
+                                     data-ng-change="ctrl.toggleConfidential()">
+                            Confidential
+                        </md-checkbox>
+                    </li>
+                    <li>
+                        <md-checkbox data-ng-model="ctrl.ticket.protected" aria-label="Protected"
+                                     style="margin-left:0"
+                                     data-ng-change="ctrl.updateTicket()">
+                            Protected
+                        </md-checkbox>
+                    </li>
+                    <li>
+                        <md-checkbox data-ng-model="ctrl.ticket.update" aria-label="Keep updated"
+                                     style="margin-left:0"
+                                     data-ng-change="ctrl.updateTicket()">
+                            <md-tooltip>
+                                All new reports concerning the same category & service will be attached to this ticket
+                            </md-tooltip>
+                            Keep updated
+                        </md-checkbox>
+                    </li>
+
+                    <li data-ng-if="ctrl.ticket.alarm">
+                        <strong class="badge error">
+                            <i class="zmdi zmdi-alarm-on white"></i>
+                            Alarm
+                        </strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div flex>
+            <h3 layout="row">
+                Customer
+                <span flex></span>
+                <strong flex="5" class="badge success mini" data-ng-if="ctrl.ticket.defendant.isVIP">VIP</strong>
+                <strong flex="15" class="badge error mini"
+                        data-ng-if="ctrl.ticket.defendant && ctrl.ticket.defendant.state !== 'active' && ctrl.ticket.defendant.state !== 'owner'">
+                    Account closed
+                </strong>
+                <strong flex="5" class="badge info mini" data-ng-if="ctrl.ticket.defendant.isGS">GS</strong>
+                <strong flex="10" class="badge warning mini" data-ng-if="ctrl.ticket.defendant.isInternal">Intern.</strong>
+            </h3>
+
+            <div layout="row" layout-sm="column" layout-align="space-around" data-ng-show="ctrl.loaders.services">
+                <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+            </div>
+
+            <div layout="row" layout-align="space-between" data-ng-show="!ctrl.loaders.services && !ctrl.ticket.defendant">
+                No defendant
+            </div>
+
+            <div layout="row" layout-align="space-between" data-ng-show="!ctrl.loaders.services && ctrl.ticket.defendant">
+                <ul  flex>
+                    <li>
+                        Customer ID : <strong data-ng-bind="ctrl.ticket.defendant.customerId || 'None'"></strong>
+
+                        <a href="" role="button" data-ng-click="ctrl.showDialogDetachDefendant($event)"
+                           data-ng-if="ctrl.ticket.defendant">
+                            <md-tooltip>Detach this defendant</md-tooltip>
+                            <md-icon md-font-icon="zmdi zmdi-delete grey"></md-icon>
+                        </a>
+                    </li>
+                    <li>
+                        Email : <strong data-ng-bind="ctrl.ticket.defendant.email"></strong>
+                    </li>
+                    <li>
+                        Country : <strong data-ng-bind="ctrl.ticket.defendant.country"></strong>
+                    </li>
+                    <li>
+                        Customer since : <strong data-ng-bind="ctrl.ticket.defendant.creationDate | amDateFormat:'DD/MM/YY'"></strong>
+                    </li>
+                    <li data-ng-if="ctrl.servicesCount">
+                        Services : <strong data-ng-bind="ctrl.servicesCount"></strong>
+                    </li>
+                    <li>
+                        Tickets : <strong data-ng-bind="ctrl.ticketsCount"></strong>
+                    </li>
+                    <li>
+                        Comments : &nbsp;
+
+                        <a href="#" data-ng-click="ctrl.showDialogDefendantComment($event)">
+                            <md-tooltip>Click to insert comment</md-tooltip>
+                            <md-icon md-font-icon="zmdi zmdi-comment-text primary"></md-icon>
+                        </a>
+
+                        <md-content class="defendant-comments">
+                            <em data-ng-if="!ctrl.ticket.defendant.comments.length">No comment</em>
+                            <md-list data-ng-if="ctrl.ticket.defendant.comments.length" class="no-padding">
+                                <md-list-item data-ng-repeat="comment in ctrl.ticket.defendant.comments" layout="row" layout-align="start start">
+                                    <div flex>
+                                        <pre data-ng-bind="comment.comment" flex></pre>
+                                        <em class="pull-right author">
+                                            {{comment.user}} le {{(comment.date * 1000) | date:'dd-MM-yyyy à HH:mm'}}
+                                        </em>
+                                    </div>
+                                    <div data-ng-if="comment.user !== Auth.getCurrentUser().username" style="float:right; width:60px;">
+                                    </div>
+                                    <md-menu md-position-mode="target-right target" style="float:right" class="no-padding"
+                                             data-ng-if="comment.user === Auth.getCurrentUser().username">
+                                        <md-button aria-label="Menu" class="md-icon-button" ng-click="$mdOpenMenu()">
+                                            <md-icon md-font-icon="zmdi zmdi-more-vert primary zmdi-hc-2x"></md-icon>
+                                        </md-button>
+                                        <md-menu-content width="2">
+                                            <md-menu-item>
+                                                <md-button data-ng-click="ctrl.showDialogEditDefendantComment($event,comment)">
+                                                    <md-icon md-font-icon="zmdi zmdi-edit primary"></md-icon> Edit
+                                                </md-button>
+                                            </md-menu-item>
+                                            <md-menu-item>
+                                                <md-button data-ng-click="ctrl.removeDefendantComment(comment)">
+                                                    <md-icon md-font-icon="zmdi zmdi-delete primary"></md-icon> Delete
+                                                </md(button>
+                                            </md-menu-item>
+                                        </md-menu-content>
+                                    </md-menu>
+                                </md-list-item>
+                            </md-list>
+                        </md-content>
+                    </li>
+                </ul>
+
+                <ul  flex>
+                    <li>
+                        Name : <strong data-ng-bind="ctrl.ticket.defendant.firstname"></strong>
+                        <strong data-ng-bind="ctrl.ticket.defendant.name"></strong>
+                    </li>
+                    <li>
+                        Spare email : <strong data-ng-bind="ctrl.ticket.defendant.spareEmail"></strong>
+                    </li>
+                    <li>
+                        Billing Country : <strong data-ng-bind="ctrl.ticket.defendant.billingCountry"></strong>
+                    </li>
+                    <li>
+                        Language : <strong data-ng-bind="ctrl.ticket.defendant.lang"></strong>
+                    </li>
+
+                    <li>
+                        Address : <strong data-ng-bind="ctrl.ticket.defendant.address"></strong>
+                        <strong data-ng-bind="ctrl.ticket.defendant.zip"></strong>
+                        <strong data-ng-bind="ctrl.ticket.defendant.city"<>></strong>
+
+                    </li>
+                    <li>
+                        legalForm : <strong data-ng-bind="ctrl.ticket.defendant.legalForm"></strong>
+                    </li>
+                    <li data-ng-if="ctrl.ticket.defendant.organisation">
+                        Organization : <strong data-ng-bind="ctrl.ticket.defendant.organisation"></strong>
+                    </li>
+
+                    <li>
+                        <tags-input class="ngTags" data-ng-model="ctrl.ticket.defendant.tags"
+                                    display-property="name"
+                                    min-length="2"
+                                    add-from-autocomplete-only="false"
+                                    replace-spaces-with-dashes="false"
+                                    on-tag-added="ctrl.addDefendantTag($tag)"
+                                    on-tag-removed="ctrl.removeDefendantTag($tag)">
+                            <auto-complete source="ctrl.defendantTags"
+                                           min-length="0"
+                                           debounce-delay="100"
+                                           select-first-match="false"
+                                           max-results="10">
+                            </auto-complete>
+                        </tags-input>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" data-ng-if="ctrl.ticket">
+        <md-tabs class="md-padding"  md-dynamic-height md-stretch-tabs="always"
+                 md-selected="ctrl.selectedTabIndex">
+
+            <md-tab aria-controls="tab-activity" label="Activities" ui-sref="ticket.activities" md-active="ctrl.state.is('ticket.activities')">
+                <div ui-view="tab-activities"></div>
+            </md-tab>
+
+            <md-tab aria-controls="tab-comments" label="Comments"
+                    md-on-select="ctrl.showFloatButtonComment = true"
+                    md-on-deselect="ctrl.showFloatButtonComment = false"
+                    ui-sref="ticket.comments" md-active="ctrl.state.is('ticket.comments')">
+                <div ui-view="tab-comments"></div>
+            </md-tab>
+
+            <md-tab aria-controls="tab-content" label="Reports" md-no-ink
+                    ui-sref="ticket.reports" md-active="ctrl.state.is('ticket.reports')">
+                <div ui-view="tab-reports"></div>
+            </md-tab>
+
+            <md-tab aria-controls="tab-services" label="Services" md-no-ink md-on-select="ctrl.onTabSelected()"
+                    ui-sref="ticket.services" md-active="ctrl.state.is('ticket.services')">
+                <div ui-view="tab-services"></div>
+            </md-tab>
+
+            <md-tab aria-controls="tab-history" label="History"  md-no-ink md-on-select="ctrl.onTabSelected('History')"
+                    ui-sref="ticket.history" md-active="ctrl.state.is('ticket.history')">
+                <div ui-view="tab-history"></div>
+            </md-tab>
+
+            <md-tab aria-controls="tab-proofs" label="Proofs" md-no-ink
+                    md-on-select="ctrl.onTabSelected('Proofs')"
+                    ui-sref="ticket.proofs" md-active="ctrl.state.is('ticket.proofs')">
+                <div ui-view="tab-proofs"></div>
+            </md-tab>
+
+            <md-tab aria-controls="tab-emails" label="Emails" md-no-ink
+                    data-ng-show="ctrl.emails && ctrl.emails.length > 0"
+                    md-on-select="ctrl.onTabSelected('Emails')"
+                    ui-sref="ticket.emails" md-active="ctrl.state.is('ticket.emails')">
+                <div ui-view="tab-emails"></div>
+            </md-tab>
+        </md-tabs>
+    </div>
+
+    <md-button class="md-fab btn-float-right" data-ng-click="ctrl.showDialogComment($event)"
+               data-ng-if="ctrl.showFloatButtonComment"
+               aria-label="Add comment" title="Add comment">
+        <md-icon md-font-icon="zmdi zmdi-comment-text zmdi-hc-2x white"></md-icon>
+    </md-button>
+
+    <md-button class="md-raised md-warn md-icon md-fab btn-float-right" data-ng-click="ctrl.showDialogAddProof($event)"
+               data-ng-if="ctrl.state.is('ticket.proofs')"
+               aria-label="Add proof" title="Add proof">
+        <md-icon md-font-icon="zmdi zmdi-comment-text zmdi-hc-2x white"></md-icon>
+    </md-button>
+
+</md-content>

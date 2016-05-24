@@ -1,0 +1,32 @@
+<div role="tabpanel" id="tab-emails" data-ng-init="ctrlEmails.init()">
+    
+    <div layout="row" layout-align="center" data-ng-show="ctrlEmails.loaders.emails">
+        <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+    </div>
+
+    <div layout="row" layout-align="center center">
+        <p data-ng-if="!ctrlEmails.loaders.emails && ctrlEmails.emails.length <= 0">No email</p>
+    </div>
+    <ol class="discussion">
+        <li data-ng-repeat="email in ctrlEmails.emails"
+            data-ng-class="{
+                other: !email.from.match('ticket\\+' + ctrl.ticket.publicId) && email.from !== ctrl.ticket.defendant.email,
+                defendant: email.from === ctrl.ticket.defendant.email,
+                self: email.from.match('ticket\\+' + ctrl.ticket.publicId)
+            }">
+            <div class="messages">
+                <p><strong data-ng-bind="email.subject"></strong></p>
+                <ul>
+                    <li>From : <strong data-ng-bind="email.from"></strong></li>
+                    <li>To : <strong data-ng-bind="email.to"></strong></li>
+                    <li>Date : <strong data-ng-bind="email.created | amDateFormat:'DD/MM/YY HH:mm'"></strong></li>
+                </ul>
+                <pre data-ng-bind="::email.body"></pre>
+                <time datetime="{{email.created}}">
+                    {{email.from}} • {{email.created | amDateFormat:'DD/MM/YY HH:mm'}}
+                </time>
+            </div>
+        </li>
+    </ol>
+
+</div>

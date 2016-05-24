@@ -1,0 +1,302 @@
+<md-content class="table-responsive-vertical" flex data-ng-show="!ctrl.loaders.search"  style="overflow:hidden">
+
+    <md-content class="no-margin" layout="row" layout-align="space-between center" style="height:65px;">
+        <em class="fs13">{{ctrl.results.ticketsCount}} tickets found</em>
+        <md-button class="md-icon-button md-fab" aria-label="Refresh" data-ng-click="ctrl.searchTickets()">
+            <i class="zmdi zmdi-refresh white zmdi-hc-3x"></i>
+            <md-tooltip>Refresh results</md-tooltip>
+        </md-button>
+    </md-content>
+
+    <table class="table table-medium table-hover table-mc-indigo">
+        <thead>
+            <!-- Dont allow sort columns if search form is not shown -->
+            <tr data-ng-show="!ctrl.showSearchForm">
+                <th>
+                    <md-checkbox data-ng-model="ctrl.selectAll" data-ng-change="ctrl.selectAllResults()" aria-label="Select all"></md-checkbox>
+                </th>
+                <th>ID</th>
+                <th>Category</th>
+                <th>Defendant</th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th>Date</th>
+                <th>Last update</th>
+                <th>Reports</th>
+                <th>Details</th>
+            </tr>
+            <tr data-ng-show="ctrl.showSearchForm">
+                <th>
+                    <md-checkbox data-ng-model="ctrl.selectAll" data-ng-change="ctrl.selectAllResults()" aria-label="Select all"></md-checkbox>
+                </th>
+                <th>
+                    <a href="" data-ng-show="ctrl.sortBy.field !== 'id'"
+                       data-ng-click="ctrl.sortBy.field = 'id'; ctrl.currentPage = 1; ctrl.searchTickets()">
+                        ID
+                        <i class="zmdi zmdi-unfold-more"></i>
+                    </a>
+                    <a href=""
+                       data-ng-show="ctrl.sortBy.field == 'id' && ctrl.sortBy.order === 1"
+                       data-ng-click="ctrl.sortBy.order = -1; ctrl.currentPage = 1; ctrl.searchTickets()">
+                        ID
+                        <i class="zmdi zmdi-caret-up"></i>
+                    </a>
+                    <a href=""
+                       data-ng-show="ctrl.sortBy.field === 'id'  && ctrl.sortBy.order === -1"
+                       data-ng-click="ctrl.sortBy.order = 1; ctrl.currentPage = 1; ctrl.searchTickets()">
+                        ID
+                        <i class="zmdi zmdi-caret-down"></i>
+                    </a>
+                </th>
+                <th>
+                    <span data-ng-if="!ctrl.currentCategory">
+                        <a href="" data-ng-show="ctrl.sortBy.field !== 'category'"
+                           data-ng-click="ctrl.sortBy.field = 'category'; ctrl.currentPage = 1; ctrl.searchTickets()">
+                            Category
+                            <i class="zmdi zmdi-unfold-more"></i>
+                        </a>
+                        <a href=""
+                           data-ng-show="ctrl.sortBy.field === 'category' && ctrl.sortBy.order === 1"
+                           data-ng-click="ctrl.sortBy.order = -1; ctrl.currentPage = 1; ctrl.searchTickets()">
+                            Category
+                            <i class="zmdi zmdi-caret-up"></i>
+                        </a>
+                        <a href=""
+                           data-ng-show="ctrl.sortBy.field === 'category'  && ctrl.sortBy.order === -1"
+                           data-ng-click="ctrl.sortBy.order = 1; ctrl.currentPage = 1; ctrl.searchTickets()">
+                            Category
+                            <i class="zmdi zmdi-caret-down"></i>
+                        </a>
+                    </span>
+                </th>
+                <th>Defendant</th>
+                <th>
+                    <a href="" data-ng-show="ctrl.sortBy.field !== 'status'"
+                       data-ng-click="ctrl.sortBy.field = 'status'; ctrl.currentPage = 1; ctrl.searchTickets()">
+                        Status
+                        <i class="zmdi zmdi-unfold-more"></i>
+                    </a>
+                    <a href=""
+                       data-ng-show="ctrl.sortBy.field === 'status' && ctrl.sortBy.order === 1"
+                       data-ng-click="ctrl.sortBy.order = -1; ctrl.currentPage = 1; ctrl.searchTickets()">
+                        Status
+                        <i class="zmdi zmdi-caret-up"></i>
+                    </a>
+                    <a href=""
+                       data-ng-show="ctrl.sortBy.field === 'status'  && ctrl.sortBy.order === -1"
+                       data-ng-click="ctrl.sortBy.order = 1; ctrl.currentPage = 1; ctrl.searchTickets()">
+                        Status
+                        <i class="zmdi zmdi-caret-down"></i>
+                    </a>
+                </th>
+                <th>
+                    <a href="" data-ng-show="ctrl.sortBy.field !== 'priority'"
+                       data-ng-click="ctrl.sortBy.field = 'priority'; ctrl.currentPage = 1; ctrl.searchTickets()">
+                        Priority
+                        <i class="zmdi zmdi-unfold-more"></i>
+                    </a>
+                    <a href=""
+                       data-ng-show="ctrl.sortBy.field === 'priority' && ctrl.sortBy.order === 1"
+                       data-ng-click="ctrl.sortBy.order = -1; ctrl.currentPage = 1; ctrl.searchTickets()">
+                        Priority
+                        <i class="zmdi zmdi-caret-up"></i>
+                    </a>
+                    <a href=""
+                       data-ng-show="ctrl.sortBy.field === 'priority' && ctrl.sortBy.order === -1"
+                       data-ng-click="ctrl.sortBy.order = 1; ctrl.currentPage = 1; ctrl.searchTickets()">
+                        Priority
+                        <i class="zmdi zmdi-caret-down"></i>
+                    </a>
+                </th>
+                <th>
+                    <a href="" data-ng-show="ctrl.sortBy.field !== 'creationDate'"
+                       data-ng-click="ctrl.sortBy.field = 'creationDate'; ctrl.currentPage = 1; ctrl.searchTickets()">
+                        Date
+                        <i class="zmdi zmdi-unfold-more"></i>
+                    </a>
+                    <a href=""
+                       data-ng-show="ctrl.sortBy.field === 'creationDate' && ctrl.sortBy.order === 1"
+                       data-ng-click="ctrl.sortBy.order = -1; ctrl.searchTickets()">
+                        Date
+                        <i class="zmdi zmdi-caret-up"></i>
+                    </a>
+                    <a href=""
+                       data-ng-show="ctrl.sortBy.field === 'creationDate'  && ctrl.sortBy.order === -1"
+                       data-ng-click="ctrl.sortBy.order = 1; ctrl.currentPage = 1; ctrl.searchTickets()">
+                        Date
+                        <i class="zmdi zmdi-caret-down"></i>
+                    </a>
+                </th>
+                <th>
+                    <a href="" data-ng-show="ctrl.sortBy.field !== 'modificationDate'"
+                       data-ng-click="ctrl.sortBy.field = 'modificationDate'; ctrl.currentPage = 1; ctrl.searchTickets()">
+                        Last Update
+                        <i class="zmdi zmdi-unfold-more"></i>
+                    </a>
+                    <a href=""
+                       data-ng-show="ctrl.sortBy.field === 'modificationDate' && ctrl.sortBy.order === 1"
+                       data-ng-click="ctrl.sortBy.order = -1; ctrl.searchTickets()">
+                        Last Update
+                        <i class="zmdi zmdi-caret-up"></i>
+                    </a>
+                    <a href=""
+                       data-ng-show="ctrl.sortBy.field === 'modificationDate'  && ctrl.sortBy.order === -1"
+                       data-ng-click="ctrl.sortBy.order = 1; ctrl.currentPage = 1; ctrl.searchTickets()">
+                        Last Update
+                        <i class="zmdi zmdi-caret-down"></i>
+                    </a>
+                </th>
+                <th>
+                    <a href="" data-ng-show="ctrl.sortBy.field !== 'attachedReportsCount'"
+                       data-ng-click="ctrl.sortBy.field = 'attachedReportsCount'; ctrl.currentPage = 1; ctrl.searchTickets()">
+                        Reports
+                        <i class="zmdi zmdi-unfold-more"></i>
+                    </a>
+                    <a href=""
+                       data-ng-show="ctrl.sortBy.field === 'attachedReportsCount' && ctrl.sortBy.order === 1"
+                       data-ng-click="ctrl.sortBy.order = -1; ctrl.currentPage = 1; ctrl.searchTickets()">
+                        Reports
+                        <i class="zmdi zmdi-caret-up"></i>
+                    </a>
+                    <a href=""
+                       data-ng-show="ctrl.sortBy.field === 'attachedReportsCount'  && ctrl.sortBy.order === -1"
+                       data-ng-click="ctrl.sortBy.order = 1; ctrl.currentPage = 1; ctrl.searchTickets()">
+                        Reports
+                        <i class="zmdi zmdi-caret-down"></i>
+                    </a>
+
+                </th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody data-ng-show="!ctrl.loaders.search && ctrl.results.tickets.length <= 0">
+            <tr>
+                <td colspan="11">
+                    <div layout="row" layout-fill layout-align="center">
+                        No tickets
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+        <tbody data-ng-if="!ctrl.loaders.tickets">
+            <tr data-ng-repeat="ticket in ctrl.results.tickets"
+                title="Open ticket"
+                class="row-clickable">
+                <td>
+                    <md-checkbox data-ng-model="ticket.selected" data-ng-change="ctrl.selectResultItem(ticket)" aria-label="Select">
+                    </md-checkbox>
+                </td>
+                <td data-title="ID">
+                    <a ui-sref="ticket.activities({id: ticket.id})"
+                       data-ng-bind="::ticket.id">
+                    </a>
+                </td>
+                <td data-title="Category">
+                    <a ui-sref="ticket.activities({id: ticket.id})"
+                       data-ng-bind="::ticket.category">
+                    </a>
+                </td>
+                <td data-title="Defendant">
+                    <a ui-sref="ticket.activities({id: ticket.id})">
+                        <p data-ng-bind="::ticket.defendant.email || 'No defendant'"></p>
+                        <em data-ng-bind="::ticket.service.name"></em>
+                    </a>
+                </td>
+                <td data-title="Status">
+                    <a ui-sref="ticket.activities({id: ticket.id})">
+                        <i class="zmdi grey"
+                           data-ng-class="{
+                                          'zmdi-alarm-snooze': ticket.status === 'Snoozed',
+                                          'zmdi-phone-forwarded' : ticket.status === 'ToCall',
+                                          'zmdi-phone-in-talk' : ticket.status === 'Answered',
+                                          'zmdi-close' : ticket.status === 'Closed',
+                                          'zmdi-alert-polygon': ticket.status === 'Open'
+                                          }">
+                        </i>
+                        <strong data-ng-bind="::ticket.status"></strong>
+                    </a>
+                </td>
+                <td data-title="Priority">
+                    <a ui-sref="ticket.activities({id: ticket.id})">
+                        <span class="badge" data-ng-class="{
+                                                           'error': ticket.priority === 'High',
+                                                           'info': ticket.priority === 'Normal',
+                                                           'success' : ticket.priority === 'Low'}"
+                              data-ng-bind="::ticket.priority">
+                        </span>
+                    </a>
+                </td>
+                <td data-title="Date">
+                    <a ui-sref="ticket.activities({id: ticket.id})"
+                       data-ng-bind="ticket.creationDate * 1000 | amDateFormat:'DD/MM/YY HH:mm'">
+                    </a>
+                </td>
+                <td data-title="Last Update">
+                    <a ui-sref="ticket.activities({id: ticket.id})"
+                        data-ng-bind="ctrl.getElapsedTime(ticket)">
+                    </a>
+                </td>
+                <td data-title="Reports" data-ng-bind="ticket.attachedReportsCount">
+                    <a ui-sref="ticket.activities({id: ticket.id})"
+                       data-ng-bind="ticket.attachedReportsCount">
+                    </a>
+                </td>
+                <td data-title="Details">
+                    <a ui-sref="ticket.activities({id: ticket.id})">
+                        <ul class="count-infos">
+                            <li>
+                                <i class="zmdi zmdi-account grey"></i>
+                                <span data-ng-bind="::ticket.treatedBy || 'Nobody'"></span>
+                            </li>
+                            <li>
+                                <i class="zmdi zmdi-comment grey"></i>
+                                <span data-ng-bind="::ticket.commentsCount || 'No'"></span>
+                                <span data-ng-if="ticket.commentsCount > 1">comments</span>
+                                <span data-ng-if="ticket.commentsCount <= 1">comment</span>
+                            </li>
+                            <li class="badge error" data-ng-if="ticket.alarm">
+                                <i class="zmdi zmdi-alarm-on white"></i>
+                                Alarm
+                            </li>
+                            <li>
+                                <i class="zmdi zmdi-format-list-bulleted grey"></i>
+                                <span data-ng-bind="::ticket.items.itemsCount"></span>
+                                <span data-ng-if="ticket.items.itemsCount > 1">items</span>
+                                <span data-ng-if="ticket.items.itemsCount <= 1">item</span>
+                            </li>
+                        </ul>
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="pagination" layout="row" layout-align="space-around"
+         data-ng-if="ctrl.results.ticketsCount > ctrl.resultsPerPage">
+        <paging class="small"
+                page="ctrl.currentPage"
+                page-size="ctrl.resultsPerPage"
+                total="ctrl.results.ticketsCount"
+                adjacent="5"
+                dots="..."
+                scroll-top="true"
+                hide-if-empty="true"
+                ul-class="pagination"
+                active-class="active"
+                disabled-class="disabled"
+                show-prev-next="true"
+                paging-action="ctrl.currentPage = page; ctrl.searchTickets()">
+        </paging>
+        <div flex></div>
+        <input type="number" data-ng-model="ctrl.currentPage" data-ng-change="ctrl.searchTickets()"
+               data-ng-model-options="{debounce: {'default': 500}}" max="{{ctrl.ceil(ctrl.results.ticketsCount / ctrl.resultsPerPage)}}" min="1"  />
+        <md-select data-ng-model="ctrl.resultsPerPage" data-ng-change="ctrl.searchTickets()" aria-label="Results per page">
+            <md-option value="10" data-ng-show="ctrl.results.ticketsCount >= 10">10</md-option>
+            <md-option value="15" data-ng-show="ctrl.results.ticketsCount >= 15">15</md-option>
+            <md-option value="20" data-ng-show="ctrl.results.ticketsCount >= 20">20</md-option>
+            <md-option value="50" data-ng-show="ctrl.results.ticketsCount >= 50">50</md-option>
+            <md-option value="100" data-ng-show="ctrl.results.ticketsCount >= 100">100</md-option>
+        </md-select>
+    </div>
+
+</md-content>

@@ -1,0 +1,19 @@
+tooltip-mouse{
+  position: absolute;
+  z-index: 1000;
+  top: -1000px;
+  left: -1000px;
+  padding: 5px;
+  background: white;
+  visibility:hidden;
+  opacity:0;
+  border:1px solid #cccccc;
+  /*.md-whiteframe-z2;*/
+	transition : opacity 0.5s cubic-bezier(0, 0.6, 0.4, 1), visibility 0s linear 0.5s;
+
+	&.tooltip-mouse-menu-show {
+    opacity:1;
+    visibility:visible;
+    transition-delay:0s;
+	}
+}

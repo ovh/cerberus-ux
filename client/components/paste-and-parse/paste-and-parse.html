@@ -1,0 +1,72 @@
+<md-dialog aria-label="Paste and parse" data-ng-init="init()" flex>
+    <md-dialog-content class="md-dialog-content">
+        <h1>
+            <i class="zmdi zmdi-copy grey"></i>
+            Paste &amp; Parse
+        </h1>
+
+        <md-content layout="column" layout-align="center" data-ng-show="!parsedData">
+            <md-input-container>
+                <label>Paste your raw data and leave the rest to me.</label>
+                <textarea data-ng-model="rawData"></textarea>
+            </md-input-container>
+        </md-content>
+
+        <md-content layout="column" layout-align="center" data-ng-show="parsedData && parsedData.length === 0 && !processing">
+            <p>No IP/URL/FQDN found in the pasted data.</p>
+        </md-content>
+
+        <md-content layout="column" layout-align="center" data-ng-show="parsedData && parsedData.length > 0 && !processing">
+            <p>Here are the parsed data :</p>
+
+            <table class="table table-medium table-hover table-items table-mc-indigo">
+                <thead>
+                    <tr>
+                        <th data-ng-repeat="(key, val) in parsedData[0]">{{key}}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-ng-repeat="row in parsedData">
+                        <td data-ng-repeat="(key, val) in row">
+                            {{val}}
+                        </td>
+                        <td flex="10">
+                            <a data-ng-click="removeParsedData(row)" href="#">
+                                <i class="zmdi zmdi-close"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </md-content>
+
+        <md-content layout="column" layout-align="center" data-ng-show="parsedData && processing">
+            <p>In progress...</p>
+
+            <table class="table table-medium table-hover table-items table-mc-indigo">
+                <thead>
+                    <tr>
+                        <th data-ng-repeat="(key, val) in parsedData[0]">{{key}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-ng-repeat="row in parsedData">
+                        <td data-ng-repeat="(key, val) in row">
+                            {{val}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </md-content>
+        
+    </md-dialog-content>
+    <div class="md-actions" layout="horizontal" layout-align="end">
+        <md-button data-ng-click="cancel()" data-ng-hide="parsedData && processing">Close</md-button>
+
+        <md-button data-ng-click="displayParsedData()" data-ng-show="!parsedData" data-ng-disabled="!rawData">Parse</md-button>
+        <md-button data-ng-click="processParsedData()" 
+                   data-ng-show="parsedData && parsedData.length > 0 && !processing">Proceed</md-button>
+        <md-button data-ng-click="validate()" data-ng-show="parsedData && processing">Done</md-button>
+    </div>
+</md-dialog>

@@ -1,0 +1,43 @@
+<div role="tabpanel" id="tab-categories">
+    <div layout="column" layout-fill>
+        <md-content class="md-padding" flex="">
+            <md-toolbar md-theme="white" class="no-shadow">
+                <h3 class="md-toolbar-tools" layout="row">
+                    <i class="zmdi zmdi-format-list-bulleted grey"></i>
+                    <span flex>Categories</span>
+                    <md-button data-ng-click="ctrlCategories.addCategory()" aria-label="Add new category"
+                               class="md-icon-button">
+                        <md-tooltip>Add new category</md-tooltip>
+                        <md-icon md-font-icon="zmdi zmdi-plus zmdi-hc-2x grey"></md-icon>
+                    </md-button>
+                </h3>
+            </md-toolbar>
+
+            <md-divider></md-divider>
+            <md-list>
+                <md-list-item ng-repeat="category in ctrlCategories.categories | orderBy:'name'">
+                    <i class="zmdi zmdi-chevron-right grey md-avatar"></i>
+                    <div class="md-list-item-text">
+                        <h4 data-ng-bind="::category.label"></h4>
+                        <p data-ng-bind="::category.description"></p>
+                    </div>
+                    <span flex></span>
+                    <div layout="row">
+                        <md-button data-ng-click="ctrlCategories.updateCategory(category)"
+                                   aria-label="Update category"
+                                   class="md-icon-button">
+                            <md-tooltip>Update category</md-tooltip>
+                            <md-icon md-font-icon="zmdi zmdi-edit grey"></md-icon>
+                        </md-button>
+                        <md-button data-ng-click="ctrlCategories.deleteCategory(category)"
+                                   aria-label="Delete category"
+                                   class="md-icon-button">
+                            <md-tooltip>Delete category</md-tooltip>
+                            <md-icon md-font-icon="zmdi zmdi-delete grey"></md-icon>
+                        </md-button>
+                    </div>
+                </md-list-item>
+            </md-list>
+        </md-content>
+    </div>
+</div>

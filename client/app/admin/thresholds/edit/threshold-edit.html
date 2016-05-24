@@ -1,0 +1,30 @@
+<md-dialog  aria-label="Add threshold">
+    <md-dialog-content class="md-dialog-content">
+        <h2 data-ng-if="!isEditing">Add Threshold</h2>
+        <h2 data-ng-if="isEditing">Edit Threshold</h2>
+
+        <div layout="row">
+            <md-input-container>
+                <label>Category</label>
+                <md-select ng-model="threshold.category" placeholder="Category">
+                    <md-option ng-value="cat.name" ng-repeat="cat in categories">{{ cat.name }}</md-option>
+                </md-select>
+            </md-input-container>
+        </div>
+        <div layout="row">
+            <md-input-container>
+                <label>Threshold</label>
+                <input type="number" min="1" ng-model="threshold.threshold">
+            </md-input-container>
+            <md-input-container>
+                <label>Interval (in days)</label>
+                <input type="number" min="1" ng-model="threshold.interval">
+            </md-input-container>
+        </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="horizontal" layout-align="end end">
+        <md-button  ng-click="cancel()" aria-label="Cancel">Cancel</md-button>
+        <md-button  data-ng-disabled="!threshold.category || !threshold.threshold || ! threshold.interval"
+                    class="md-primary" ng-click="hide()" aria-label="Save">Save</md-button>
+    </md-dialog-actions>
+</md-dialog>

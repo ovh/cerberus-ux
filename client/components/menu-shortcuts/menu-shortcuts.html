@@ -1,0 +1,39 @@
+<div data-ng-controller="MenuShortcutsCtrl">
+    <div layout="row" layout-align="center" data-ng-show="loaders.stats">
+        <md-progress-circular md-mode="indeterminate" md-theme="white"></md-progress-circular>
+    </div>
+
+    <div data-ng-show="!loaders.stats">
+        <a data-ng-href="{{searchMyTickets()}}"       
+           class="toolbar-shortcuts"
+           title="See my tickets" aria-label="See my tickets">    
+            My tickets
+        </a>
+
+        <span class="fs13 no-margin" data-ng-show="!loaders.stats">(</span>
+        <a data-ng-href="{{searchMyTicketsAnswered()}}"
+           class="toolbar-shortcuts no-margin"
+           title="See my tickets answered" aria-label="See my tickets answered">
+            <span data-ng-bind="stats.myTicketsAnsweredCount"></span> answered
+        </a>,
+
+        <a data-ng-href="{{searchMyTicketsTodo()}}"
+           class="toolbar-shortcuts no-margin"
+           title="See my tickets todo" aria-label="See my tickets todo">
+            <span data-ng-bind="stats.myTicketsTodoCount"></span> todo
+        </a>,
+
+        <a data-ng-href="{{searchMyTicketsSleeping()}}"
+           class="toolbar-shortcuts no-margin"
+           title="See my tickets sleeping" aria-label="See my tickets sleeping">
+            <span data-ng-bind="stats.myTicketsSleepingCount"></span> sleeping
+        </a>
+        <span class="fs13 no-margin" data-ng-show="!loaders.stats">)</span>
+
+        <a ui-sref="searchTodo" class="toolbar-shortcuts"
+           title="See sorted todo tickets" aria-label="See sorted todo tickets">
+            Prioritized tickets (<span data-ng-bind="stats.todoCount"></span>)
+        </a>
+
+    </div>
+</div>

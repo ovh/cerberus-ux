@@ -1,0 +1,24 @@
+<md-dialog aria-label="Resolution" data-ng-init="init()" md-theme="default">
+    <md-dialog-content class="md-dialog-content">
+        <h1>Closing a ticket</h1>
+
+        <div data-ng-if="loading" layout="row" layout-align="center">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+        </div>
+
+        <div flex data-ng-if="!loading">
+            <p>Please select below how the ticket has been resolved :</p>
+            <md-select data-ng-model="body.resolution" placeholder="Resolution" name="body.resolution" flex>
+                <md-option data-ng-repeat="resolution in resolutions"
+                           data-ng-value="{{resolution.id}}">{{::resolution.codename}}</md-option>
+            </md-select>
+
+            <strong>Notice that no e-mail will be sent to the defendant.</strong>
+        </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="horizontal" layout-align="end">
+        <md-button data-ng-click="cancel()">Cancel</md-button>
+        <md-button class="md-primary" data-ng-disabled="!body.resolution"
+                                      data-ng-click="confirm()">Close the ticket</md-button>
+    </md-dialog-actions>
+</md-dialog>

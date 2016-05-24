@@ -1,0 +1,49 @@
+.pagination {
+  list-style: none;
+  width: 100%;
+  margin: 0 0 1px 0;
+  
+  input[type=number] {    
+    height: 20px;
+    margin: 0;
+    float: left;
+  }
+
+  md-select {
+    margin: 0;
+    height: 20px;
+    padding: 0 ;
+    md-select-label {
+      padding-top: 0;
+    }
+  }  
+  
+  li {
+    display: inline-block;
+    cursor: pointer;
+    min-width: 20px;
+    text-align: center;
+    padding: 5px;
+    
+    &:hover {
+      background: @md-blue;
+      a {
+        color: @md-white !important;
+        font-weight: bold;
+      }
+    }
+
+    &.active {
+      background: @md-indigo;
+      a {
+        color: @md-white !important;
+        font-weight: bold;
+      }
+      
+    }
+
+    &.disabled {
+      color: @md-grey;
+    }
+  }
+}

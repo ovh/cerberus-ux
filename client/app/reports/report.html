@@ -1,0 +1,373 @@
+<md-toolbar class="md-medium">
+    <div class="md-toolbar-tools">
+        <md-button data-ng-click="goBackState()" aria-label="Back" class="md-icon-button">
+            <md-icon md-font-icon="zmdi zmdi-arrow-back zmdi-hc-2x white"></md-icon>
+        </md-button>
+        <h2>Report {{ctrl.report.id}}</h2>
+        <span flex></span>
+        <div data-ng-include="'components/menu-shortcuts/menu-shortcuts.html'"></div>
+        <md-button data-ng-href="dashboard"  aria-label="Dashboard" title="Dashboard" class="md-icon-button">
+            <md-icon md-font-icon="zmdi zmdi-view-dashboard white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button ui-sref="admin.people"  aria-label="Administration" title="Administation" class="md-icon-button"
+                   data-ng-if="Auth.isAdmin()">
+            <md-icon md-font-icon="zmdi zmdi-settings white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button aria-label="Search" ui-sref="search({filters: '{}'})" title="Search" class="md-icon-button">
+            <md-icon md-font-icon="zmdi zmdi-search white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button class="md-icon-button" ui-sref="diaporama" aria-label="Diaporama">
+            <md-tooltip>Diaporama</md-tooltip>
+            <md-icon md-font-icon class="zmdi zmdi-slideshow white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button class="md-icon-button" data-ng-click="logout()" aria-label="Logout">
+            <md-tooltip>Logout</md-tooltip>
+            <md-icon md-font-icon class="zmdi zmdi-power white zmdi-hc-2x"></md-icon>
+        </md-button>
+    </div>
+</md-toolbar>
+
+<md-fab-speed-dial md-direction="left" class="md-scale md-fab-top-right mt40"
+                   data-ng-if="ctrl.report"
+                   hide-md hide-gt hide-gt-md hide-lg>
+    <md-fab-trigger>
+        <md-button aria-label="menu" class="md-fab md-accent">
+            <md-tooltip md-direction="top">Actions</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-menu zmdi-hc-2x white" aria-label="Actions"></md-icon>
+        </md-button>
+    </md-fab-trigger>
+    <md-fab-actions>
+
+        <md-button  data-ng-click="ctrl.createTicket()"
+                    data-ng-if="!ctrl.report.ticket && !ctrl.hasMatchTicketToAttach"
+                    class="md-fab md-raised md-mini"
+                    aria-label="Create ticket">
+            <i class="zmdi zmdi-calendar-check grey"></i>
+            <md-tooltip>Create ticket</md-tooltip>
+        </md-button>
+
+        <md-button data-ng-repeat="status in ctrl.status"
+                   data-ng-click="ctrl.report.status = status.label; ctrl.updateReport()"
+                   aria-label="{{status.label}}"
+                   class="md-fab md-raised md-mini"
+                   data-ng-if="ctrl.showStatusButton(status)">
+            <md-tooltip>Set report status to {{status.label}}</md-tooltip>
+            <i class="zmdi grey"
+               data-ng-class="{
+                              'zmdi-attachment': status.label === 'Attached',
+                              'zmdi-archive' : status.label === 'Archived',
+                              'zmdi-alert-polygon' : status.label === 'New',
+                              'zmdi-check' : status.label === 'Validated',
+                              'zmdi-shield-check' : status.label === 'PhishToCheck',
+                              'zmdi-badge-check' : status.label === 'ToValidate'
+                              }">
+            </i>
+        </md-button>
+    </md-fab-actions>
+</md-fab-speed-dial>
+
+<md-content id="report-view" class="md-padding" data-ng-init="ctrl.init()">
+
+    <div layout="row" layout-sm="column" layout-align="center" data-ng-show="ctrl.loaders.report">
+        <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+    </div>
+    
+    <div data-ng-if="!ctrl.loaders.report && ctrl.report" layout="column">
+
+        <div layout="row" layout-align="space-between" class="sticky" hide-xs hide-sm>
+            <md-progress-circular data-ng-show="" md-mode="indeterminate" class="md-accent"></md-progress-circular>
+
+            <md-button data-ng-disabled="!ctrl.prevReportId" ui-sref="report.content({id: ctrl.prevReportId})" class="md-icon-button"
+                       aria-label="Go to previous report">
+                <md-tooltip>Go to previous report</md-tooltip>
+                <md-icon md-font-icon="zmdi zmdi-chevron-left zmdi-hc-2x grey"></md-icon>
+            </md-button>
+
+            <md-button  data-ng-click="ctrl.createTicket()"
+                        data-ng-if="!ctrl.report.ticket && !ctrl.hasMatchTicketToAttach"
+                        aria-label="Create ticket">
+                <i class="zmdi zmdi-calendar-check grey"></i>
+                Create ticket
+            </md-button>
+
+            <md-button data-ng-repeat="status in ctrl.status"
+                       data-ng-click="ctrl.report.status = status.label; ctrl.updateReport()"
+                       aria-label="{{status.label}}"
+                       data-ng-if="ctrl.showStatusButton(status)">
+                <md-tooltip>Set report status to {{status.label}}</md-tooltip>
+                <i class="zmdi grey"
+                   data-ng-class="{
+                                  'zmdi-attachment': status.label === 'Attached',
+                                  'zmdi-archive' : status.label === 'Archived',
+                                  'zmdi-alert-polygon' : status.label === 'New',
+                                  'zmdi-check' : status.label === 'Validated',
+                                  'zmdi-shield-check' : status.label === 'PhishToCheck',
+                                  'zmdi-badge-check' : status.label === 'ToValidate'
+                                  }">
+                </i>
+                <span data-ng-bind="status.label"></span>
+            </md-button>
+
+            <md-button  data-ng-disabled="!ctrl.nextReportId" ui-sref="report.content({id: ctrl.nextReportId})"
+                        class="md-icon-button"
+                        aria-label="Go to next report">
+                <md-tooltip>Go to next report</md-tooltip>
+                <md-icon md-font-icon="zmdi zmdi-chevron-right zmdi-hc-2x grey"></md-icon>
+            </md-button>
+        </div>
+
+        <div class="ticket-header mt20" layout="row" layout-sm="column" layout-xs="column"
+             layout-padding layout-margin>
+
+            <div flex>
+                <h3>Informations</h3>
+
+                <div layout="row" layout-align="space-around">
+                    <ul flex>
+
+                        <li data-ng-if="ctrl.report.ticket">
+                            <span>Attached to ticket : </span>
+                            <strong>
+                                <a ui-sref="ticket.activities({id: ctrl.report.ticket})"
+                                   aria-label="Show ticket" data-ng-bind="::ctrl.report.ticket">
+                                    <md-tooltip>Show the ticket</md-tooltip>
+                                </a>
+                            </strong>
+                        </li>
+
+                        <li>
+                            <span>Category :</span>
+                            <strong data-ng-if="ctrl.report.status === 'Attached'"
+                                    data-ng-bind="ctrl.report.category">
+                            </strong>
+                            <strong data-ng-if="ctrl.report.status !== 'Attached'">
+                                <a href="#" title="Click to edit"
+                                   editable-select="ctrl.report.category"
+                                   buttons="no"
+                                   e-ng-options="category.name as category.name for category  in ctrl.categories"
+                                   onaftersave="ctrl.updateReport()"
+                                   data-ng-bind="ctrl.report.category">
+                                    <md-tooltip>Click to change the status</md-tooltip>
+
+                                </a>
+                            </strong>
+                        </li>
+
+                        <li>
+                            <span>Status : </span>
+                            <strong>
+                                {{ctrl.report.status}}
+                                <a ui-sref="ticket.activities({id: ctrl.report.ticket})" aria-label="Show ticket"
+                                   class="md-icon-button"
+                                   data-ng-if="ctrl.report.ticket">
+                                    <md-tooltip>Show the ticket</md-tooltip>
+
+                                    <i class="zmdi zmdi-calendar-note"></i>
+                                </a>
+                            </strong>
+                        </li>
+
+                        <li>
+                            <span>Date : </span>
+                            <strong data-ng-bind="::ctrl.report.receivedDate * 1000 | amDateFormat:'DD/MM/YY HH:mm'"></strong>
+                        </li>
+
+                        <li>
+                            <span>Domain : </span>
+                            <strong data-ng-bind="::ctrl.report.service.name"></strong>
+                        </li>
+
+                        <li data-ng-if="ctrl.report.service.componentType">
+                            <span>Service type : </span>
+                            <strong>
+                                {{::ctrl.report.service.componentType}}
+                                <span data-ng-if="ctrl.report.service.componentSubType">
+                                    ({{::ctrl.report.service.componentSubType}})
+                                </span>
+                            </strong>
+                        </li>
+
+                        <li>
+                            <span>Source : </span>
+                            <strong data-ng-bind="::ctrl.report.provider.email"></strong>
+                            <span class="badge success" data-ng-if="ctrl.report.provider.trusted">
+                                <i class="zmdi zmdi-check white" alt="Provider trusted"></i>
+                                trust
+                            </span>
+                            <span class="badge error" data-ng-if="!ctrl.report.provider.trusted">
+                                Not trust
+                            </span>
+                        </li>
+                        <li>
+                            <tags-input class="ngTags" data-ng-model="ctrl.report.tags"
+                                        display-property="name"
+                                        min-length="2"
+                                        add-from-autocomplete-only="false"
+                                        replace-spaces-with-dashes="false"
+                                        on-tag-added="ctrl.addReportTag($tag)"
+                                        on-tag-removed="ctrl.removeReportTag($tag)">
+                                <auto-complete source="ctrl.reportTags"
+                                               min-length="0"
+                                               select-first-match="false"
+                                               load-on-down-arrow="true"
+                                               debounce-delay="0">
+                                </auto-complete>
+                            </tags-input>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div flex>
+                <h3 layout="row">
+                    Customer
+                    <span flex></span>
+                    <strong flex="5" class="badge success mini" data-ng-if="ctrl.report.defendant.isVIP">VIP</strong>
+                    <strong flex="15" class="badge error mini"
+                            data-ng-if="ctrl.report.defendant && ctrl.report.defendant.state !== 'active' && ctrl.report.defendant.state !== 'owner'">
+                        Account closed
+                    </strong>
+                    <strong flex="5" class="badge info mini" data-ng-if="ctrl.report.defendant.isGS">GS</strong>
+                    <strong flex="10" class="badge warning mini" data-ng-if="ctrl.report.defendant.isInternal">Intern.</strong>
+                </h3>
+
+                <div layout="row" layout-sm="column" layout-align="space-around" data-ng-show="ctrl.loaders.services">
+                    <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+                </div>
+
+                <div layout="row" layout-align="space-between" data-ng-show="!ctrl.loaders.services && !ctrl.report.defendant">
+                    No defendant
+                </div>
+
+                <div layout="row" layout-align="space-between" data-ng-show="!ctrl.loaders.services && ctrl.report.defendant">
+                    <ul  flex>
+                        <li>
+                            Customer ID :
+                            <strong data-ng-bind="ctrl.report.defendant.customerId || 'None'"></strong>
+
+                            <a href="" role="button" data-ng-click="ctrl.showDialogDetachDefendant($event)"
+                               data-ng-if="ctrl.report.defendant">
+                                <md-tooltip>Detach this defendant</md-tooltip>
+                                <md-icon md-font-icon="zmdi zmdi-delete grey"></md-icon>
+                            </a>
+                        </li>
+                        <li>
+                            Email : <strong data-ng-bind="ctrl.report.defendant.email"></strong>
+                        </li>
+
+                        <li>
+                            Country : <strong data-ng-bind="ctrl.report.defendant.country"></strong>
+                        </li>
+                        <li>
+                            Customer since : <strong data-ng-bind="ctrl.report.defendant.creationDate | amDateFormat:'DD/MM/YY'"></strong>
+                        </li>
+                        <li>
+                            Services : <strong data-ng-bind="ctrl.servicesCount"></strong>
+                        </li>
+                        <li>
+                            Comments : &nbsp;
+
+                            <a href="#" data-ng-click="ctrl.showDialogDefendantComment($event)"
+                               role="button">
+                                <md-tooltip>Click to insert comment</md-tooltip>
+                                <md-icon md-font-icon="zmdi zmdi-comment-text grey"></md-icon>
+                            </a>
+
+                            <md-content class="defendant-comments">
+                                <em data-ng-if="!ctrl.report.defendant.comments.length">No comment</em>
+                                <md-list data-ng-if="ctrl.report.defendant.comments.length" class="no-padding">
+                                    <md-list-item data-ng-repeat="comment in ctrl.report.defendant.comments" layout="row" layout-align="start start">
+                                        <div flex>
+                                            <pre data-ng-bind="comment.comment" flex></pre>
+                                            <em class="pull-right author">
+                                                {{comment.user}} le {{(comment.date * 1000) | date:'dd-MM-yyyy à HH:mm'}}
+                                            </em>
+                                        </div>
+                                        <div data-ng-if="comment.user !== Auth.getCurrentUser().username" style="float:right; width:60px;">
+                                        </div>
+                                        <md-menu md-position-mode="target-right target" style="float:right" class="no-padding"
+                                                 data-ng-if="comment.user === Auth.getCurrentUser().username">
+                                            <md-button aria-label="Menu" class="md-icon-button" ng-click="$mdOpenMenu()">
+                                                <md-icon md-font-icon="zmdi zmdi-more-vert primary zmdi-hc-2x"></md-icon>
+                                            </md-button>
+                                            <md-menu-content width="2">
+                                                <md-menu-item>
+                                                    <md-button data-ng-click="ctrl.showDialogEditDefendantComment($event,comment)">
+                                                        <md-icon md-font-icon="zmdi zmdi-edit primary"></md-icon> Edit
+                                                    </md-button>
+                                                </md-menu-item>
+                                                <md-menu-item>
+                                                    <md-button data-ng-click="ctrl.removeDefendantComment(comment)">
+                                                        <md-icon md-font-icon="zmdi zmdi-delete primary"></md-icon> Delete
+                                                    </md(button>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </md-list-item>
+                                </md-list>
+                            </md-content>
+                        </li>
+                    </ul>
+
+                    <ul  flex>
+                        <li>
+                            Name : <strong data-ng-bind="ctrl.report.defendant.firstname"></strong>
+                            <strong data-ng-bind="ctrl.report.defendant.name"></strong>
+                        </li>
+                        <li>
+                            Spare email : <strong data-ng-bind="ctrl.report.defendant.spareEmail"></strong>
+                        </li>
+                        <li>
+                            Address : <strong data-ng-bind="ctrl.report.defendant.address"></strong>
+                            <strong data-ng-bind="ctrl.report.defendant.zip"></strong>
+                            <strong data-ng-bind="ctrl.report.defendant.city"<>></strong>
+
+                        </li>
+                        <li>
+                            legalForm : <strong data-ng-bind="ctrl.report.defendant.legalForm"></strong>
+                        </li>
+                        <li data-ng-if="ctrl.report.defendant.organisation">
+                            Organization : <strong data-ng-bind="ctrl.report.defendant.organisation"></strong>
+                        </li>
+                        <li>
+                            <tags-input class="ngTags" data-ng-model="ctrl.report.defendant.tags"
+                                        key-property="id"
+                                        display-property="name"
+                                        min-length="2"
+                                        add-from-autocomplete-only="false"
+                                        replace-spaces-with-dashes="false"
+                                        on-tag-added="ctrl.addDefendantTag($tag)"
+                                        on-tag-removed="ctrl.removeDefendantTag($tag)">
+
+                                <auto-complete source="ctrl.defendantTags"
+                                               min-length="0"
+                                               debounce-delay="100"
+                                               select-first-match="false"
+                                               max-results="10">
+                                </auto-complete>
+                            </tags-input>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row" data-ng-if="ctrl.report">
+            <md-tabs class="md-padding" md-dynamic-height md-stretch-tabs="always">
+
+                <md-tab aria-controls="tab-content" label="Content" md-no-ink
+                        ui-sref="report.content" md-active="ctrl.state.is('report.content')">
+                    <div ui-view="tab-content"></div>
+                </md-tab>
+
+                <md-tab aria-controls="tab-services" label="Services" md-no-ink
+                        ui-sref="report.services" md-active="ctrl.state.is('report.services')">
+                    <div ui-view="tab-services"></div>
+                </md-tab>
+
+                <md-tab aria-controls="tab-history" label="History" md-no-ink
+                        ui-sref="report.history" md-active="ctrl.state.is('report.history')">
+                    <div ui-view="tab-history"></div>
+                </md-tab>
+            </md-tabs>
+        </div>
+</md-content>

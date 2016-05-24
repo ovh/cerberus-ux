@@ -1,0 +1,22 @@
+<md-dialog aria-label="Change delay" data-ng-init="init()">
+    <md-dialog-content class="md-dialog-content">
+        <h1>
+            <i class="zmdi zmdi-timer grey"></i>
+            Change delay
+        </h1>
+
+        <div>
+            <md-input-container>
+                <label>Select the delay before action : <strong>{{snoozeDuration.value}} h</strong></label>
+                <input required type="number" step="1" name="snoozeDuration" data-ng-model="snoozeDuration.value" min="0" />
+            </md-input-container>
+        </div>        
+    </md-dialog-content>
+    <md-dialog-actions layout="horizontal" layout-align="end">
+        <md-button data-ng-click="cancel()">Cancel</md-button>
+        <md-button class="md-primary" data-ng-click="hide()"
+                   data-ng-disabled="!snoozeDuration">
+            Valid
+        </md-button>
+    </md-dialog-actions>
+</md-dialog>

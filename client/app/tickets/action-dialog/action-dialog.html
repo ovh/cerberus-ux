@@ -1,0 +1,53 @@
+<md-dialog id="action-dialog" aria-label="Action status" data-ng-init="init()" flex>
+    <md-dialog-content class="md-dialog-content">
+        <h1>
+            <i class="zmdi zmdi-minus-circle grey"></i> Actions status
+        </h1>
+
+        <md-content layout="row" layout-align="center" data-ng-if="loading">
+            <md-progress-circular class="md-accent" md-mode="indeterminate">
+            </md-progress-circular>
+        </md-content>
+        <md-content data-ng-if="!loading">
+
+            <table class="table table-medium table-hover table-items table-mc-indigo">
+                <thead>
+                    <tr>
+                        <th>IP</th>
+                        <th>Action</th>
+                        <th>Creation date</th>
+                        <th>Execution date</th>
+                        <th>State</th>
+                        <th>Comment</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-ng-repeat="job in jobs" data-ng-class="{done: job.status === 'done',
+                                                                     cancelled: job.status === 'cancelled',
+                                                                     doing: job.status === 'doing',
+                                                                     failed: job.status === 'actionError'
+                                                                     }">
+                        <td>{{job.ip}}</td>
+                        <td>{{job.action.name}}</td>
+                        <td>{{job.creationDate * 1000 | date: 'dd/MM/yyyy HH:mm:ss'}}</td>
+                        <td data-ng-if="job.executionDate">{{job.executionDate * 1000 | date: 'dd/MM/yyyy HH:mm:ss'}}</td>
+                        <td data-ng-if="!job.executionDate"></td>
+                        <td>{{::job.status}}</td>
+                        <td>{{::job.comment}}</td>
+                        <td flex="10">
+                            <a data-ng-if="job.status === 'pending'" data-ng-click="cancelJob(job)" href="#">
+                                <i class="zmdi zmdi-close"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </md-content>
+
+    </md-dialog-content>
+    <md-dialog-actions layout="horizontal" layout-align="end">
+        <md-button data-ng-click="cancel()">Close</md-button>
+    </md-dialog-actions>
+</md-dialog>

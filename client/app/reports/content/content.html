@@ -1,0 +1,125 @@
+<div role="tabpanel" id="tab-content" data-ng-init="ctrlContent.init()">
+    <div layout="column" layout-fill>
+
+        <md-content flex>
+            <md-toolbar md-theme="white" class="no-shadow">
+                <h3 class="md-toolbar-tools" layout="row" layout-align="space-between">
+                    <span class="zmdi  zmdi-info-outline grey"></span>
+                    <span flex>Details</span>
+                </h3>
+            </md-toolbar>
+
+            <md-content layout="row" layout-fill layout-align="center" data-ng-show="ctrlContent.loaders.init">
+                <md-progress-circular class="md-accent" md-mode="indeterminate"></md-progress-circular>
+            </md-content>
+                
+            
+            <md-content class="md-padding" data-ng-show="!ctrlContent.loaders.init" flex>
+                <md-list>
+
+                    <md-list-item  layout="column" layout-align="start start"
+                                   data-ng-include="'components/report-items/report-items.html'">
+                    </md-list-item>
+
+                </md-list>
+            </md-content>
+        </md-content>
+
+        <md-content flex class="md-padding">
+            <md-toolbar md-theme="white">
+                <h3 class="md-toolbar-tools" layout="row" layout-align="space-between">
+                    <span class="subject-content" data-ng-bind="::ctrl.report.subject"></span>
+
+                    <span flex></span>                                    
+
+                    <tooltip-mouse data-tooltip-mouse-zone-class="subject-content"
+                                   data-tooltip-mouse-disabled="false"
+                                   data-tooltip-mouse-close="">                        
+                        <div>
+                            <md-button class="md-raised md-accent md-icon-button"
+                                       title="Add item to report" aria-label="Add item to report"
+                                       data-ng-click="ctrlContent.addReportItem(ctrl.report)">
+                                <md-icon md-font-icon="zmdi zmdi-format-playlist-add white zmd-lg"></md-icon>
+                            </md-button>
+                        </div>
+                    </tooltip-mouse>
+
+                    <md-button aria-label="Help" class="md-icon-button">
+                        <md-tooltip>
+                            You can add report items<br />
+                            by selecting IPs and URLs<br />
+                            in the text.
+                        </md-tooltip>                                        
+                        <md-icon md-font-icon="zmdi zmdi-help grey"></md-icon>
+                    </md-button>
+
+                    <md-button aria-label="Body email" class="md-icon-button"
+                               data-ng-show="ctrlContent.showRaw || ctrlContent.showDehtmlify"
+                               data-ng-click="ctrlContent.showRaw = ctrlContent.showDehtmlify = false">
+                        <md-tooltip>
+                            Show email body
+                        </md-tooltip>                                        
+                        <md-icon md-font-icon="zmdi zmdi-code-setting grey"></md-icon>
+                    </md-button>
+                    
+                    <md-button aria-label="Raw email" class="md-icon-button"
+                               data-ng-show="!ctrlContent.showRaw"
+                               data-ng-click="ctrlContent.showRawEmail()">
+                        <md-tooltip>
+                            Show raw email
+                        </md-tooltip>                                        
+                        <md-icon md-font-icon="zmdi zmdi-code grey"></md-icon>
+                    </md-button>
+
+                    <md-button aria-label="Dehtmlify email" class="md-icon-button"
+                               data-ng-show="!ctrlContent.showDehtmlify"
+                               data-ng-click="ctrlContent.showDehtmlifyEmail()">
+                        <md-tooltip>
+                            Show dehtmlified email
+                        </md-tooltip>
+                        <md-icon md-font-icon="zmdi zmdi-spellcheck grey"></md-icon>
+                    </md-button>
+                </h3>
+            </md-toolbar>
+
+            <md-content data-ng-if="ctrl.report.attachments.length > 0">
+                <hr />
+                <div layout="row" layout-padding>
+                    <span class="zmdi zmdi-attachment grey"></span>
+                    {{ctrl.report.attachments.length}} attached file(s) :
+                    <md-button class="attached-file" aria-label="Download" data-ng-repeat="attachment in ctrl.report.attachments"
+                               data-ng-click="ctrlContent.downloadAttach(attachment)">                                    
+                        <md-tooltip>
+                            Attach file {{attachment.filename}}
+                        </md-tooltip> 
+                        <span  data-ng-bind="::attachment.name"></span>
+                    </md-button>
+                </div>
+                <hr />
+            </md-content>
+
+            <md-content class="md-padding">
+                <pre class="body-content" data-ng-bind="::ctrl.report.body"
+                     data-ng-show="!ctrlContent.showRaw && !ctrlContent.showDehtmlify"></pre>
+                <pre class="body-content" data-ng-bind="::ctrl.report.raw"
+                     data-ng-show="ctrlContent.showRaw"></pre>
+                <pre class="body-content" data-ng-bind="::ctrl.report.dehtmlify"
+                     data-ng-show="ctrlContent.showDehtmlify"></pre>
+                <tooltip-mouse
+                                     data-tooltip-mouse-zone-class="body-content"
+                                     data-tooltip-mouse-disabled="false"
+                                     data-tooltip-mouse-close="">
+                    
+                    <div>
+                        <md-button class="md-raised md-accent md-icon-button"
+                                   title="Add item to report" aria-label="Add item to report"
+                                   data-ng-click="ctrlContent.addReportItem(ctrl.report)">
+                            <md-icon md-font-icon="zmdi zmdi-format-playlist-add white zmd-lg"></md-icon>
+                        </md-button>
+                    </div>
+                </tooltip-mouse>                                                                                            
+            </md-content>
+        </md-content>
+        
+    </div>
+</div>

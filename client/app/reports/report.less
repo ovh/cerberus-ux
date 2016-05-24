@@ -1,0 +1,114 @@
+#report-view {
+
+  md-content {
+    margin-bottom: 10px;
+  }
+
+  .md-tab-content {
+    padding: .1em;
+    padding-top: 1em;
+  }
+
+  .table-items {
+
+    .editable-wrap {
+      display: inline-block;
+      white-space: nowrap;
+      margin: 0;
+      width: 100%;
+
+      .editable-input {
+        width: 100%;
+      }
+
+      .editable-error,  .editable-controls {
+        display: block;
+        width: 100%;
+      }
+    }
+  }
+
+  .service-sheet {
+    max-height: 300px;
+    overflow: auto;
+    transition: all .4s;
+
+    .btn-expanded {
+      transform: rotate(-180deg);
+      transition: all .5s;
+    }
+
+  }
+
+  .btn-expanded {
+    transform: rotate(-180deg);
+    transition: all .5s;
+  }
+
+  .activities {
+    max-height: 0px;
+    overflow: hidden;
+    transition: all .4s;
+
+    .btn-expanded {
+      transform: rotate(-180deg);
+      transition: all .5s;
+    }
+
+    &.expanded {
+      max-height: 9999px;
+    }
+
+  }
+
+  .expired {
+    text-decoration: line-through ;
+  }
+
+  .ticket-header {
+    h3 {
+      border-bottom: solid 1px @md-grey;
+      color: @md-grey;
+    }
+
+    ul {
+      margin: 0;
+      -webkit-padding-start: 8px;
+      list-style: none;
+
+      li {
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+    }
+  }
+
+  .attached-file {
+    height: 30px;
+    margin-top: -6px;
+    padding-top: 0;
+    
+    span {
+      text-overflow: ellipsis;
+      width: 100px;
+      font-size: 10px;
+      display: inline-block;
+      overflow: hidden;
+    }
+  }
+
+  .defendant-comments {
+    max-height: 150px;
+  
+    .author {
+        color: @md-grey;
+        font-size: 10px;
+    }
+
+    pre {
+        font-size: 12px;
+        text-align: justify;
+        white-space: pre-wrap;
+    }
+  }
+}

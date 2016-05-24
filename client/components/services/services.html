@@ -1,0 +1,95 @@
+<div role="tabpanel" id="tab-services" data-ng-init="ctrlServices.init()">
+
+    <md-content layout="row" layout-align="center center" class="md-padding"
+                data-ng-if="!ctrl.ticket.defendant && !ctrl.report.defendant">
+        <p>No customer information</p>
+    </md-content>
+
+    <md-content layout="row" layout-align="center center" class="md-padding" data-ng-show="ctrlServices.loaders.services">
+        <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+    </md-content>
+
+    <md-content layout="row" layout-align="center center" class="md-padding"
+                data-ng-if="!ctrlServices.loaders.services && !ctrlServices.customerServices.expired">
+        <p>No service found</p>
+    </md-content>
+
+    <md-content  layout="column" layout-fill class="md-padding"
+                 data-ng-repeat="(worldPart, data) in ctrlServices.customerServices.services"
+                 data-ng-if="!ctrlServices.loaders.services && ctrlServices.customerServices.count[worldPart] > 0">
+
+        <md-toolbar md-theme="white" class="no-shadow">
+            <h3 class="md-toolbar-tools" layout="row" layout-align="space-between">
+                <span class="zmdi zmdi-storage grey"></span>
+                <span flex>Services {{::worldPart}}</span>
+                <div flex></div>
+                <span data-ng-bind="::ctrlServices.customerServices.count[worldPart]"></span>
+            </h3>
+        </md-toolbar>
+
+        <md-divider></md-divider>
+
+        <md-content class="md-whiteframe-z1 service-sheet" layout-padding layout-margin
+                    data-ng-repeat="(serviceName, services) in ctrlServices.customerServices.services[worldPart]"
+                    data-ng-class="{expanded: ex.show}">
+            <div layout="row">
+                <p><strong data-ng-bind="::serviceName"></strong>: {{::services.length}}</p>
+                <div flex></div>
+                <md-button data-ng-click="ex.show = !ex.show" class="md-icon-button"
+                           title="Show details" aria-label="Show details" md-no-ink>
+                    <md-icon md-font-icon="zmdi zmdi-chevron-down zmdi-hc-2x grey"
+                             data-ng-class="{'btn-expanded': ex.show}">
+                    </md-icon>
+                </md-button>
+            </div>
+            <p data-ng-if="ctrlServices.customerServices.expired[worldPart][serviceName].avg">
+                Time average : <strong data-ng-bind="::ctrlServices.customerServices.expired[worldPart][serviceName].avg"></strong> days
+            </p>
+            <p data-ng-if="ctrlServices.customerServices.expired[worldPart][serviceName].expiredSinceAbuse > 0">
+                Expired since abuse :
+                <strong data-ng-bind="ctrlServices.customerServices.expired[worldPart][serviceName].expiredSinceAbuse"></strong>
+            </p>
+            <div class="serviceDetails table-responsive-vertical" data-ng-if="ex.show">
+                <table class="table table-medium table-hover table-mc-indigo">
+                    <thead>
+                        <tr>
+                            <th>Ref</th>
+                            <th>Domain</th>
+                            <th>Creation</th>
+                            <th>Expiration</th>
+                            <th>Auto-renew</th>
+                            <th>State</th>
+                        </tr>
+                    </thead>
+                    <tbody data-ng-show="ctrlServices.loaders.services">
+                        <tr>
+                            <td colspan="6">
+                                <div layout="row" layout-fill layout-align="center">
+                                    <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr data-ng-repeat="service in ::services | orderBy:'creationDate':true"
+                            data-ng-class="{expired: service.isExpired}">
+                            <td data-title="Ref" data-ng-bind="::service.reference"></td>
+                            <td data-title="Domain" data-ng-bind="::service.name"></td>
+                            <td data-title="Creation" data-ng-bind="::service.creationDate * 1000 | amDateFormat:'DD/MM/YY HH:mm'"></td>
+                            <td data-title="Expiration" data-ng-bind="::service.expirationDate * 1000 | amDateFormat:'DD/MM/YY HH:mm'"></td>
+                            <td data-title="Auto-renew" data-ng-bind="::service.autorenew"></td>
+                            <td data-title="State" data-ng-bind="::service.state"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div data-ng-if="services.length > 10 && ex && ex.show" layout="row" layout-align="end">
+                <md-button data-ng-click="ex.show = false" title="Hide details" aria-label="Hide details" md-no-ink>
+                    <i class="zmdi zmdi-chevron-down zmdi-hc-2x grey" class="md-icon-button"
+                       data-ng-class="{'btn-expanded': ex.show}"></i>
+                </md-button>
+            </div>
+        </md-content>
+
+    </md-content>
+</div>

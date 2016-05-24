@@ -1,0 +1,28 @@
+<md-dialog aria-label="Edit news" flex>
+    <md-dialog-content class="md-dialog-content">
+        <h1>
+            <i class="mdi mdi-notifications grey"></i>
+            Edit News
+        </h1>
+        
+        <md-content layout="column">
+            <md-input-container>
+                <label>Title</label>
+                <input data-ng-model="news.title" required>
+            </md-input-container>
+            <md-input-container>
+                <label>News content</label>
+                <textarea data-ng-model="news.content"></textarea>
+            </md-input-container>
+        </md-content>
+        
+    </md-dialog-content>
+    <md-dialog-actions layout="horizontal" layout-align="end">
+        <md-button data-ng-click="cancel()">Cancel</md-button>
+        <md-button class="md-primary" data-ng-click="send()"
+                   data-ng-disabled="!news.content || !news.title">
+            <i class="mdi mdi-send grey"></i>
+            Send
+        </md-button>
+    </md-dialog-actions>
+</md-dialog>

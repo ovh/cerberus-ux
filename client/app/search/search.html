@@ -1,0 +1,289 @@
+<md-toolbar class="md-medium">
+    <div class="md-toolbar-tools">
+        <md-button data-ng-click="goBackState()" aria-label="Back" class="md-icon-button">
+            <md-tooltip>Go back</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-arrow-back zmdi-hc-2x white"></md-icon>
+        </md-button>
+        <h2>Search</h2>
+        <span flex></span>
+        <div data-ng-include="'components/menu-shortcuts/menu-shortcuts.html'"></div>
+        <md-button data-ng-href="dashboard"  aria-label="Dashboard"
+                   class="md-icon-button">
+            <md-tooltip>Dashboard</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-view-dashboard white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button ui-sref="admin.people"  aria-label="Administration" data-ng-if="Auth.isAdmin()"
+                   class="md-icon-button">
+            <md-tooltip>Administration</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-settings white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button aria-label="Search" ui-sref="search({filters: '{}'})" class="md-icon-button">
+            <md-tooltip>Search</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-search white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button class="md-icon-button" ui-sref="diaporama" aria-label="Diaporama">
+            <md-tooltip>Diaporama</md-tooltip>
+            <md-icon md-font-icon class="zmdi zmdi-slideshow white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button class="md-icon-button" data-ng-click="logout()" aria-label="Logout">
+            <md-tooltip>Logout</md-tooltip>
+            <md-icon md-font-icon class="zmdi zmdi-power white zmdi-hc-2x"></md-icon>
+        </md-button>
+    </div>
+</md-toolbar>
+
+<md-content id="search-view" data-ng-init="ctrl.init()" class="md-padding">
+    <md-content id="filters-view" data-ng-if="ctrl.showSearchForm">
+
+        <div layout="row">
+
+            <md-input-container flex>
+                <label>Search</label>
+                <input data-ng-model="ctrl.filters.fulltext" data-ng-model-options="{debounce: {'default': 500}}" />
+            </md-input-container>
+
+            <md-button aria-label="Collapse" md-no-ink
+                       data-ng-click="ctrl.filtersExpanded = !ctrl.filtersExpanded">
+                More
+            </md-button>
+        </div>
+
+        <form name="filtersForm" data-ng-show="ctrl.filtersExpanded">
+            
+            <div layout="row" layout-align="center">
+                <md-radio-group data-ng-model="ctrl.filters.type">
+                    <md-radio-button value="tickets" data-ng-model="ctrl.filters.type">Tickets</md-radio-button>
+                    <md-radio-button value="reports" data-ng-model="ctrl.filters.type">Reports</md-radio-button>
+                </md-radio-group>
+            </div>
+
+            <div layout="row" layout-sm="column" layout-xs="column">
+
+                <md-input-container flex data-ng-show="ctrl.filters.type === 'tickets'">
+                    <label>Ticket or Public ID</label>
+                    <input data-ng-model="ctrl.filters.ticketIds" data-ng-model-options="{debounce: {'default': 500}}" />
+                </md-input-container>
+
+                 <md-input-container data-ng-show="ctrl.filters.type === 'reports'" flex>
+                    <label>Subject</label>
+                    <input data-ng-model="ctrl.filters.subject" data-ng-model-options="{debounce: {'default': 500}}" />
+                </md-input-container>
+
+                <md-input-container flex>
+                    <label>Defendant</label>
+                    <input data-ng-model="ctrl.filters.customerId" data-ng-model-options="{debounce: {'default': 500}}" />
+                </md-input-container>
+
+                <md-input-container flex>
+                    <label>IP / URL</label>
+                    <input data-ng-model="ctrl.filters.ip" data-ng-model-options="{debounce: {'default': 500}}" />
+                </md-input-container>
+
+                <md-autocomplete md-search-text="ctrl.searchText" flex
+                                 md-no-cache="false"
+                                 md-search-text-change="ctrl.searchTextChange()"
+                                 md-items="provider in ctrl.querySearchProvider(ctrl.searchText)"
+                                 md-item-text="provider.email"
+                                 md-selected-item="selectedProvider"
+                                 md-selected-item-change="ctrl.filters.providers = selectedProvider"
+                                 md-floating-label="Source" id="provider-email">
+                    <md-item-template>
+                        <div layout="row" layout-align="space-between center">
+                            <span md-highlight-text="ctrl.searchText">{{provider.email}}</span>
+                            <span flex></span>
+                            <span class="badge success" data-ng-if="provider.trusted">
+                                <i class="zmdi zmdi-check white" alt="Provider trusted"></i>
+                                trust
+                            </span>
+                            <span class="badge error" data-ng-if="!provider.trusted">
+                                Not trust
+                            </span>
+                        </div>
+                    </md-item-template>
+                    <md-not-found>
+                        No matches found for "{{ctrl.searchText}}".
+                    </md-not-found>
+                </md-autocomplete>
+                
+                <md-input-container>
+                    <label>Categories</label>
+                    <md-select data-ng-model="ctrl.filters.category"
+                               name="filters-categories" multiple="true">
+                        <md-option data-ng-value="''">
+                            No filter
+                        </md-option>
+                        <md-option data-ng-value="category.name" data-ng-repeat="category in ctrl.categories"
+                                   data-ng-bind="::category.label">
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+                
+                <md-input-container>
+                    <label>Status</label>
+                    <md-select data-ng-model="ctrl.filters.status"
+                               name="filters-status" multiple="true">
+                        <md-option data-ng-value="''">
+                            No filter
+                        </md-option>
+                        <md-option data-ng-value="status.label" data-ng-repeat="status in ctrl.status"
+                                   data-ng-bind="::status.label">
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
+
+            <div layout="row" layout-sm="column" layout-xs="column">
+
+                <md-input-container flex>
+                    <label>Ticket tags</label>
+                    <md-select data-ng-model="ctrl.filters.ticketTag"
+                               data-ng-show="ctrl.filters.type === 'tickets'"
+                           name="filters-ticket-tags">
+                        <md-option data-ng-value="''">
+                            No filter
+                        </md-option>
+                        <md-option data-ng-value="tag.name" data-ng-repeat="tag in ctrl.ticketTags"
+                                   data-ng-bind="::tag.name">
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+
+                <md-input-container flex>
+                    <label>Priorities</label>
+                    <md-select data-ng-model="ctrl.filters.priority" placeholder="Priorities" flex
+                               name="filters-priorities">
+                        <md-option data-ng-value="''">
+                            No filter
+                        </md-option>
+                        <md-option data-ng-value="priority.label" data-ng-repeat="priority in ctrl.priorities"
+                                   data-ng-bind="::priority.label">
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+
+                <md-input-container data-ng-if="ctrl.filters.type === 'tickets'" flex>
+                    <label>Assign</label>
+                    <md-select data-ng-model="ctrl.filters.treatedBy">
+                        <md-option data-ng-value="''">
+                            No filter
+                        </md-option>
+                        <md-option data-ng-value="'unassigned'">
+                            Unassigned
+                        </md-option>
+                        <md-option data-ng-value="user.username" data-ng-repeat="user in ctrl.users"
+                                   data-ng-bind="::user.username">
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+
+                <md-input-container data-ng-show="ctrl.filters.type === 'reports'" flex>
+                    <label>Report tags</label>
+                    <md-select data-ng-model="ctrl.filters.reportTag" placeholder="Report tags" flex
+                               name="filters-report-tags">
+                        <md-option data-ng-value="''">
+                            No filter
+                        </md-option>
+                        <md-option data-ng-value="tag.name" data-ng-repeat="tag in ctrl.reportTags"
+                                   data-ng-bind="::tag.name">
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+                
+                <md-input-container flex>
+                    <label>Defendant tags</label>
+                    <md-select data-ng-model="ctrl.filters.defendantTag"
+                               name="filters-defendant-tags">
+                        <md-option data-ng-value="''">
+                            No filter
+                        </md-option>
+                        <md-option data-ng-value="tag.name" data-ng-repeat="tag in ctrl.defendantTags"
+                                   data-ng-bind="::tag.name">
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+
+                <md-input-container flex data-ng-show="ctrl.filters.type === 'tickets'">
+                    <md-checkbox data-ng-model="ctrl.filters.escalated" aria-label="Escalated tickets">
+                        Escalated
+                    </md-checkbox>
+                </md-input-container>
+
+                <md-input-container flex data-ng-show="ctrl.filters.type === 'tickets'">
+                    <md-checkbox data-ng-model="ctrl.filters.moderation" aria-label="Moderated tickets">
+                        Moderated
+                    </md-checkbox>
+                </md-input-container>
+                
+                <md-input-container flex data-ng-show="ctrl.filters.type === 'tickets'">
+                    <md-checkbox data-ng-model="ctrl.filters.confidential" aria-label="Confidential tickets">
+                        Confidential
+                    </md-checkbox>
+                </md-input-container>
+
+                <md-input-container data-ng-show="ctrl.filters.type === 'reports'">
+                    <md-checkbox data-ng-model="ctrl.filters.notAttached" aria-label="Not attached">
+                        Not Attached
+                    </md-checkbox>
+                </md-input-container>
+            </div>
+        </form>
+    </md-content>
+
+    <md-content layout="row" layout-align="center" data-ng-show="ctrl.loaders.search">
+        <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+    </md-content>
+
+    <div data-ng-switch on="ctrl.filters.type">
+        <div class="animate-switch" data-ng-switch-when="tickets">
+            <div data-ng-include="'app/search/tickets-result-view.html'"></div>
+        </div>
+        <div class="animate-switch" data-ng-switch-when="reports">
+            <div data-ng-include="'app/search/reports-result-view.html'"></div>
+        </div>
+        <div class="animate-switch" data-ng-switch-default>
+            <div data-ng-include="'app/search/tickets-result-view.html'"></div>
+        </div>
+    </div>
+
+
+    <md-content data-ng-if="ctrl.selectedItems.length" class="sticky-actions">
+        <md-content layout="row" layout-align="space-between center"  layout-sm="column">
+            <md-select data-ng-model="ctrl.bulk.category" placeholder="Category" flex name="bulk-category">
+                <md-option data-ng-value="''">Don't change category</md-option>
+                <md-option data-ng-value="category.name" data-ng-repeat="category in ctrl.categories"
+                           data-ng-bind="::category.name">
+                </md-option>
+            </md-select>
+
+            <md-select data-ng-model="ctrl.bulk.status" placeholder="Status" flex name="bulk-status">
+                <md-option data-ng-value="''">Don't change status</md-option>
+                <md-option data-ng-value="status.label" data-ng-repeat="status in ctrl.getBulkAllowedStatus()"
+                           data-ng-bind="::status.label">
+                </md-option>
+            </md-select>
+
+            <md-select data-ng-model="ctrl.bulk.priority" placeholder="Priority" flex name="bulk-priority"
+                       data-ng-show="ctrl.filters.type !== 'reports'">
+                <md-option data-ng-value="''">Don't change priority</md-option>
+                <md-option data-ng-value="priority.label" data-ng-repeat="priority in ctrl.priorities"
+                           data-ng-bind="::priority.label">
+                </md-option>
+            </md-select>
+
+            <md-select data-ng-model="ctrl.bulk.treatedBy" placeholder="Assign to" flex name="bulk-assign"
+                       data-ng-show="ctrl.filters.type !== 'reports'">
+                <md-option data-ng-value="''">Don't change owner</md-option>
+                <md-option data-ng-value="user.username" data-ng-repeat="user in ctrl.users"
+                           data-ng-bind="::user.username">
+                </md-option>
+            </md-select>
+
+            <md-button data-ng-click="ctrl.resetBulkFields()" class="md-raised">Reset</md-button>
+            <md-button data-ng-click="ctrl.saveBulk($event)" class="md-raised md-primary"
+                       data-ng-disabled="!(ctrl.bulk.treatedBy || ctrl.bulk.status || ctrl.bulk.priority || ctrl.bulk.category)">
+                Save
+            </md-button>
+        </md-content>
+    <md-content/>
+
+</md-content>

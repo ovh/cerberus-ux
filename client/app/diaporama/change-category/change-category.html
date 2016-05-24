@@ -1,0 +1,31 @@
+<md-dialog aria-label="Change category" data-ng-init="init()">
+    <md-dialog-content class="md-dialog-content">
+        <h1>
+            <i class="zmdi zmdi-edit grey"></i>
+            Change category
+        </h1>
+
+        <md-content layout="row" layout-align="center" data-ng-if="!categories">
+            <md-progress-circular class="md-accent" md-mode="indeterminate">
+            </md-progress-circular>
+        </md-content>
+
+        <md-content data-ng-if="categories">
+            <p>Please select in the list below the new category to set:</p>
+            <md-input-container>
+                <label>Category</label>
+                <md-select aria-label="category" data-ng-model="value.selectedCategory">
+                    <md-option data-ng-repeat="cat in categories"
+                               data-ng-value="cat.label"
+                               data-ng-bind="cat.label">
+                    </md-option>
+                </md-select>
+            </md-intput-container>
+        </md-content>
+
+    </md-dialog-content>
+    <md-dialog-actions layout="horizontal" layout-align="end">
+        <md-button data-ng-click="cancel()">Close</md-button>
+        <md-button class="md-primary" data-ng-click="save()">Save and go to next report</md-button>
+    </md-dialog-actions>
+</md-dialog>

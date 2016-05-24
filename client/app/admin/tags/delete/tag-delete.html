@@ -1,0 +1,15 @@
+<md-dialog aria-label="Delete tag">
+    <md-dialog-content class="md-dialog-content">
+        <h2>Delete {{tag.tagType.toLowerCase()}} tag</h2>        
+        <p>You're about to delete this tag.</p>
+        <p>Are-you sure ?</p>
+        <div layout="row" layout-fill layout-align="center" data-ng-show="loaders.tags">
+            <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+        </div>
+
+    </md-dialog-content>
+    <md-dialog-actions layout-align="end">
+        <md-button  ng-click="cancel()" data-ng-disabled="loaders.tags">No</md-button>
+        <md-button  class="md-primary" ng-click="hide()" data-ng-disabled="loaders.tags">Yes</md-button>
+    </md-dialog-actions>
+</md-dialog>

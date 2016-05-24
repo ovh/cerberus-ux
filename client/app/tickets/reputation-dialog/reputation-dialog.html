@@ -1,0 +1,47 @@
+<md-dialog aria-label="Reputation" data-ng-init="init()" flex>
+    <md-dialog-content class="md-dialog-content">
+        <h1>
+            <i class="zmdi zmdi-trending-up grey"></i>
+            Reputation
+        </h1>
+
+        <md-content layout="row" layout-align="center" data-ng-if="!rawData">
+            <md-progress-circular class="md-accent" md-mode="indeterminate">
+            </md-progress-circular>
+        </md-content>
+        <md-content data-ng-if="rawData">
+            <md-list>
+                <md-list-item data-ng-repeat="entry in rawData">
+                    <md-content layout="column">
+                        <em>{{entry.timestamp * 1000 | date:'dd/MM/yyyy HH:mm'}} (Weight: {{entry.weight}})</em>
+                        <pre class="reputation-entry body-content" data-ng-bind="::entry.data"></pre>
+
+                        <tooltip-mouse data-ng-if="ticketId !== null"
+                                 data-tooltip-mouse-zone-class="reputation-entry"
+                                 data-tooltip-mouse-disabled="false"
+                                 data-tooltip-mouse-close="">
+                            <div>
+                                <md-button class="md-raised md-warn md-icon-button"
+                                           title="Add proof"
+                                           aria-label="Add proof"
+                                           data-ng-click="addProof(entry)">
+                                    <md-icon md-font-icon class="zmdi zmdi-file-add white"></md-icon>
+                                </md-button>
+                            </div>
+                        </tooltip-mouse>
+
+                    </md-content>
+                    <md-divider/>
+                </md-list-item>
+
+                <md-list-item data-ng-if="rawData.length === 0">
+                    Empty.
+                </md-list-item>
+            </md-list>
+        </md-content>
+        
+    </md-dialog-content>
+    <md-dialog-actions layout="horizontal" layout-align="end">
+        <md-button data-ng-click="cancel()">Close</md-button>
+    </md-dialog-actions>
+</md-dialog>

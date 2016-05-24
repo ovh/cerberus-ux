@@ -1,0 +1,217 @@
+<md-content class="md-whiteframe-z table-responsive-vertical" data-ng-show="!ctrl.loaders.search" flex style="overflow: hidden;">
+    <em class="fs13">{{ctrl.results.reportsCount}} reports found</em>
+    <table class="table table-medium table-hover table-mc-indigo">
+        <thead>
+            <tr>
+                <th>
+                    <a href="" data-ng-show="ctrl.sortBy.field !== 'id'"
+                       data-ng-click="ctrl.sortBy.field = 'id'; ctrl.currentPage = 1; ctrl.searchReports()">
+                        ID
+                        <i class="zmdi zmdi-unfold-more"></i>
+                    </a>
+                    <a href=""
+                       data-ng-show="ctrl.sortBy.field === 'id' && ctrl.sortBy.order === 1"
+                       data-ng-click="ctrl.sortBy.order = -1; ctrl.currentPage = 1; ctrl.searchReports()">
+                        ID
+                        <i class="zmdi zmdi-caret-up"></i>
+                    </a>
+                    <a href=""
+                       data-ng-show="ctrl.sortBy.field == 'id'  && ctrl.sortBy.order === -1"
+                       data-ng-click="ctrl.sortBy.order = 1; ctrl.currentPage = 1; ctrl.searchReports()">
+                        ID
+                        <i class="zmdi zmdi-caret-down"></i>
+                    </a>
+                </th>
+                <th>
+                    <span data-ng-if="!ctrl.currentCategory">
+                        <a href="" data-ng-show="ctrl.sortBy.field !== 'category'"
+                           data-ng-click="ctrl.sortBy.field = 'category'; ctrl.currentPage = 1; ctrl.searchReports()">
+                            Category
+                            <i class="zmdi zmdi-unfold-more"></i>
+                        </a>
+                        <a href=""
+                           data-ng-show="ctrl.sortBy.field === 'category' && ctrl.sortBy.order === 1"
+                           data-ng-click="ctrl.sortBy.order = -1; ctrl.currentPage = 1; ctrl.searchReports()">
+                            Category
+                            <i class="zmdi zmdi-caret-up"></i>
+                        </a>
+                        <a href=""
+                           data-ng-show="ctrl.sortBy.field === 'category'  && ctrl.sortBy.order === -1"
+                           data-ng-click="ctrl.sortBy.order = 1; ctrl.currentPage = 1; ctrl.searchReports()">
+                            Category
+                            <i class="zmdi zmdi-caret-down"></i>
+                        </a>
+                    </span>
+                </th>
+                <th>Defendant</th>
+                <th>
+                    <a href="" data-ng-show="ctrl.sortBy.field !== 'status'"
+                       data-ng-click="ctrl.sortBy.field = 'status'; ctrl.currentPage = 1; ctrl.searchReports()">
+                        Status
+                        <i class="zmdi zmdi-unfold-more"></i>
+                    </a>
+                    <a href=""
+                       data-ng-show="ctrl.sortBy.field === 'status' && ctrl.sortBy.order === 1"
+                       data-ng-click="ctrl.sortBy.order = -1; ctrl.currentPage = 1; ctrl.searchReports()">
+                        Status
+                        <i class="zmdi zmdi-caret-up"></i>
+                    </a>
+                    <a href=""
+                       data-ng-show="ctrl.sortBy.field === 'status'  && ctrl.sortBy.order === -1"
+                       data-ng-click="ctrl.sortBy.order = 1; ctrl.currentPage = 1; ctrl.searchReports()">
+                        Status
+                        <i class="zmdi zmdi-caret-down"></i>
+                    </a>
+                </th>
+                <th>
+                    <a href="" data-ng-show="ctrl.sortBy.field !== 'provider'"
+                       data-ng-click="ctrl.sortBy.field = 'provider'; ctrl.currentPage = 1; ctrl.searchReports()">
+                        Source
+                        <i class="zmdi zmdi-unfold-more"></i>
+                    </a>
+                    <a href=""
+                       data-ng-show="ctrl.sortBy.field === 'provider' && ctrl.sortBy.order === 1"
+                       data-ng-click="ctrl.sortBy.order = -1; ctrl.currentPage = 1; ctrl.searchReports()">
+                        Source
+                        <i class="zmdi zmdi-caret-up"></i>
+                    </a>
+                    <a href=""
+                       data-ng-show="ctrl.sortBy.field === 'provider' && ctrl.sortBy.order === -1"
+                       data-ng-click="ctrl.sortBy.order = 1; ctrl.currentPage = 1; ctrl.searchReports()">
+                        Source
+                        <i class="zmdi zmdi-caret-down"></i>
+                    </a>
+                </th>
+                <th>
+                    <a href="" data-ng-show="ctrl.sortBy.field !== 'receivedDate'"
+                       data-ng-click="ctrl.sortBy.field = 'receivedDate'; ctrl.currentPage = 1; ctrl.searchReports()">
+                        Date
+                        <i class="zmdi zmdi-unfold-more"></i>
+                    </a>
+                    <a href=""
+                       data-ng-show="ctrl.sortBy.field === 'receivedDate' && ctrl.sortBy.order === 1"
+                       data-ng-click="ctrl.sortBy.order = -1; ctrl.searchReports()">
+                        Date
+                        <i class="zmdi zmdi-caret-up"></i>
+                    </a>
+                    <a href=""
+                       data-ng-show="ctrl.sortBy.field === 'receivedDate'  && ctrl.sortBy.order === -1"
+                       data-ng-click="ctrl.sortBy.order = 1; ctrl.currentPage = 1; ctrl.searchReports()">
+                        Date
+                        <i class="zmdi zmdi-caret-down"></i>
+                    </a>
+                </th>
+                <th>Subject</th>
+                <th>
+                    <span>Items</span>
+                </th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody data-ng-show="!ctrl.loaders.search && ctrl.results.reports.length <= 0">
+            <tr>
+                <td colspan="9">
+                    <div layout="row" layout-fill layout-align="center">
+                        No Reports
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+        <tbody data-ng-if="!ctrl.loaders.search">
+            <tr data-ng-repeat="report in ctrl.results.reports"
+                title="Show report"
+                class="row-clickable">
+                <td data-title="ID">
+                    <a ui-sref="report.content({id: report.id})"
+                       data-ng-bind="::report.id">
+                    </a>
+                </td>
+                <td data-title="Category">
+                    <a ui-sref="report.content({id: report.id})"
+                       data-ng-bind="::report.category">
+                    </a>
+                </td>
+                <td data-title="Defendant">
+                    <a ui-sref="report.content({id: report.id})">
+                        <p data-ng-bind="::report.defendant.email || 'No defendant'"></p>
+                        <em data-ng-bind="::report.service.name"></em>
+                    </a>
+                </td>
+                <td data-title="Status">
+                    <a ui-sref="report.content({id: report.id})">
+                        <i class="zmdi grey"
+                           data-ng-class="{
+                                          'zmdi-attachment': report.status === 'Attached',
+                                          'zmdi-archive' : report.status === 'Archived',
+                                          'zmdi-alert-polygon' : report.status === 'New',
+                                          'zmdi-done' : report.status === 'Validated'
+                                          }">
+                        </i>
+                        <strong data-ng-bind="::report.status"></strong>
+                    </a>
+                </td>
+                <td data-title="Source">
+                    <a ui-sref="report.content({id: report.id})">
+                       {{ report.provider.email | limitTo : 30 }}{{report.provider.email.length > 30 ? '...' : ''}}
+                    </a>
+                </td>
+                <td data-title="Date">
+                    <a ui-sref="report.content({id: report.id})"
+                       data-ng-bind="::report.receivedDate * 1000 | amDateFormat:'DD/MM/YY HH:mm'">
+                    </a>
+                </td>
+                <td data-title="Subject">
+                    <a ui-sref="report.content({id: report.id})">
+                        {{ report.subject | limitTo: 30 }}{{report.subject.length > 30 ? '...' : ''}}
+                    </a>
+                </td>
+                <td data-title="Items">
+                    <a ui-sref="report.content({id: report.id})">
+                        <ul class="count-infos">
+                            <li>
+                                <i class="zmdi zmdi-format-list-bulleted grey"></i>
+                                <span data-ng-bind="::report.items.itemsCount"></span>
+                                <span data-ng-if="report.items.itemsCount > 1">items</span>
+                                <span data-ng-if="report.items.itemsCount <= 1">item</span>
+                            </li>
+                        </ul>
+                    </a>
+                </td>
+                <td data-title="Actions">
+                    <md-button ui-sref="ticket.activities({id: report.ticket})" class="md-icon-button"
+                               data-ng-if="report.ticket"
+                               aria-label="Show ticket" title="Show ticket">
+                        <i class="zmdi zmdi-calendar-note grey"></i>
+                    </md-button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="pagination" layout="row" layout-align="space-around"
+         data-ng-if="ctrl.results.reportsCount > ctrl.resultsPerPage">
+        <paging class="small"
+                page="ctrl.currentPage"
+                page-size="ctrl.resultsPerPage"
+                total="ctrl.results.reportsCount"
+                adjacent="5"
+                dots="..."
+                scroll-top="true"
+                hide-if-empty="true"
+                ul-class="pagination"
+                active-class="active"
+                disabled-class="disabled"
+                show-prev-next="true"
+                paging-action="ctrl.currentPage = page; ctrl.searchReports()">
+        </paging>
+        <div flex></div>
+        <input type="number" data-ng-model="ctrl.currentPage" data-ng-change="ctrl.searchReports()"
+               data-ng-model-options="{debounce: {'default': 500}}" max="{{ctrl.ceil(ctrl.results.reportsCount / ctrl.resultsPerPage)}}" min="1"  />
+        <md-select data-ng-model="ctrl.resultsPerPage" data-ng-change="ctrl.searchReports()" aria-label="Results per page">
+            <md-option value="10" data-ng-show="ctrl.results.reportsCount >= 10">10</md-option>
+            <md-option value="15" data-ng-show="ctrl.results.reportsCount >= 15">15</md-option>
+            <md-option value="20" data-ng-show="ctrl.results.reportsCount >= 20">20</md-option>
+            <md-option value="50" data-ng-show="ctrl.results.reportsCount >= 50">50</md-option>
+            <md-option value="100" data-ng-show="ctrl.results.reportsCount >= 100">100</md-option>
+        </md-select>
+    </div>
+</md-content>

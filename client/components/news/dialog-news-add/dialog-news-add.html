@@ -1,0 +1,33 @@
+<md-dialog aria-label="Add news" data-ng-init="init()" flex>
+    <md-dialog-content class="md-dialog-content">
+        <h1>
+            <i class="mdi mdi-notifications-on grey"></i>
+            Add News
+        </h1>
+        
+        <form name="formAddNews">
+            <md-content layout="column" layout-padding layout-fill>
+                <md-input-container>
+                    <label>Title</label>
+                    <input required name="newsTitle" data-ng-model="news.title" />
+                    <div ng-messages="formAddNews.newsTitle.$error">
+                        <div ng-message="required">Enter title.</div>
+                    </div>
+                </md-input-container>
+                <md-input-container>
+                    <label>News content</label>
+                    <textarea data-ng-model="news.content"></textarea>
+                </md-input-container>
+            </md-content>
+        </form>
+        
+    </md-dialog-content>
+    <md-dialog-actions layout="horizontal" layout-align="end">
+        <md-button data-ng-click="cancel()">Cancel</md-button>
+        <md-button class="md-primary" data-ng-click="send()"
+                   data-ng-disabled="!news.content || !news.title">
+            <i class="mdi mdi-send grey"></i>
+            Send
+        </md-button>
+    </md-dialog-actions>
+</md-dialog>

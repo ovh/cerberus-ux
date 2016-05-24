@@ -1,0 +1,31 @@
+<div role="tabpanel" id="tab-comments" data-ng-init="ctrlComments.init()">
+
+    <md-content class="md-padding" layout-fill>
+        <div layout="row" layout-align="center center">
+            <p data-ng-if="ctrl.ticket.comments.length <= 0">No comment</p>
+        </div>
+        <md-list data-ng-if="ctrl.ticket.comments.length > 0">
+            <md-list-item data-ng-repeat="comment in ctrl.ticket.comments | orderBy:'date':true">
+                <div layout="column">
+                    <p>
+                        <i class="zmdi zmdi-account grey"></i>
+                        <strong data-ng-bind="comment.user"></strong> add comment:
+                        <em data-ng-bind="comment.date * 1000 | amDateFormat:'DD/MM/YY HH:mm'"></em>
+                    </p>
+
+                    <div>
+                        <a href="#" data-ng-if="ctrlComments.getMe().username === comment.user"
+                           editable-textarea="comment.comment" e-rows="5" e-cols="70"
+                           onaftersave="ctrlComments.updateComment(comment)">
+                            <pre class="body-content" data-ng-bind="comment.comment || 'no comment'"></pre>
+                        </a>
+                        <pre class="body-content" data-ng-if="ctrlComments.getMe().username !== comment.user"
+                             data-ng-bind="comment.comment || 'No comment'">
+                        </pre>
+                    </div>
+                </div>
+                <md-divider data-ng-if="!$last"></md-divider>
+            </md-list-item>
+        </md-list>
+    </md-content>
+</div>

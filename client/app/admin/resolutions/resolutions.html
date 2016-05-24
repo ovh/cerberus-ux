@@ -1,0 +1,50 @@
+<div role="tabpanel" id="tab-resolutions" data-ng-init="ctrlResolutions.init()">
+    <div layout="column" layout-fill>
+        <md-content class="md-padding" flex="">
+            <md-toolbar md-theme="white" class="no-shadow">
+                <h3 class="md-toolbar-tools" layout="row">
+                    <i class="zmdi zmdi-check grey"></i>&nbsp;<span flex>Ticket resolutions</span>
+                    <md-button data-ng-click="ctrlResolutions.addResolution($event)"
+                               class="md-icon-button"
+                               aria-label="Add new template">
+                        <md-tooltip>Add new template</md-tooltip>
+                        <md-icon md-font-icon="zmdi zmdi-plus zmdi-hc-2x grey"></md-icon>
+                    </md-button>
+                </h3>
+            </md-toolbar>
+
+            <md-divider></md-divider>
+
+            <md-content data-ng-if="ctrlResolutions.loading" layout="row" layout-align="center center">
+                    <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+            </md-content>
+
+            <md-content data-ng-if="!ctrlResolutions.loading">
+                <md-list>
+                    <md-list-item data-ng-repeat="resolution in ctrlResolutions.resolutions">
+                        <i class="zmdi zmdi-chevron-right grey md-avatar"></i>
+                        <div class="md-list-item-text">
+                            <h4 data-ng-bind="::resolution.codename"></h4>
+                        </div>
+
+                        <span flex></span>
+                        <div layout="row">
+                            <md-button data-ng-click="ctrlResolutions.updateResolution($event, resolution)"
+                                       class="md-icon-button"
+                                       aria-label="Update resolution">
+                                <md-tooltip>Update resolution</md-tooltip>
+                                <md-icon md-font-icon="zmdi zmdi-edit grey"></md-icon>
+                            </md-button>
+                            <md-button data-ng-click="ctrlResolutions.deleteResolution(resolution)"
+                                       class="md-icon-button"
+                                       aria-label="Delete resolution">
+                                <md-tooltip>Delete resolution</md-tooltip>
+                                <md-icon md-font-icon="zmdi zmdi-delete grey"></md-icon>
+                            </md-button>
+                        </div>
+                    </md-list-item>
+                </md-list>
+            </md-content>
+        </md-content>
+    </div>
+</div>

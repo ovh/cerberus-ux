@@ -1,0 +1,179 @@
+<md-content data-ng-controller="PresetEditorCtrl as ctrl">
+    <div layout="row" layout-align="space-between" data-ng-init="ctrl.init(ctrlPresets.editingPreset, ctrlPresets)">
+        <h4 data-ng-if="ctrlPresets.view === 'adding'">Add a preset</h4>
+        <h4 data-ng-if="ctrlPresets.view === 'editing'">Edit a preset</h4>
+        <md-button data-ng-click="ctrlPresets.view = 'list'"
+                   class="md-icon-button"
+                   aria-label="Close editor">
+            <md-tooltip>Close editor</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-close"></md-icon>
+        </md-button>
+    </div>
+
+
+    <md-content data-ng-if="ctrl.loading" layout="row" layout-align="center center">
+        <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+    </md-content>
+    
+    <md-content data-ng-if="!ctrl.loading">
+        <md-input-container>
+            <label>Preset Name</label>
+            <input data-ng-model="ctrl.currentPreset.name">
+        </md-input-container>
+
+        <h4>Mail templating</h4>
+
+        <md-content layout="row" layout-align="start start" layout-fill>
+            <md-checkbox data-ng-model="ctrl.currentPreset.templates.plaintiff.send">Send mail to plaintiff with template</md-checkbox>             <span flex></span>            
+            <md-select data-ng-model="ctrl.currentPreset.templates.plaintiff.id"
+                            data-ng-disabled="!ctrl.currentPreset.templates.plaintiff.send"
+                            class="no-margin" aria-label="Plaintiff template">
+                <md-option data-ng-repeat="template in ctrl.getEmailTemplatesByRecipient('Plaintiff')"
+                           data-ng-value="template.id"
+                           data-ng-bind="template.name">
+                </md-option>
+            </md-select>
+        </md-content>
+
+        <md-content layout="row" layout-align="start start" layout-fill>
+            <md-checkbox data-ng-model="ctrl.currentPreset.templates.defendant.send">Send mail to defendant with template</md-checkbox>
+            <span flex></span>
+            <md-select data-ng-model="ctrl.currentPreset.templates.defendant.id"
+                            data-ng-disabled="!ctrl.currentPreset.templates.defendant.send"
+                            class="no-margin" aria-label="Defendant template">
+                <md-option data-ng-repeat="template in ctrl.getEmailTemplatesByRecipient('Defendant')"
+                           data-ng-value="template.id"
+                           data-ng-bind="template.name">
+                </md-option>
+            </md-select>
+        </md-content>
+
+        <md-content layout="row" layout-align="start start" layout-fill>
+            <md-checkbox data-ng-model="ctrl.currentPreset.templates.other.send">Send mail to third party with template</md-checkbox>
+            <span flex></span>
+            <md-select data-ng-model="ctrl.currentPreset.templates.other.id"
+                            data-ng-disabled="!ctrl.currentPreset.templates.other.send"
+                            class="no-margin" aria-label="Third party template">
+                <md-option data-ng-repeat="template in ctrl.getEmailTemplatesByRecipient('Other')"
+                           data-ng-value="template.id"
+                           data-ng-bind="template.name">
+                </md-option>
+            </md-select>
+        </md-content>
+
+        <h4>Schedule an action</h4>
+
+        <md-content>
+            <md-radio-group data-ng-model="ctrl.currentPreset.action.codename">
+                <md-content layout="row" layout-align="start center" layout-fill class="no-margin">
+                    <md-radio-button value="waiting_answer">
+                        <span>Wait answer within</span>
+                    </md-radio-button>
+                    <!-- Cannot include these elements in previous tag since <md-radio-button> does not forward mouse events. -->
+                    <md-content layout="row" layout-align="start center" layout-margin>
+                        <input type="number" min="1" data-ng-model="ctrl.currentPreset.action.params.snoozeDuration"
+                             class="action-duration" data-ng-disabled="ctrl.currentPreset.action.codename !== 'waiting_answer'">
+                        <span>hours.</span>
+                    </md-content>
+                </md-content>
+
+                <md-content layout="row" layout-align="start center" layout-fill class="no-margin">
+                    <md-radio-button value="close_with_resolution">
+                        <span>Close ticket with resolution</span>
+                    </md-radio-button>
+                    <!-- Cannot include these elements in previous tag since <md-radio-button> does not forward mouse events. -->
+                    <md-content layout="row" layout-align="start center" layout-margin>
+                        <md-select data-ng-model="ctrl.currentPreset.action.params.resolution"
+                                   data-ng-disabled="ctrl.currentPreset.action.codename !== 'close_with_resolution'"
+                                   aria-label="Resolution" class="no-margin">
+                            <md-option data-ng-repeat="resolution in ctrl.resolutions"
+                                       data-ng-value="resolution.id"
+                                       data-ng-bind="resolution.codename" flex>
+                            </md-option>
+                        </md-select>
+                    </md-content>
+                </md-content>
+
+                <md-content layout="row" layout-align="start center" layout-fill class="no-margin">
+                    <md-radio-button value="pause_ticket">
+                        <span>Pause ticket for</span>
+                    </md-radio-button>
+                    <!-- Cannot include these elements in previous tag since <md-radio-button> does not forward mouse events. -->
+                    <md-content layout="row" layout-align="start center" layout-margin>
+                        <input type="number" min="1" data-ng-model="ctrl.currentPreset.action.params.pauseDuration"
+                             class="action-duration" data-ng-disabled="ctrl.currentPreset.action.codename !== 'pause_ticket'">
+                        <span flex>hours.</span>
+                    </md-content>
+                </md-content>
+
+                <md-content layout="row" layout-align="start center" layout-fill class="no-margin">
+                    <md-radio-button value="waiting_answer_then_action">
+                        <span>Wait answer within</span>
+                    </md-radio-button>
+                    <!-- Cannot include these elements in previous tag since <md-radio-button> does not forward mouse events. -->
+                    <md-content layout="row" layout-align="start center" layout-margin>
+                        <input type="number" min="1" data-ng-model="ctrl.currentPreset.action.params.snoozeDuration"
+                             class="action-duration" data-ng-disabled="ctrl.currentPreset.action.codename !== 'waiting_answer_then_action'">
+                        <span>hours then if no reply do user action.</span>
+                    </md-content>
+                </md-content>
+
+                <md-content layout="row" layout-align="start center" class="no-margin">
+                    <md-radio-button value="waiting_answer_then_action_and_close">
+                        <span>Wait answer within</span>
+                    </md-radio-button>
+                    <!-- Cannot include these elements in previous tag since <md-radio-button> does not forward mouse events. -->
+                    <md-content layout="row" layout-align="start center" layout-margin>
+                        <input type="number" min="1" data-ng-model="ctrl.currentPreset.action.params.snoozeDuration"
+                             class="action-duration" data-ng-disabled="ctrl.currentPreset.action.codename !== 'waiting_answer_then_action_and_close'">
+                        <span>hours then if no reply do user action and close ticket with resolution</span>
+                        <md-select data-ng-model="ctrl.currentPreset.action.params.resolution"
+                                   data-ng-disabled="ctrl.currentPreset.action.codename !== 'waiting_answer_then_action_and_close'"
+                                   aria-label="Resolution">
+                            <md-option data-ng-repeat="resolution in ctrl.resolutions"
+                                       data-ng-value="resolution.id"
+                                       data-ng-bind="resolution.codename" flex>
+                            </md-option>
+                        </md-select>
+                    </md-content>
+                </md-content>
+
+                <md-content layout="row" layout-align="start center" class="no-margin">
+                    <md-radio-button value="action_then_waiting_answer">
+                        <span>Do user action then wait answer within</span>
+                    </md-radio-button>
+                    <!-- Cannot include these elements in previous tag since <md-radio-button> does not forward mouse events. -->
+                    <md-content layout="row" layout-align="start center" layout-margin>
+                        <input type="number" min="1" data-ng-model="ctrl.currentPreset.action.params.snoozeDuration"
+                             class="action-duration" data-ng-disabled="ctrl.currentPreset.action.codename !== 'action_then_waiting_answer'">
+                        <span flex>hours.</span>
+                    </md-content>
+                </md-content>
+
+                <md-content layout="row" layout-align="start center" class="no-margin">
+                    <md-radio-button value="action_then_close">
+                        <span>Do user action and close ticket with resolution</span>
+                    </md-radio-button>
+                    <!-- Cannot include these elements in previous tag since <md-radio-button> does not forward mouse events. -->
+                    <md-content layout="row" layout-align="start center" layout-margin>
+                        <md-select data-ng-model="ctrl.currentPreset.action.params.resolution"
+                                   data-ng-disabled="ctrl.currentPreset.action.codename !== 'action_then_close'"
+                                   aria-label="Resolution">
+                            <md-option data-ng-repeat="resolution in ctrl.resolutions"
+                                       data-ng-value="resolution.id"
+                                       data-ng-bind="resolution.codename" flex>
+                            </md-option>
+                        </md-select>
+                    </md-content>
+                </md-content>
+
+                </md-content>
+            </md-radio-group>
+        </md-content>
+
+        <md-content class="sticky-actions" layout="row" layout-align="end center">
+            <md-button data-ng-click="ctrl.save()" class="md-primary md-raised"
+                       data-ng-disabled="!(ctrl.currentPreset.action && ctrl.currentPreset.name)">Save</md-button>
+        </md-content>
+    </md-content>
+</md-content>

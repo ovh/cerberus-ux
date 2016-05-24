@@ -1,0 +1,168 @@
+<div role="tabpanel" id="tab-history" data-ng-init="ctrlHistory.init()">
+    <div  layout="column" layout-fill>
+        <md-content flex>
+            <md-toolbar md-theme="white" class="no-shadow">
+                <h3 class="md-toolbar-tools" layout="row">
+                    <span class="zmdi zmdi-time-restore grey"></span>
+                    <span flex>History</span>
+                    <div flex></div>
+                </h3>
+            </md-toolbar>
+            <div layout="row" layout-margin>
+                <highchart config="ctrlHistory.chartConfigAllQueues"></highchart>
+                <md-content flex class="md-whiteframe-z"
+                            data-ng-if="ctrlHistory.reportsHistoryForDefenfantCount > 0">
+                    <md-toolbar md-theme="white" class="no-shadow">
+                        <h3 class="md-toolbar-tools" layout="row" layout-align="space-between">
+                            <span class="zmdi zmdi-time-restore grey"></span>
+                            <span flex>Reports</span>
+                            <div flex></div>
+                        </h3>
+                    </md-toolbar>
+                    <table class="table table-medium table-hover table-mc-indigo">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <a href="" data-ng-show="ctrlHistory.sortBy.field !== 'id'"
+                                       data-ng-click="ctrlHistory.sortBy.field = 'id'; ctrlHistory.getReportsHistoryForDefenfant()">
+                                        ID
+                                        <i class="zmdi zmdi-unfold-more"></i>
+                                    </a>
+                                    <a href=""
+                                       data-ng-show="ctrlHistory.sortBy.field === 'id' && ctrlHistory.sortBy.order === 1"
+                                       data-ng-click="ctrlHistory.sortBy.order = -1; ctrlHistory.getReportsHistoryForDefenfant()">
+                                        ID
+                                        <i class="zmdi zmdi-chevron-up"></i>
+                                    </a>
+                                    <a href=""
+                                       data-ng-show="ctrlHistory.sortBy.field === 'id'  && ctrlHistory.sortBy.order === -1"
+                                       data-ng-click="ctrlHistory.sortBy.order = 1; ctrlHistory.getReportsHistoryForDefenfant()">
+                                        ID
+                                        <i class="zmdi zmdi-chevron-down"></i>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="" data-ng-show="ctrlHistory.sortBy.field !== 'category'"
+                                       data-ng-click="ctrlHistory.sortBy.field = 'category'; ctrlHistory.getReportsHistoryForDefenfant()">
+                                        Category
+                                        <i class="zmdi zmdi-unfold-more"></i>
+                                    </a>
+                                    <a href=""
+                                       data-ng-show="ctrlHistory.sortBy.field == 'category' && ctrlHistory.sortBy.order == 1"
+                                       data-ng-click="ctrlHistory.sortBy.order = -1; ctrlHistory.getReportsHistoryForDefenfant()">
+                                        Category
+                                        <i class="zmdi zmdi-chevron-up"></i>
+                                    </a>
+                                    <a href=""
+                                       data-ng-show="ctrlHistory.sortBy.field == 'category'  && ctrlHistory.sortBy.order == -1"
+                                       data-ng-click="ctrlHistory.sortBy.order = 1; ctrlHistory.getReportsHistoryForDefenfant()">
+                                        Category
+                                        <i class="zmdi zmdi-chevron-down"></i>
+                                    </a>
+                                </th>
+
+                                <th>
+                                    <a href="" data-ng-show="ctrlHistory.sortBy.field !== 'status'"
+                                       data-ng-click="ctrlHistory.sortBy.field = 'status'; ctrlHistory.getReportsHistoryForDefenfant()">
+                                        Status
+                                        <i class="zmdi zmdi-unfold-more"></i>
+                                    </a>
+                                    <a href=""
+                                       data-ng-show="ctrlHistory.sortBy.field == 'status' && ctrlHistory.sortBy.order == 1"
+                                       data-ng-click="ctrlHistory.sortBy.order = -1; ctrlHistory.getReportsHistoryForDefenfant()">
+                                        Status
+                                        <i class="zmdi zmdi-chevron-up"></i>
+                                    </a>
+                                    <a href=""
+                                       data-ng-show="ctrlHistory.sortBy.field == 'status'  && ctrlHistory.sortBy.order == -1"
+                                       data-ng-click="ctrlHistory.sortBy.order = 1; ctrlHistory.getReportsHistoryForDefenfant()">
+                                        Status
+                                        <i class="zmdi zmdi-chevron-down"></i>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="" data-ng-show="ctrlHistory.sortBy.field !== 'receivedDate'"
+                                       data-ng-click="ctrlHistory.sortBy.field = 'receivedDate'; ctrlHistory.getReportsHistoryForDefenfant()">
+                                        Date
+                                        <i class="zmdi zmdi-unfold-more"></i>
+                                    </a>
+                                    <a href=""
+                                       data-ng-show="ctrlHistory.sortBy.field === 'receivedDate' && ctrlHistory.sortBy.order == 1"
+                                       data-ng-click="ctrlHistory.sortBy.order = -1; ctrlHistory.getReportsHistoryForDefenfant()">
+                                        Date
+                                        <i class="zmdi zmdi-chevron-up"></i>
+                                    </a>
+                                    <a href=""
+                                       data-ng-show="ctrlHistory.sortBy.field === 'receivedDate'  && ctrlHistory.sortBy.order == -1"
+                                       data-ng-click="ctrlHistory.sortBy.order = 1; ctrlHistory.getReportsHistoryForDefenfant()">
+                                        Date
+                                        <i class="zmdi zmdi-chevron-down"></i>
+                                    </a>
+                                </th>
+                                <th>Providers</th>
+                            </tr>
+                        </thead>
+                        <tbody data-ng-if="ctrlHistory.loaders.reportsHistoryForDefenfant">
+                            <tr>
+                                <td colspan="6">
+                                    <div layout="row" layout-fill layout-align="center">
+                                        <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody data-ng-if="!ctrlHistory.loaders.reportsHistoryForDefenfant && ctrlHistory.reportsHistoryForDefenfant.length <= 0">
+                            <tr>
+                                <td colspan="6">
+                                    <div layout="row" layout-fill layout-align="center">
+                                        No Report
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody data-ng-if="!ctrlHistory.loaders.reportsHistoryForDefenfant && ctrlHistory.reportsHistoryForDefenfant.length > 0">
+                            <tr data-ng-repeat="report in ctrlHistory.reportsHistoryForDefenfant"
+                                class="row-clickable">
+                                <td data-title="ID">
+                                    <a ui-sref="report.content({id: report.id})">{{::report.id}}</a>
+                                </td>
+                                <td data-title="Category">
+                                    <a ui-sref="report.content({id: report.id})">{{::report.category}}</a>
+                                </td>
+                                <td data-title="Status">
+                                    <a ui-sref="report.content({id: report.id})">{{::report.status}}</a>
+                                </td>
+                                <td data-title="Date">
+                                    <a ui-sref="report.content({id: report.id})">
+                                        {{::report.receivedDate * 1000 | amDateFormat:'DD/MM/YY HH:mm'}}
+                                    </a>
+                                </td>
+                                <td data-title="Provider">
+                                    <a ui-sref="report.content({id: report.id})">{{::report.provider.email}}</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="pagination" layout="row" layout-align="space-around"
+                         data-ng-if="ctrlHistory.reportsHistoryForDefenfantCount > ctrlHistory.paginationReportsHistory.resultsPerPage">
+                        <paging class="small"
+                                page="ctrlHistory.paginationReportsHistory.currentPage"
+                                page-size="ctrlHistory.paginationReportsHistory.resultsPerPage"
+                                total="ctrlHistory.reportsHistoryForDefenfantCount"
+                                adjacent="2"
+                                dots="..."
+                                scroll-top="true"
+                                hide-if-empty="true"
+                                ul-class="pagination"
+                                active-class="active"
+                                disabled-class="disabled"
+                                show-prev-next="true"
+                                paging-action="ctrlHistory.paginationReportsHistory.currentPage = page;ctrlHistory.getReportsHistoryForDefenfant();">
+                        </paging>
+                    </div>
+                </md-content>
+            </div>
+        </md-content>
+
+    </div>
+</div>

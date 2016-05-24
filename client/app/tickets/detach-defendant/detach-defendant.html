@@ -1,0 +1,21 @@
+<md-dialog aria-label="Detach defendant" data-ng-init="init()">
+    <md-dialog-content class="md-dialog-content">
+        <h1>
+            Would you like to detach defendant <strong data-ng-bind="ticket.defendant.customerId"></strong>
+        </h1>
+        <p>
+            <em>
+                <i class="zmdi zmdi-alert-triangle"></i>
+                All items will be deleted !
+            </em>
+        </p>
+        <p>
+            You have to select items to force the system to resolve the real defendant of this ticket.
+        </p>
+        <p>Do you want to continue ? </p>
+    </md-dialog-content>
+    <md-dialog-actions layout="horizontal" layout-align="end">
+        <md-button data-ng-click="cancel()">Cancel</md-button>
+        <md-button class="md-primary" data-ng-click="hide()">Valid</md-button>
+    </md-dialog-actions>
+</md-dialog>

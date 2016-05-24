@@ -1,0 +1,114 @@
+#diaporama-view {
+
+  .sticky {
+      a {
+          font-weight: bold;
+      }
+  }
+
+  .sticky-thumbnails {
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+    margin-bottom: 0px;
+    margin-left: -7px;
+    border-top: 1px @md-grey solid;
+    padding: 5px;
+
+    .thumbnail {
+        width: 100px;
+        height: 100px;
+        background-size: 100px 100px;
+        line-height: 40px;
+
+        border: 1px @md-grey solid;
+
+        text-align: center;
+
+        .no-screenshot {
+            position: absolute;
+            top: 0px;
+            width: 100px;
+        }
+    }
+
+    a {
+        text-decoration: none;
+        color: @md-grey;
+
+        &:hover {
+            font-weight: bold;
+        }
+    }
+  }
+
+  .ticket-header {
+    margin-top: 3em;
+
+    h3 {
+      border-bottom: solid 1px @md-grey;
+      color: @md-grey;
+    }
+
+    ul {
+      margin: 0;
+      -webkit-padding-start: 0;
+      list-style: none;
+
+      li {
+        margin-bottom: 8px;
+        font-size: 14px;
+
+        a {
+            font-weight: bold;
+            border-bottom: dashed 1px @md-blue;
+            text-decoration: none;
+
+            &:hover {
+                color: @md-default;
+            }
+        }
+      }
+    }
+
+    .screenshot {
+        background: black;
+        height: 100%;
+        max-height: 100%;
+        min-height: 1500px;
+        padding: 50px 0px;
+
+        text-align: center;
+
+        p {
+            font-weight: bold;
+            font-style: italic;
+            color: white;
+        }
+
+        img {
+            max-width: 95%;
+        }
+    }
+  }
+
+  .screenshot-meta {
+    padding: 30px 10px;
+  }
+
+  .defendant-comments {
+
+    margin-bottom: 100px;
+  
+    .author {
+        color: @md-grey;
+        font-size: 10px;
+    }
+
+    pre {
+        font-size: 12px;
+        text-align: justify;
+        white-space: pre-wrap;
+    }
+  }
+}

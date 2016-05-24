@@ -1,0 +1,220 @@
+<div role="tabpanel" id="tab-content" data-ng-init="ctrlReports.init()">
+    <div layout="column">
+
+        <md-content flex class="md-whiteframe-z1">
+            <md-toolbar md-theme="white" class="no-shadow">
+                <h3 class="md-toolbar-tools" layout="row" layout-align="space-between">
+                    <span class="zmdi zmdi-info-outline grey"></span>
+                    <span flex>Details</span>
+                </h3>
+            </md-toolbar>
+
+            <md-content class="md-padding" flex>
+                <md-list>
+
+                    <md-list-item layout="column" layout-align="start start"
+                                  data-ng-include="'components/report-items/report-items.html'">
+                    </md-list-item>
+
+                    <md-list-item>
+                        <h4>Attached reports</h4>
+                        <span flex></span>
+                        <span data-ng-bind="ctrlReports.ticket.attachedReportsCount"></span>
+                    </md-list-item>
+
+                </md-list>
+            </md-content>
+        </md-content>
+
+        <md-content layout="row" layout-align="center center" class="md-padding"
+                    data-ng-if="ctrlReports.loaders.reports">
+            <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+        </md-content>
+
+        <md-content flex class="md-whiteframe-z1 md-padding" data-ng-if="!ctrlReports.loaders.reports" data-ng-repeat="attachedReport in ctrl.ticket.reports" data-ng-init="reportCollapse.expand = (ctrl.ticket.reports.length === 1)">
+            <md-toolbar class="no-shadow" md-theme="white">
+                <div class="md-toolbar-tools" layout="row" layout-align="space-between">
+                    <span class="zmdi zmdi-info-outline grey"></span> 
+
+                    <a href="" flex
+                       data-ng-click="ctrlReports.getReportAttachments(attachedReport); reportCollapse.expand = !reportCollapse.expand"
+                       class="shortened-text">
+                            {{attachedReport.receivedDate * 1000 | date:'dd/MM/yyyy HH:mm'}} 
+                            {{attachedReport.provider.name || attachedReport.provider.email}}
+                            [{{attachedReport.items.itemsCount > 1 ? attachedReport.items.itemsCount + ' items' : attachedReport.items.items[0].history[0].rawItem}}]
+                    </a>
+
+                    <md-button ui-sref="report.content({id: attachedReport.id})" class="md-icon-button"
+                               aria-label="Show report">
+                        <md-tooltip>
+                            Show report
+                        </md-tooltip>
+                        <md-icon md-font-icon="zmdi zmdi-calendar-note grey"></md-icon>
+                    </md-button>
+
+                    <md-button  aria-label="Help" data-ng-if="reportCollapse.expand" class="md-icon-button">
+                        <md-tooltip>
+                            You can add report items<br />
+                            and proofs by selecting the text.
+                        </md-tooltip>
+                        <md-icon md-font-icon="zmdi zmdi-help grey"></md-icon>
+                    </md-button>
+                    
+                    <md-button aria-label="Body email" class="md-ion-button"
+                               data-ng-show="ctrlReports.showRaw || ctrlReports.showDehtmlify"
+                               data-ng-click="ctrlReports.showRaw = ctrlReports.showDehtmlify = false">
+                        <md-tooltip>
+                            Show email body 
+                        </md-tooltip>                                        
+                        <md-icon md-font-icon="zmdi zmdi-code-setting grey"></md-icon>
+                    </md-button>
+                    <md-button aria-label="Raw email" class="md-icon-button"
+                               data-ng-show="!ctrlReports.showRaw"
+                               data-ng-click="ctrlReports.showRawEmail(attachedReport)">
+                        <md-tooltip>
+                            Show raw email
+                        </md-tooltip>                                        
+                        <md-icon md-font-icon="zmdi zmdi-code grey"></md-icon>
+                    </md-button>
+
+                    <md-button aria-label="Dehtmlify email" class="md-icon-button"
+                               data-ng-show="!ctrlReports.showDehtmlify"
+                               data-ng-click="ctrlReports.showDehtmlifyEmail(attachedReport)">
+                        <md-tooltip>
+                            Show dehtmlified email
+                        </md-tooltip>
+                        <md-icon md-font-icon="zmdi zmdi-spellcheck grey"></md-icon>
+                    </md-button>
+
+                    <md-button data-ng-click="ctrlReports.detachReport(attachedReport)" aria-label="detach report">
+                        detach report
+                    </md-button>
+                    
+                    <md-button data-ng-click="ctrl.showDialogSblRemoval(attachedReport, $event)"
+                               data-ng-if="attachedReport.sblRemoval.subject"
+                               aria-label="SBL removal">
+                        <md-tooltip>Send SBL removal request</md-tooltip>
+                        <i class="zmdi zmdi-undo grey"></i>
+                        SBL removal
+                    </md-button>
+                    
+                    <md-button data-ng-click="reportCollapse.expand = !reportCollapse.expand"
+                               title="Show full report" aria-label="Collapse"
+                               class="md-icon-button">
+                        <md-icon md-font-icon="zmdi grey zmdi-hc-2x"
+                                 data-ng-class="{
+                                                'zmdi-chevron-down': !reportCollapse.expand,
+                                                'zmdi-chevron-up': reportCollapse.expand
+                                                }">
+                                </i>
+                    </md-button>
+                </div>
+            </md-toolbar>                            
+
+            <md-content class="md-padding" data-ng-if="reportCollapse.expand">
+                
+                <strong class="subject-content" data-ng-bind="::attachedReport.subject">
+                </strong>                                
+                <tooltip-mouse data-tooltip-mouse-zone-class="subject-content"
+                               data-tooltip-mouse-disabled="false"
+                               data-tooltip-mouse-close="">
+                    
+                    <div>
+                        <md-button class="md-raised md-accent md-icon-button"
+                                   title="Add item to report" aria-label="Add item to report"
+                                   data-ng-click="ctrlReports.addReportItem(attachedReport)">
+                            <md-icon md-font-icon="zmdi zmdi-format-playlist-add white"></md-icon>
+                        </md-button>
+                        <md-button class="md-raised md-warn md-icon-button"
+                                   title="Add proof"
+                                   aria-label="Add proof"
+                                   data-ng-click="ctrlReports.addProof(attachedReport, 'subject')">
+                            <md-icon md-font-icon class="zmdi zmdi-file-add white"></md-icon>
+                        </md-button>
+                    </div>
+                </tooltip-mouse>
+                <md-content data-ng-if="attachedReport.attachments.length > 0">
+                    <hr />
+                    <div layout="row" layout-padding>
+                        <span class="zmdi zmdi-attachment grey"></span>
+                        {{attachedReport.attachments.length}} attached file(s) :
+                        <md-button class="attached-file" aria-label="Download"
+                                   data-ng-repeat="attachment in attachedReport.attachments"
+                                   data-ng-click="ctrlReports.downloadAttach(attachedReport, attachment)">
+                            <md-tooltip>
+                                Attach file {{attachment.filename}}
+                            </md-tooltip> 
+                            <span  data-ng-bind="::attachment.name"></span>
+                        </md-button>
+                    </div>
+                    <hr />
+                </md-content>
+                <pre class="body-content" data-ng-bind="::attachedReport.body"
+                     data-ng-show="!ctrlReports.showRaw && !ctrlReports.showDehtmlify"></pre>
+                <pre class="body-content" data-ng-bind="::attachedReport.raw"
+                     data-ng-show="ctrlReports.showRaw"></pre>
+                <pre class="body-content" data-ng-bind="::attachedReport.dehtmlify"
+                     data-ng-show="ctrlReports.showDehtmlify"></pre>
+                <tooltip-mouse
+                                     data-tooltip-mouse-zone-class="body-content"
+                                     data-tooltip-mouse-disabled="false"
+                                     data-tooltip-mouse-close="">
+
+                    <div>
+                        <md-button class="md-raised md-accent md-icon-button"
+                                   title="Add item to report"
+                                   aria-label="Add item to report"
+                                   data-ng-click="ctrlReports.addReportItem(attachedReport)">
+                            <md-icon md-font-icon="zmdi zmdi-format-playlist-add white"></md-icon>
+                        </md-button>
+                        <md-button class="md-raised md-warn md-icon-button"
+                                   title="Add proof"
+                                   aria-label="Add proof"
+                                   data-ng-click="ctrlReports.addProof(attachedReport, 'body')">
+                            <md-icon md-font-icon class="zmdi zmdi-file-add white"></md-icon>
+                        </md-button>
+                    </div>
+                </tooltip-mouse>
+                <div layout="row" layout-align="end">
+                    <md-button data-ng-click="reportCollapse.expand = !reportCollapse.expand" aria-label="Collapse" class="md-icon-button">
+                        <i class="zmdi grey zmdi-hc-2x" data-ng-class="{
+                                                                       'zmdi-chevron-down': !reportCollapse.expand,
+                                                                       'zmdi-chevron-up': reportCollapse.expand
+                                                                       }"></i>
+                    </md-button>
+                </div>
+            </md-content>
+        </md-content>
+        <div class="pagination" layout="row" layout-align="space-around"
+             data-ng-if="ctrl.ticket.attachedReportsCount > ctrlReports.reportResultsPerPage">
+            <paging  page="ctrlReports.currentReportPage"
+                     page-size="ctrlReports.reportResultsPerPage"
+                     total="ctrl.ticket.attachedReportsCount"
+                     adjacent="5"
+                     dots="..."
+                     scroll-top="true"
+                     hide-if-empty="true"
+                     ul-class="pagination"
+                     active-class="active"
+                     disabled-class="disabled"
+                     show-prev-next="true"
+                     paging-action="ctrlReports.currentReportPage = page; ctrlReports.getReports()">
+            </paging>
+            <div flex></div>
+            <input type="number" 
+                   data-ng-model="ctrlReports.currentReportPage" data-ng-change="ctrlReports.getReports()"
+                   data-ng-model-options="{debounce: {'default': 500}}"
+                   max="{{ctrlReports.round(ctrlReports.ticket.attachedReportsCount / ctrlReports.reportResultsPerPage)}}"
+                   min="1"  />
+            <md-select data-ng-model="ctrlReports.currentReportPage"
+                       data-ng-change="ctrlReports.getReports()"
+                       aria-label="Current Report Page">
+                <md-option value="10">10</md-option>
+                <md-option value="15">15</md-option>
+                <md-option value="20">20</md-option>
+                <md-option value="50">50</md-option>
+                <md-option value="100">100</md-option>
+            </md-select>
+        </div>
+    </div>
+</div>

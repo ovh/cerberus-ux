@@ -1,0 +1,35 @@
+<div role="tabpanel" id="tab-people">
+    <div layout="column">
+        <md-content class="md-padding" flex>
+            <md-toolbar  md-theme="white" class="no-shadow">
+                <h3 class="md-toolbar-tools" layout="row">
+                    <span class="zmdi zmdi-accounts-alt grey"></span>
+                    <span flex>People</span>
+                </h3>
+            </md-toolbar>
+            <md-divider></md-divider>
+            <md-list>
+                <md-list-item ng-repeat="user in ctrlPeople.users | orderBy:'username'">
+                    <i class="zmdi zmdi-account grey md-avatar"></i>
+
+                    <div class="md-list-item-text">
+                        <h4 data-ng-bind="::user.username"></h4>
+                        <p>
+                            role: <strong>{{user.isSuperuser?'Admin':'User'}}</strong>
+                        </p>
+                    </div>
+                    <span flex></span>
+                    <div layout="row">
+                        <md-button ng-href="admin/people/edit/{{user.id}}"
+                                   class="md-icon-button"
+                                   aria-label="Update user">
+                            <md-tooltip>Update user</md-tooltip>
+                            <i class="zmdi zmdi-edit grey"></i>
+                        </md-button>
+                    </div>
+                </md-list-item>
+            </md-list>
+        </md-content>
+    </div>
+</div>
+

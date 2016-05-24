@@ -1,0 +1,34 @@
+.trash {
+  color:rgb(209, 91, 71);
+}
+
+#admin-view {
+  [layout="column"] {
+    md-content {
+      margin-bottom: 20px;
+    }
+  }
+
+  #tab-presets {
+    .action-duration {
+        max-width: 50px;
+    }
+
+    .trash {
+      filter: grayscale(100%);
+      -moz-filter: grayscale(100%);
+      -webkit-filter: grayscale(100%);
+      color: @md-indigo !important;
+
+      &.dndDragover {
+          filter: none;
+          -webkit-filter: none;
+          -moz-filter: none;
+      }
+    }
+
+    .group {
+      border: 1px solid rgba(0,0,0,0.12);
+    }
+  }
+}

@@ -1,0 +1,309 @@
+<md-toolbar class="md-medium">
+    <div class="md-toolbar-tools">
+        <md-button data-ng-click="goBackState()" aria-label="Back" class="md-icon-button">
+            <md-tooltip>Go back</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-arrow-back zmdi-hc-2x white"></md-icon>
+        </md-button>
+        <h2>Diaporama</h2>
+        <div flex></div>
+        <div data-ng-include="'components/menu-shortcuts/menu-shortcuts.html'"></div>
+        <md-button data-ng-href="dashboard"  aria-label="Dashboard" class="md-icon-button">
+            <md-tooltip>Dashboard</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-view-dashboard white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button ui-sref="admin.people"  aria-label="Administration" data-ng-if="Auth.isAdmin()"
+                   class="md-icon-button">
+            <md-tooltip>Administration</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-settings white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button class="md-icon-button" ui-sref="search({filters: '{}'})" aria-label="Search">
+            <md-tooltip>Search</md-tooltip>
+            <md-icon md-font-icon class="zmdi zmdi-search white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button class="md-icon-button" data-ng-click="logout()" aria-label="Logout">
+            <md-tooltip>Logout</md-tooltip>
+            <md-icon md-font-icon class="zmdi zmdi-power white zmdi-hc-2x"></md-icon>
+        </md-button>
+    </div>
+</md-toolbar>
+
+<md-content id="diaporama-view" data-ng-init="ctrl.init()">
+    <md-content id="filters-view">
+
+        <div data-ng-if="ctrl.loaders.init" layout="row" layout-align="center center" layout-padding>
+            <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+        </div>
+
+        <div data-ng-if="!ctrl.loaders.init && ctrl.reportsCount === 0" layout="row" layout-align="center center">
+            <h1><i class="zmdi zmdi-info-outline"></i> No report to review yet.</h1>
+        </div>
+
+        <div data-ng-if="!ctrl.loaders.init && ctrl.report" layout="row">
+            <div layout="row" layout-align="center center" class="sticky" layout-padding>
+                <h2 class="no-margin">
+                    Report <a ui-sref="report.content({id: ctrl.report.id})" target="_blank" aria-label="Go to report">{{ctrl.report.id}}</a>
+                </h2>
+                <span flex></span>
+    
+                <h3 data-ng-if="ctrl.view === 'screenshot'" class="no-margin">
+                    <a href="#" title="Return to report description" data-ng-click="ctrl.exitScreenshotView()">
+                        Return to report description
+                    </a>
+                </h3>
+
+                <span flex></span>
+                <div layout="column">
+                    <span>{{ctrl.reportsCount}} reports to review.</span>
+                    <a href="#" title="Skip this report"
+                       data-ng-click="ctrl.skipReport($event)">Skip this report <i class="zmdi zmdi-fast-forward"></i></a>
+                </div>
+            </div>
+
+            <div data-ng-if="ctrl.view === 'description'" layout="row" layout-align="space-around" class="ticket-header"
+                 layout-padding flex>
+                <div layout="column" flex>
+                    <h3>About the report</h3>
+                    <ul flex>
+                        <li>
+                            <span>Date:</span>
+                            <strong data-ng-bind="::ctrl.report.receivedDate * 1000 | amDateFormat:'DD/MM/YY HH:mm'"></strong>
+                        </li>
+                        <li>
+                            <span>Domain:</span>
+                            <strong data-ng-bind="::ctrl.report.service.name"></strong>
+                        </li>
+                        <li>
+                            <span>Priority:</span>
+                            <strong class="badge" data-ng-class="{'error': ctrl.report.provider.priority === 'High',
+                                                                 'info': ctrl.report.provider.priority === 'Normal',
+                                                                 'success' : ctrl.report.provider.priority === 'Low'}"
+                                                  data-ng-bind="ctrl.report.provider.priority">
+                            </strong>
+                        </li>
+                        <li>
+                            <span>Category:</span>
+                            <a href="#" title="Click to edit" 
+                                data-ng-bind="ctrl.report.category"
+                                data-ng-click="ctrl.changeCategory($event)">
+                                <md-tooltip>Click to change the status</md-tooltip>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div layout="column" flex>
+                    <h3>About the defendant</h3>
+                    <div flex layout="row" layout-align="center start" data-ng-if="ctrl.loaders.defendant">
+                        <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+                    </div>
+                    <ul flex data-ng-if="!ctrl.loaders.defendant">
+                        <li>
+                            <span>Customer ID:</span>
+                            <strong data-ng-bind="ctrl.report.defendant.customerId || 'None'"></strong>
+                        </li>
+                        <li>
+                            <span>State:</span>
+                            <strong class="badge success mini" data-ng-if="ctrl.report.defendant.isVIP">VIP</strong>
+                            <strong class="badge error mini"
+                                data-ng-if="ctrl.report.defendant && ctrl.report.defendant.state !== 'active' && ctrl.report.defendant.state !== 'owner'">
+                                Account closed
+                            </strong>
+                            <strong class="badge info mini" data-ng-if="ctrl.report.defendant.isGS">GS</strong>
+                            <strong data-ng-if="ctrl.report.defendant.state === 'active'">Active</strong>
+                        </li>
+                        <li>
+                            <span>Tickets (Reports) count:</span>
+                            <strong>{{::ctrl.report.defendant.ticketsCount}} ({{::ctrl.report.defendant.reportsCount}})</strong>
+                        </li>
+                        <li>
+                            <span>Name:</span>
+                            <strong data-ng-bind="ctrl.report.defendant.firstname"></strong>
+                            <strong data-ng-bind="ctrl.report.defendant.name"></strong>
+                        </li>
+                        <li>
+                            <span>Customer since:</span>
+                            <strong data-ng-bind="ctrl.report.defendant.creationDate * 1000 | amDateFormat:'DD/MM/YY'"></strong>
+                        </li>
+                        <li>
+                            <span>Email:</span>
+                            <strong data-ng-bind="ctrl.report.defendant.email"></strong>
+                        </li>
+                        <li>
+                            <span>Country:</span>
+                            <strong data-ng-bind="ctrl.report.defendant.country"></strong>
+                        </li>
+                        <li>
+                            <span>Organization:</span>
+                            <strong data-ng-bind="ctrl.report.defendant.organisation"></strong>
+                        </li>
+                        <li>
+                            <span>Comment:</span>
+                            <md-content class="defendant-comments">
+                                <em data-ng-if="!ctrl.report.defendant.comments.length">No comment</em>
+                                <md-list data-ng-if="ctrl.report.defendant.comments.length" class="no-padding">
+                                    <md-list-item data-ng-repeat="comment in ctrl.report.defendant.comments" layout="row" layout-align="start start">
+                                        <div flex>
+                                            <pre data-ng-bind="comment.comment" flex></pre>
+                                            <em class="pull-right author">
+                                                {{comment.user}} le {{(comment.date * 1000) | date:'dd-MM-yyyy à HH:mm'}}
+                                            </em>
+                                        </div>
+                                        <div data-ng-if="comment.user !== Auth.getCurrentUser().username" style="float:right; width:60px;">
+                                        </div>
+                                    </md-list-item>
+                                </md-list>
+                            </md-content>
+                        </li>
+                    </ul>
+                </div>
+                <div layout="column" flex>
+                    <h3>About the plaintiff</h3>
+                    <ul flex>
+                        <li>
+                            <span>Source:</span>
+                             <strong data-ng-bind="::ctrl.report.provider.email"></strong>
+                             <span class="badge success" data-ng-if="ctrl.report.provider.trusted">
+                                 <i class="zmdi zmdi-check white" alt="Provider trusted"></i>
+                                 Trust
+                             </span>
+                             <span class="badge error" data-ng-if="!ctrl.report.provider.trusted">
+                                 Not trust
+                             </span>
+                        </li>
+                        <li>
+                            <strong>Subject:</strong>
+                            <pre class="body-content" data-ng-bind="ctrl.report.subject"></pre>
+                        </li>
+                        <li>
+                            <strong>Body:</strong>
+                            <pre class="body-content" data-ng-bind="ctrl.report.body"></pre>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div data-ng-if="ctrl.view === 'screenshot'" layout="row" layout-align="start start" class="ticket-header" flex>
+             <div class="screenshot" flex="75">
+                 <img data-ng-src="{{ctrl.currentScreenshot.screenshots[ctrl.screenshotHistoryIndex].location}}" data-ng-show="ctrl.currentScreenshot.screenshots.length > 0">
+                 <p data-ng-if="ctrl.currentScreenshot.screenshots.length === 0">No screenshot available.</p>
+             </div>
+             <div class="screenshot-meta" layout="column" flex="25">
+                 <h3>Screenshot information</h3>
+
+                 <ul>
+                     <li data-ng-if="ctrl.currentScreenshot.screenshots[ctrl.screenshotHistoryIndex].timestamp">
+                        Screenshot date: 
+                        <md-select data-ng-model="ctrl.screenshotHistoryIndex">
+                            <md-option data-ng-repeat="history in ctrl.currentScreenshot.screenshots"
+                                       data-ng-bind="history.timestamp * 1000 | amDateFormat:'DD/MM/YY HH:mm'"
+                                       value="{{$index}}">
+                            </md-option>
+                        </md-select>
+                    </li>
+                    <li>
+                        URL:
+                        <pre class="body-content">{{ctrl.currentScreenshot.rawItem}}</pre>
+                        </li>
+                    </ul>
+
+                <h3>URL access results:</h3>
+                <ul data-ng-if="ctrl.currentScreenshot.screenshots.length > 0">
+                    <li>
+                        Direct access:
+                        <a href="#" data-ng-click="ctrl.showHeadersOf = 'directAccess'">
+                            {{ctrl.currentScreenshot.screenshots[ctrl.screenshotHistoryIndex].response.directAccess.state}}
+                            &nbsp;-&nbsp;
+                            {{ctrl.currentScreenshot.screenshots[ctrl.screenshotHistoryIndex].response.directAccess.statusCode}}
+                        </a>
+                    </li>
+                    <li>
+                        Proxied access:
+                        <a href="#" data-ng-click="ctrl.showHeadersOf = 'proxyAccess'">
+                            {{ctrl.currentScreenshot.screenshots[ctrl.screenshotHistoryIndex].response.proxyAccess.state}}
+                            &nbsp;-&nbsp;
+                            {{ctrl.currentScreenshot.screenshots[ctrl.screenshotHistoryIndex].response.proxyAccess.statusCode}}
+                        </a>
+                    </li>
+                    <li data-ng-if="ctrl.currentScreenshot.screenshots[ctrl.screenshotHistoryIndex].response.proxyAccess.proxyAddr">
+                        <span>
+                        Proxy:
+                            <strong>
+                                {{ctrl.currentScreenshot.screenshots[ctrl.screenshotHistoryIndex].response.proxyAccess.proxyAddr}}
+                            </strong>
+                        </span>
+                    </li>
+                </ul>
+                <ul data-ng-if="ctrl.currentScreenshot.screenshots.length === 0">
+                    <i>This item hasn't been checked yet.</i>
+                </ul>
+
+                <div data-ng-if="ctrl.showHeadersOf">
+                    <h3>Headers <a href="#" data-ng-click="ctrl.showHeadersOf = null"><i class="zmdi zmdi-close"></i></a></h3>
+                    <pre class="body-content" 
+                         data-ng-bind="ctrl.currentScreenshot.screenshots[ctrl.screenshotHistoryIndex].response[ctrl.showHeadersOf].headers">
+                    </pre>
+                </div>
+
+                <div class="mt20" layout="column" layout-align="center center">
+                    <h4>Is it phishing?</h4>
+                    <div flex>
+                        <md-button class="md-raised" data-ng-click="ctrl.isPhishing(false)">
+                            <md-icon md-font-icon="zmdi zmdi-close zmdi-hc-2x error"></md-icon>
+                            No
+                        </md-button>
+                        <md-button class="md-raised" data-ng-click="ctrl.isPhishing(true)">
+                            <md-icon md-font-icon="zmdi zmdi-check zmdi-hc-2x success"></md-icon>
+                            Yes
+                        </md-button>
+                    </div>
+                </div>
+             </div>
+        </div>
+    </md-content>
+
+    <md-content data-ng-if="ctrl.report" class="sticky-thumbnails">
+        <md-content layout="row" layout-align="center center" md-padding data-ng-if="ctrl.loaders.screenshots">
+            <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+        </md-content>
+
+        <md-content layout="row" layout-align="space-around center" layout-sm="column" 
+                    data-ng-if="!ctrl.loaders.screenshots && ctrl.screenshots.length === 0">
+            <h3>No item for this report.</h3>
+        </md-content>
+
+        <md-content layout="row" layout-align="space-around center" layout-sm="column" 
+                    data-ng-if="!ctrl.loaders.screenshots && ctrl.screenshots.length > 0">
+
+            <div>
+                <md-icon md-font-icon="zmdi zmdi-fast-rewind zmdi-hc-2x" 
+                    data-ng-if="ctrl.screenshotPage > 1"
+                    data-ng-click="ctrl.screenshotPage = ctrl.screenshotPage - 1">
+                </md-icon>
+            </div>
+
+            <div data-ng-repeat="screenshot in ctrl.screenshots | limitTo: 7:((ctrl.screenshotPage-1)*7)">
+                <a href="#" data-ng-click="ctrl.showScreenshot(screenshot)">
+                    <div class="thumbnail"
+                         data-ng-style="{'background-image': 'url(' + screenshot.screenshots[0].location + ')'}">
+                         <i class="zmdi zmdi-check zmdi-hc-4x success mt20" data-ng-if="screenshot.isPhishing === true"></i>
+                         <i class="zmdi zmdi-close zmdi-hc-4x error mt20"   data-ng-if="screenshot.isPhishing === false"></i>
+                         <i class="zmdi zmdi-eye zmdi-hc-4x primary mt20"   data-ng-if="screenshot.rawItem === ctrl.currentScreenshot.rawItem"></i>
+                        <div data-ng-if="screenshot.screenshots.length === 0" class="no-screenshot">
+                             No screenshot
+                        </div>
+                    </div>
+                    <md-tooltip>{{screenshot.rawItem}}</md-tooltip>
+                </a>
+            </div>
+
+            <div>
+                <md-icon md-font-icon="zmdi zmdi-fast-forward zmdi-hc-2x" 
+                     data-ng-if="(ctrl.screenshotPage * 7) < ctrl.screenshots.length"
+                     data-ng-click="ctrl.screenshotPage = ctrl.screenshotPage + 1">
+                </md-icon>
+            </div>
+
+        </md-content>
+    <md-content/>
+
+</md-content>

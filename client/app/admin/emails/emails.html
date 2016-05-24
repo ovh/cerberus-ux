@@ -1,0 +1,98 @@
+<div role="tabpanel" id="tab-emails">
+    <div layout="column" layout-fill>
+        <md-content class="md-padding" flex="">
+            <md-toolbar md-theme="white" class="no-shadow">
+                <h3 class="md-toolbar-tools" layout="row">
+                    <i class="zmdi zmdi-email grey"></i>
+                    <span flex>Emails templates</span>
+                    <md-button data-ng-click="ctrlEmails.addEmailTemplate()"
+                               class="md-icon-button"
+                               aria-label="Add new template">
+                        <md-tooltip>Add new template</md-tooltip>
+                        <md-icon md-font-icon="zmdi zmdi-plus zmdi-hc-2x grey"></md-icon>
+                    </md-button>
+                </h3>
+            </md-toolbar>
+
+            <md-divider></md-divider>
+            <md-content data-ng-if="ctrlEmails.emailsTemplateView === 'editor'">
+                <div layout="row" layout-align="space-between">
+                    <h4>Add email template</h4>
+                    <md-button data-ng-click="ctrlEmails.emailsTemplateView = 'list'"
+                               class="md-icon-button"
+                               aria-label="Close editor">
+                        <md-tooltip>Close editor</md-tooltip>
+                        <md-icon md-font-icon="zmdi zmdi-close"></md-icon>
+                    </md-button>
+                </div>
+                <md-content layout="column">
+                    <md-input-container>
+                        <label>Name</label>
+                        <input data-ng-model="ctrlEmails.template.name">
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Recipient</label>
+                        <md-select data-ng-model="ctrlEmails.template.recipientType">
+                            <md-option data-ng-repeat="recipient in ctrlEmails.recipientTypes"
+                                       data-ng-value="recipient"
+                                       data-ng-bind="::recipient"></md-option>
+                        </md-select>
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Language</label>
+                        <md-select data-ng-model="ctrlEmails.template.lang">
+                            <md-option data-ng-repeat="lang in ctrlEmails.emailTemplateLanguages"
+                                       data-ng-value="lang"
+                                       data-ng-bind="::lang"></md-option>
+                        </md-select>
+                    </md-input-container>
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Subject</label>
+                        <input data-ng-model="ctrlEmails.template.subject">
+                    </md-input-container>
+
+                    <md-input-container>
+                        <label>Body</label>
+                        <textarea data-ng-model="ctrlEmails.template.body"></textarea>
+                    </md-input-container>
+
+                    <div layout="row" layout-align="end">
+                        <md-button class="md-raised md-primary"
+                                   aria-label="Save template"
+                                   data-ng-disabled="!ctrlEmails.template.name || !ctrlEmails.template.subject || 
+                                                     !ctrlEmails.template.lang ||!ctrlEmails.template.body || !ctrlEmails.template.recipientType"
+                                   data-ng-click="ctrlEmails.saveEmailTemplate()">
+                            Save
+                        </md-button>
+                    </div>
+                </md-content>
+            </md-content>
+
+            <md-list data-ng-if="ctrlEmails.emailsTemplateView === 'list'">
+                <md-list-item ng-repeat="template in ctrlEmails.emailTemplates">
+                    <i class="zmdi zmdi-chevron-right grey md-avatar"></i>
+                    <div class="md-list-item-text">
+                        <h4 data-ng-bind="::template.name"></h4>
+                        <p data-ng-bind="::template.subject"></p>
+                    </div>
+                    <span flex></span>
+                    <div layout="row">
+                        <md-button data-ng-click="ctrlEmails.updateEmailTemplate(template)"
+                                   class="md-icon-button"
+                                   aria-label="Update template">
+                            <md-tooltip>Update template</md-tooltip>
+                            <md-icon md-font-icon="zmdi zmdi-edit grey"></md-icon>
+                        </md-button>
+                        <md-button data-ng-click="ctrlEmails.deleteEmailTemplate($event, template)"
+                                   class="md-icon-button"
+                                   aria-label="Delete template">
+                            <md-tooltip>Delete template</md-tooltip>
+                            <md-icon md-font-icon="zmdi zmdi-delete grey"></md-icon>
+                        </md-button>
+                    </div>
+                </md-list-item>
+            </md-list>
+        </md-content>
+    </div>
+</div>

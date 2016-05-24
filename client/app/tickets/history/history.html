@@ -1,0 +1,201 @@
+<div role="tabpanel" id="tab-history" data-ng-init="ctrlHistory.init()">
+    <div  layout="column" layout-fill>
+        <md-content flex class="md-whiteframe-z1">
+            <md-toolbar md-theme="white" class="no-shadow">
+                <h3 class="md-toolbar-tools" layout="row">
+                    <span class="zmdi zmdi-time-restore grey"></span>
+                    <span flex>History</span>
+                    <div flex></div>
+                </h3>
+            </md-toolbar>
+            <div layout="row" layout-margin>
+                <highchart config="ctrlHistory.chartConfigAllQueues" flex></highchart>                                
+                <highchart config="ctrlHistory.chartConfigAllQueuesReports" flex></highchart>
+            </div>
+            
+            <div layout="row" layout-margin>
+                
+                <md-content flex class="md-whiteframe-z" data-ng-if="ctrlHistory.ticketsHistoryForDefenfantCount > 0">
+                    <md-toolbar md-theme="white" class="no-shadow">
+                        <h3 class="md-toolbar-tools" layout="row" layout-align="space-between">
+                            <span class="zmdi zmdi-time-restore grey"></span>
+                            <span flex>Tickets</span>
+                            <div flex></div>
+                        </h3>
+                    </md-toolbar>
+                    <table class="table table-medium table-hover table-mc-indigo">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <a href="" data-ng-show="ctrlHistory.sortBy.field !== 'id'"
+                                       data-ng-click="ctrlHistory.sortBy.field = 'id'; ctrlHistory.getTicketsHistoryForDefenfant()">
+                                        ID
+                                        <i class="zmdi zmdi-unfold-more"></i>
+                                    </a>
+                                    <a href=""
+                                       data-ng-show="ctrlHistory.sortBy.field === 'id' && ctrlHistory.sortBy.order === 1"
+                                       data-ng-click="ctrlHistory.sortBy.order = -1; ctrlHistory.getTicketsHistoryForDefenfant()">
+                                        ID
+                                        <i class="zmdi zmdi-chevron-up"></i>
+                                    </a>
+                                    <a href=""
+                                       data-ng-show="ctrlHistory.sortBy.field === 'id'  && ctrlHistory.sortBy.order === -1"
+                                       data-ng-click="ctrlHistory.sortBy.order = 1; ctrlHistory.getTicketsHistoryForDefenfant()">
+                                        ID
+                                        <i class="zmdi zmdi-chevron-down"></i>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="" data-ng-show="ctrlHistory.sortBy.field !== 'category'"
+                                       data-ng-click="ctrlHistory.sortBy.field = 'category'; ctrlHistory.getTicketsHistoryForDefenfant()">
+                                        Category
+                                        <i class="zmdi zmdi-unfold-more"></i>
+                                    </a>
+                                    <a href=""
+                                       data-ng-show="ctrlHistory.sortBy.field == 'category' && ctrlHistory.sortBy.order == 1"
+                                       data-ng-click="ctrlHistory.sortBy.order = -1; ctrlHistory.getTicketsHistoryForDefenfant()">
+                                        Category
+                                        <i class="zmdi zmdi-chevron-up"></i>
+                                    </a>
+                                    <a href=""
+                                       data-ng-show="ctrlHistory.sortBy.field == 'category'  && ctrlHistory.sortBy.order == -1"
+                                       data-ng-click="ctrlHistory.sortBy.order = 1; ctrlHistory.getTicketsHistoryForDefenfant()">
+                                        Category
+                                        <i class="zmdi zmdi-chevron-down"></i>
+                                    </a>
+                                </th>
+
+                                <th>
+                                    <a href="" data-ng-show="ctrlHistory.sortBy.field !== 'status'"
+                                       data-ng-click="ctrlHistory.sortBy.field = 'status'; ctrlHistory.getTicketsHistoryForDefenfant()">
+                                        Status
+                                        <i class="zmdi zmdi-unfold-more"></i>
+                                    </a>
+                                    <a href=""
+                                       data-ng-show="ctrlHistory.sortBy.field == 'status' && ctrlHistory.sortBy.order == 1"
+                                       data-ng-click="ctrlHistory.sortBy.order = -1; ctrlHistory.getTicketsHistoryForDefenfant()">
+                                        Status
+                                        <i class="zmdi zmdi-chevron-up"></i>
+                                    </a>
+                                    <a href=""
+                                       data-ng-show="ctrlHistory.sortBy.field == 'status'  && ctrlHistory.sortBy.order == -1"
+                                       data-ng-click="ctrlHistory.sortBy.order = 1; ctrlHistory.getTicketsHistoryForDefenfant()">
+                                        Status
+                                        <i class="zmdi zmdi-chevron-down"></i>
+                                    </a>
+                                </th>
+                                <th>Defendant</th>
+                                <th>
+                                    <a href="" data-ng-show="ctrlHistory.sortBy.field !== 'modificationDate'"
+                                       data-ng-click="ctrlHistory.sortBy.field = 'modificationDate'; ctrlHistory.getTicketsHistoryForDefenfant()">
+                                        Date
+                                        <i class="zmdi zmdi-unfold-more"></i>
+                                    </a>
+                                    <a href=""
+                                       data-ng-show="ctrlHistory.sortBy.field == 'modificationDate' && ctrlHistory.sortBy.order == 1"
+                                       data-ng-click="ctrlHistory.sortBy.order = -1; ctrlHistory.getTicketsHistoryForDefenfant()">
+                                        Date
+                                        <i class="zmdi zmdi-chevron-up"></i>
+                                    </a>
+                                    <a href=""
+                                       data-ng-show="ctrlHistory.sortBy.field == 'modificationDate'  && ctrlHistory.sortBy.order == -1"
+                                       data-ng-click="ctrlHistory.sortBy.order = 1; ctrlHistory.getTicketsHistoryForDefenfant()">
+                                        Date
+                                        <i class="zmdi zmdi-chevron-down"></i>
+                                    </a>
+                                </th>                       
+
+                                <th>
+                                    <a href="" data-ng-show="ctrlHistory.sortBy.field !== 'priority'"
+                                       data-ng-click="ctrlHistory.sortBy.field = 'priority'; ctrlHistory.getTicketsHistoryForDefenfant()">
+                                        Priority
+                                        <i class="zmdi zmdi-unfold-more"></i>
+                                    </a>
+                                    <a href=""
+                                       data-ng-show="ctrlHistory.sortBy.field == 'priority' && ctrlHistory.sortBy.order == 1"
+                                       data-ng-click="ctrlHistory.sortBy.order = -1; ctrlHistory.getTicketsHistoryForDefenfant()">
+                                        Priority
+                                        <i class="zmdi zmdi-chevron-up"></i>
+                                    </a>
+                                    <a href=""
+                                       data-ng-show="ctrlHistory.sortBy.field == 'priority'  && ctrlHistory.sortBy.order == -1"
+                                       data-ng-click="ctrlHistory.sortBy.order = 1; ctrlHistory.getTicketsHistoryForDefenfant()">
+                                        Priority
+                                        <i class="zmdi zmdi-chevron-down"></i>
+                                    </a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody data-ng-if="ctrlHistory.loaders.ticketsHistoryForDefenfant">
+                            <tr>
+                                <td colspan="6">
+                                    <div layout="row" layout-fill layout-align="center">
+                                        <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody data-ng-if="!ctrlHistory.loaders.ticketsHistoryForDefenfant && ctrlHistory.ticketsHistoryForDefenfant.length <= 0">
+                            <tr>
+                                <td colspan="6">
+                                    <div layout="row" layout-fill layout-align="center">
+                                        No ticket
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody data-ng-if="!ctrlHistory.loaders.ticketsHistoryForDefenfant && ctrlHistory.ticketsHistoryForDefenfant.length > 0">
+                            <tr data-ng-repeat="ticket in ctrlHistory.ticketsHistoryForDefenfant"
+                                class="row-clickable">
+                                <td data-title="ID">
+                                    <a ui-sref="ticket.activities({id: ticket.id})">{{::ticket.id}}</a>
+                                </td>
+                                <td data-title="Category">
+                                    <a ui-sref="ticket.activities({id: ticket.id})">{{::ticket.category}}</a>
+                                </td>
+                                <td data-title="Status">
+                                    <a ui-sref="ticket.activities({id: ticket.id})">{{::ticket.status}}</a>
+                                </td>
+                                <td data-title="Defendant">
+                                    <a ui-sref="ticket.activities({id: ticket.id})">{{::ticket.defendant.email}}</a>
+                                </td>
+                                <td data-title="Date">
+                                    <a ui-sref="ticket.activities({id: ticket.id})">
+                                        {{::ticket.modificationDate * 1000 | amDateFormat:'DD/MM/YY HH:mm'}}
+                                    </a>
+                                </td>
+                                <td data-title="Priority">
+                                    <a ui-sref="ticket.activities({id: ticket.id})">
+                                        <span class="badge" data-ng-class="{
+                                                                           'error': ticket.priority === 'High',
+                                                                           'info': ticket.priority === 'Normal',
+                                                                           'success' : ticket.priority === 'Low'}">
+                                            {{::ticket.priority}}
+                                        </span>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="pagination" layout="row" layout-align="space-around"
+                         data-ng-if="ctrlHistory.ticketsHistoryForDefenfantCount > ctrlHistory.paginationTicketsHistory.resultsPerPage">
+                        <paging class="small"
+                                page="ctrlHistory.paginationTicketsHistory.currentPage"
+                                page-size="ctrlHistory.paginationTicketsHistory.resultsPerPage"
+                                total="ctrlHistory.ticketsHistoryForDefenfantCount"
+                                adjacent="2"
+                                dots="..."
+                                scroll-top="true"
+                                hide-if-empty="true"
+                                ul-class="pagination"
+                                active-class="active"
+                                disabled-class="disabled"
+                                show-prev-next="true"
+                                paging-action="ctrlHistory.paginationTicketsHistory.currentPage = page;ctrlHistory.getTicketsHistoryForDefenfant();">
+                        </paging>              
+                    </div>
+                </md-content>
+            </div>
+        </md-content>
+    </div>
+</div>

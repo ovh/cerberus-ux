@@ -1,0 +1,79 @@
+<md-toolbar class="md-medium">
+    <div class="md-toolbar-tools">
+        <md-button data-ng-click="goBackState()" aria-label="Back" class="md-icon-button">
+            <md-tooltip>Go back</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-arrow-back zmdi-hc-2x white"></md-icon>
+        </md-button>
+        <h2>Administration</h2>
+        <div flex></div>
+        <div data-ng-include="'components/menu-shortcuts/menu-shortcuts.html'"></div>
+        <md-button data-ng-href="dashboard"  aria-label="Dashboard" class="md-icon-button">
+            <md-tooltip>Dashboard</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-view-dashboard white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button aria-label="Search" ui-sref="search({filters: '{}'})" class="md-icon-button">
+            <md-tooltip>Search</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-search white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button class="md-icon-button" ui-sref="diaporama" aria-label="Diaporama">
+            <md-tooltip>Diaporama</md-tooltip>
+            <md-icon md-font-icon class="zmdi zmdi-slideshow white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button class="md-icon-button" data-ng-click="logout()" aria-label="Logout">
+            <md-tooltip>Logout</md-tooltip>
+            <md-icon md-font-icon class="zmdi zmdi-power white zmdi-hc-2x"></md-icon>
+        </md-button>
+    </div>
+</md-toolbar>
+
+<md-content id="admin-view" class="md-padding" data-ng-init="ctrl.init()">
+    <div layout="row" layout-fill layout-align="center" data-ng-show="ctrl.loaders.loading">
+        <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+    </div>
+
+    <md-tabs class="md-padding" md-dynamic-height md-stretch-tabs="always" data-ng-show="!ctrl.loaders.loading"
+             md-selected="ctrl.currentTab" md-border-bottom>
+
+        <!-- Users  -->
+        <md-tab label="People" md-no-ink ui-sref="admin.people" md-active="ctrl.state.is('admin.people')">
+            <div ui-view="tab-people"></div>
+        </md-tab>
+
+        <!-- Categories  -->
+        <md-tab label="Categories" md-no-ink ui-sref="admin.category" md-active="ctrl.state.is('admin.category')">
+            <div ui-view="tab-categories"></div>
+        </md-tab>
+
+        <!-- Providers -->
+        <md-tab label="Sources" md-no-ink ui-sref="admin.providers" md-active="ctrl.state.is('admin.providers')">
+            <div ui-view="tab-providers"></div>         
+        </md-tab>
+
+         <!-- Tags  -->
+        <md-tab label="Tags" md-no-ink ui-sref="admin.tags" md-active="ctrl.state.is('admin.tags')">
+            <div ui-view="tab-tags"></div>
+        </md-tab>
+
+        <!-- Mails templates  -->
+        <md-tab label="Emails templates" md-no-ink ui-sref="admin.emails" md-active="ctrl.state.is('admin.emails')">
+            <div ui-view="tab-emails"></div>
+        </md-tab>
+
+        <!-- Ticket resolutions  -->
+        <md-tab label="Ticket resolutions" md-no-ink ui-sref="admin.resolutions" md-active="ctrl.state.is('admin.resolutions')">
+            <div ui-view="tab-resolutions"></div>
+        </md-tab>
+
+        <!-- Action presets -->
+        <md-tab label="Presets" md-no-ink ui-sref="admin.presets" md-active="ctrl.state.is('admin.presets')">
+            <div ui-view="tab-presets"></div>
+        </md-tab>
+
+        <!-- Report thresholds -->
+        <md-tab label="Thresholds" md-no-ink ui-sref="admin.thresholds" md-active="ctrl.state.is('admin.thresholds')">
+            <div ui-view="tab-thresholds"></div>
+        </md-tab>
+
+    </md-tabs>
+
+</md-content>

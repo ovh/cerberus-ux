@@ -1,0 +1,25 @@
+<div role="tabpanel" id="tab-proofs" data-ng-init="ctrlProofs.init()" layout="vertical" layout-fill>
+
+    <md-content class="md-padding" layout-fill>
+        <div layout="row" layout-align="center" data-ng-show="!ctrl.proofs">
+            <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+        </div>
+        <div layout="row" layout-align="center center">
+            <p data-ng-if="ctrl.proofs.length <= 0">No proofs.</p>
+        </div>
+        <md-list data-ng-if="ctrl.proofs.length > 0">
+            <md-list-item data-ng-repeat="proof in ctrl.proofs">
+                <div layout="row" layout-align="center center" layout-fill>
+                    <pre data-ng-bind="proof.content" class="body-content" flex></pre>
+                    <span>
+                        <a href="" data-ng-click="ctrlProofs.removeProof(proof)">
+                            <i class="zmdi zmdi-close zmdi-hc-2x"></i>
+                            <md-tooltip>Remove this proof</md-tooltip>
+                        </a>
+                    </span>
+                </div>
+                <md-divider data-ng-if="!$last"></md-divider>
+            </md-list-item>
+        </md-list>
+    </md-content>
+</div>

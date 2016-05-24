@@ -1,0 +1,249 @@
+#ticket-view {
+
+  .btn-float-right {
+    position: fixed;
+    bottom: 2em;
+    right: 2em;
+  }
+
+  .table-items {
+
+    .editable-wrap {
+      display: inline-block;
+      white-space: nowrap;
+      margin: 0;
+      width: 100%;
+
+      .editable-input {
+        width: 100%;
+      }
+
+      .editable-error,  .editable-controls {
+        display: block;
+        width: 100%;
+      }      
+    }    
+  }
+  
+  .service-sheet {
+    max-height: 300px;
+    overflow: auto;
+    transition: all .4s;
+    
+    .btn-expanded {
+      transform: rotate(-180deg);
+      transition: all .5s;
+    }        
+  }
+  
+  .btn-expanded {
+    transform: rotate(-180deg);
+    transition: all .5s;
+  }
+
+  .ticket-header {
+    h3 {
+      border-bottom: solid 1px @md-grey;
+      color: @md-grey;
+      margin: 5px 0 10px 0;
+    }
+
+    ul {
+      margin: 0;
+      -webkit-padding-start: 8px;
+      list-style: none;
+
+      li {
+        margin-bottom: 6px;
+        font-size: 14px;
+      }
+    }    
+  }
+
+  .activities {
+    max-height :300px;
+    overflow: auto;
+  }
+
+  .md-toolbar-tools a {
+    color: #2196F3;
+  }
+  
+  .conversation-box {
+    max-width: 70%;
+    margin: 20px;
+    padding: 10px;
+    
+    .conversation-body {
+      font-size: 12px;
+    }
+
+    .conversation-infos {
+      font-size: 10px;
+      color: @md-grey;
+    }
+  }
+
+  .discussion {
+    list-style: none;
+    margin: 10px 0 0 0;
+    padding: 0 0 50px 0;
+
+    li {
+      padding: 0.5rem;
+      overflow: hidden;
+      display: flex;
+    }
+    
+    .avatar {
+      width: 40px;
+      position: relative;
+    }
+
+    .avatar img {
+      display: block;
+      width: 100%;
+    }
+  }
+
+  .other {
+    .avatar:after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 0;
+      height: 0;
+      border: 5px solid white;
+      border-left-color: transparent;
+      border-bottom-color: transparent;
+    }
+
+    .messages {
+      background-color: @md-light-orange;
+    }
+  }
+
+  .defendant {
+    .messages {
+      background-color: @md-light-blue;
+    }
+  }
+
+  .self {
+    justify-content: flex-end;
+    align-items: flex-end;
+
+    .messages {
+      order: 1;
+      background-color: @md-light-green;
+    }
+    
+    .avatar {
+      order: 2;
+    }
+  
+    .avatar:after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border: 5px solid white;
+      border-right-color: transparent;
+      border-top-color: transparent;
+      box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  .messages {
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+
+    p {
+      font-size: 0.8rem;
+      margin: 0 0 0.2rem 0;
+    }
+
+    pre {
+      white-space: pre-wrap;
+    }
+
+    time {
+      font-size: 0.7rem;
+      color: @md-white;
+      float: right;
+    }
+  }
+
+  @keyframes pulse {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 0.5;
+    }
+  }
+
+  .expired {
+    text-decoration: line-through ;
+  }
+
+  
+  .attached-file {
+    height: 30px;
+    margin-top: -6px;
+    padding-top: 0;
+    
+    span {
+      text-overflow: ellipsis;
+      width: 100px;
+      font-size: 10px;
+      display: inline-block;
+      overflow: hidden;
+    }
+  }
+
+  .shortened-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .defendant-comments {
+    max-height: 150px;
+  
+    .author {
+        color: @md-grey;
+        font-size: 10px;
+    }
+
+    pre {
+        font-size: 12px;
+        text-align: justify;
+        white-space: pre-wrap;
+    }
+  }
+
+  .action-icon {
+      margin-left: 5px;
+      margin-right: 5px;
+  }
+}
+
+#interact-dialog {
+    
+    .duration {
+        padding-top: 12px;
+        max-width: 100px;
+
+        label {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 100px;
+        }
+    }
+}

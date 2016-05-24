@@ -1,0 +1,14 @@
+<md-dialog  aria-label="Add comment">
+    <md-dialog-content class="md-dialog-content">
+        <h2>
+            <i class="zmdi zmdi-comment grey"></i>
+            New comment
+        </h2>
+        <p>Would you add comment ?</p>
+        <textarea data-ng-model="comment" style="width: 500px; height: 180px" data-focus-if data-focus-delay="200"></textarea>
+    </md-dialog-content>
+    <md-dialog-actions layout="row" layout-align="end">
+        <md-button  data-ng-click="cancel()">Cancel</md-button>
+        <md-button  class="md-primary" data-ng-disabled="!comment" data-ng-click="hide()">Save</md-button>
+    </md-dialog-actions>
+</md-dialog>

@@ -1,0 +1,720 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <h2>Dashboard</h2>
+        <span flex></span>
+        <div data-ng-include="'components/menu-shortcuts/menu-shortcuts.html'"></div>
+        <md-button class="md-icon-button" ui-sref="admin.people" aria-label="Administration" data-ng-if="Auth.isAdmin()">
+            <md-tooltip>Administration</md-tooltip>
+            <md-icon md-font-icon="zmdi zmdi-settings white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button class="md-icon-button" ui-sref="search({filters: '{}'})" aria-label="Search">
+            <md-tooltip>Search</md-tooltip>
+            <md-icon md-font-icon class="zmdi zmdi-search white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button class="md-icon-button" ui-sref="diaporama" aria-label="Diaporama">
+            <md-tooltip>Diaporama</md-tooltip>
+            <md-icon md-font-icon class="zmdi zmdi-slideshow white zmdi-hc-2x"></md-icon>
+        </md-button>
+        <md-button class="md-icon-button" data-ng-click="logout()" aria-label="Logout">
+            <md-tooltip>Logout</md-tooltip>
+            <md-icon md-font-icon class="zmdi zmdi-power white zmdi-hc-2x"></md-icon>
+        </md-button>
+    </div>
+</md-toolbar>
+
+<div layout="row" layout-fill layout-align="center" data-ng-show="dashboard.loaders.init">
+    <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+</div>
+
+<md-content id="dashboard-view" class="md-padding" data-ng-init="dashboard.init()" data-ng-show="!dashboard.loaders.init">
+
+    <md-content layout="row" layout-wrap layout-margin layout-sm="column" layout-xs="column" class="md-padding">
+        
+        <md-content flex data-ng-if="!dashboard.loaders.stats" class="no-overflow">
+            <highchart config="dashboard.chartTicketsByCategories"></highchart>           
+        </md-content>
+        
+        <md-content class="md-padding md-whiteframe-z1" flex data-ng-if="!dashboard.loaders.news">
+            <md-toolbar md-theme="white" class="no-shadow">
+                <div class="md-toolbar-tools" layout="row" layout-align="space-between">
+                    <h3>
+                        <i class="zmdi zmdi-notifications grey"></i>
+                        <span flex>News</span>
+                    </h3>
+                    <div flex></div>
+                    <md-button data-ng-click="dashboard.showDialogAddNews($event)" aria-label="Add news"
+                               class="md-icon-button">
+                        <md-tooltip>Add news</md-tooltip>
+                        <md-icon md-font-icon="zmdi zmdi-plus zmdi-hc-2x grey"></md-icon>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            
+            <md-divider></md-divider>
+            
+            <div layout="row" layout-fill layout-align="center" data-ng-show="dashboard.loaders.news">
+                <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            </div>            
+
+            <md-content class="news-container" data-ng-if="!dashboard.loaders.news" flex>
+                <div layout="row" layout-fill layout-align="center" data-ng-if="dashboard.news.length <= 0">
+                    No news
+                </div>            
+                
+                <md-list>
+                    <md-list-item data-ng-repeat="news in dashboard.news.news">
+                        <div class="md-list-item-text" flex>
+                            <h5 flex>
+                                {{news.title}}
+                                <span ng-class="{info: dashboard.isNewsRecent(news)}" class="badge">
+                                    {{dashboard.getFormattedElapsedTime(news)}} ago
+                                </span>
+                            </h5>
+                            <p data-ng-bind="news.content"></p>
+                            <em class="pull-right date">Par {{news.author}} le {{(news.date * 1000) | date:'dd-MM-yyyy à HH:mm'}}</em>
+                        </div>
+                        <md-menu md-position-mode="target-right target" style="float:right">
+                            <md-button aria-label="Menu" class="md-icon-button" ng-click="$mdOpenMenu()">
+                                <md-icon md-font-icon="zmdi zmdi-more-vert grey zmdi-hc-2x"></md-icon>
+                            </md-button>
+                            <md-menu-content width="2">
+                                <md-menu-item>
+                                    <md-button data-ng-click="dashboard.showDialogEditNews($event,news)" aria-label="Edit news">
+                                        <md-icon md-font-icon="zmdi zmdi-edit grey"></md-icon> Edit
+                                    </md-button>
+                                </md-menu-item>
+                                <md-menu-item>
+                                    <md-button data-ng-click="dashboard.showDialogDeleteNews($event,news)" aria-label="Delete news">
+                                        <md-icon md-font-icon="zmdi zmdi-delete grey"></md-icon> Delete
+                                    </md-button>
+                                </md-menu-item>
+                            </md-menu-content>
+                        </md-menu>
+                        <md-divider data-ng-if="!$last"></md-divider>
+                    </md-list-item>
+                </md-list>
+                <div layout="row" layout-align="center" data-ng-show="!dashboard.loaders.news"
+                     data-ng-if="dashboard.news.length * dashboard.paginationNews.currentPage <= dashboard.news.newsCount">
+                    <md-button aria-label="Load more news"
+                               data-ng-click="dashboard.paginationNews.currentPage = dashboard.paginationNews.currentPage + 1; dashboard.getNews()">
+                        Load more
+                    </md-button>
+                </div>
+            </md-content>
+        </md-content>
+    </md-content>
+    
+    <md-content layout="row" layout-margin>
+        
+        <md-content flex class="md-whiteframe-z1" data-ng-if="dashboard.ticketsEscalatedCount > 0">
+            <md-toolbar md-theme="white" class="no-shadow">
+                <h3 class="md-toolbar-tools" layout="row" layout-align="space-between">
+                    <md-icon md-font-icon="zmdi mdi-person-add grey"></md-icon>
+                    <span flex>Escalated tickets</span>
+                    <div flex></div>
+                </h3>
+            </md-toolbar>
+            <md-content class="table-responsive-vertical">
+                <table class="table table-medium table-hover table-mc-indigo">
+                    <thead>
+                        <tr>
+                            <th>
+                                <a href="" data-ng-show="dashboard.sortBy.field !== 'id'"
+                                   data-ng-click="dashboard.sortBy.field = 'id'; dashboard.getTicketsEscalated()">
+                                    ID
+                                    <i class="zmdi zmdi-unfold-more"></i>
+                                </a>
+                                <a href=""
+                                   data-ng-show="dashboard.sortBy.field === 'id' && dashboard.sortBy.order === 1"
+                                   data-ng-click="dashboard.sortBy.order = -1; dashboard.getTicketsEscalated()">
+                                    ID
+                                    <i class="zmdi zmdi-caret-up"></i>
+                                </a>
+                                <a href=""
+                                   data-ng-show="dashboard.sortBy.field === 'id'  && dashboard.sortBy.order === -1"
+                                   data-ng-click="dashboard.sortBy.order = 1; dashboard.getTicketsEscalated()">
+                                    ID
+                                    <i class="zmdi zmdi-caret-down"></i>
+                                </a>
+                            </th>
+                            <th>
+                                <a href="" data-ng-show="dashboard.sortBy.field !== 'category'"
+                                   data-ng-click="dashboard.sortBy.field = 'category'; dashboard.getTicketsEscalated()">
+                                    Category
+                                    <i class="zmdi zmdi-unfold-more"></i>
+                                </a>
+                                <a href=""
+                                   data-ng-show="dashboard.sortBy.field == 'category' && dashboard.sortBy.order == 1"
+                                   data-ng-click="dashboard.sortBy.order = -1; dashboard.getTicketsEscalated()">
+                                    Category
+                                    <i class="zmdi zmdi-caret-up"></i>
+                                </a>
+                                <a href=""
+                                   data-ng-show="dashboard.sortBy.field == 'category'  && dashboard.sortBy.order == -1"
+                                   data-ng-click="dashboard.sortBy.order = 1; dashboard.getTicketsEscalated()">
+                                    Category
+                                    <i class="zmdi zmdi-caret-down"></i>
+                                </a>
+                            </th>
+
+                            <th>
+                                <a href="" data-ng-show="dashboard.sortBy.field !== 'status'"
+                                   data-ng-click="dashboard.sortBy.field = 'status'; dashboard.getTicketsEscalated()">
+                                    Status
+                                    <i class="zmdi zmdi-unfold-more"></i>
+                                </a>
+                                <a href=""
+                                   data-ng-show="dashboard.sortBy.field == 'status' && dashboard.sortBy.order == 1"
+                                   data-ng-click="dashboard.sortBy.order = -1; dashboard.getTicketsEscalated()">
+                                    Status
+                                    <i class="zmdi zmdi-caret-up"></i>
+                                </a>
+                                <a href=""
+                                   data-ng-show="dashboard.sortBy.field == 'status'  && dashboard.sortBy.order == -1"
+                                   data-ng-click="dashboard.sortBy.order = 1; dashboard.getTicketsEscalated()">
+                                    Status
+                                    <i class="zmdi zmdi-caret-down"></i>
+                                </a>
+                            </th>
+                            <th>Defendant</th>
+                            <th>
+                                <a href="" data-ng-show="dashboard.sortBy.field !== 'modificationDate'"
+                                   data-ng-click="dashboard.sortBy.field = 'modificationDate'; dashboard.getTicketsEscalated()">
+                                    Date
+                                    <i class="zmdi zmdi-unfold-more"></i>
+                                </a>
+                                <a href=""
+                                   data-ng-show="dashboard.sortBy.field == 'modificationDate' && dashboard.sortBy.order == 1"
+                                   data-ng-click="dashboard.sortBy.order = -1; dashboard.getTicketsEscalated()">
+                                    Date
+                                    <i class="zmdi zmdi-caret-up"></i>
+                                </a>
+                                <a href=""
+                                   data-ng-show="dashboard.sortBy.field == 'modificationDate'  && dashboard.sortBy.order == -1"
+                                   data-ng-click="dashboard.sortBy.order = 1; dashboard.getTicketsEscalated()">
+                                    Date
+                                    <i class="zmdi zmdi-caret-down"></i>
+                                </a>
+                            </th>                       
+                            <th>
+                                <a href="" data-ng-show="dashboard.sortBy.field !== 'priority'"
+                                   data-ng-click="dashboard.sortBy.field = 'priority'; dashboard.getTicketsEscalated()">
+                                    Priority
+                                    <i class="zmdi zmdi-unfold-more"></i>
+                                </a>
+                                <a href=""
+                                   data-ng-show="dashboard.sortBy.field == 'priority' && dashboard.sortBy.order == 1"
+                                   data-ng-click="dashboard.sortBy.order = -1; dashboard.getTicketsEscalated()">
+                                    Priority
+                                    <i class="zmdi zmdi-caret-up"></i>
+                                </a>
+                                <a href=""
+                                   data-ng-show="dashboard.sortBy.field == 'priority'  && dashboard.sortBy.order == -1"
+                                   data-ng-click="dashboard.sortBy.order = 1; dashboard.getMyTickets()">
+                                    Priority
+                                    <i class="zmdi zmdi-caret-down"></i>
+                                </a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody data-ng-if="dashboard.loaders.ticketsEscalated">
+                        <tr>
+                            <td colspan="9">
+                                <div layout="row" layout-fill layout-align="center">
+                                    <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody data-ng-if="!dashboard.loaders.ticketsEscalated && dashboard.ticketsEscalated.length <= 0">
+                        <tr>
+                            <td colspan="9">
+                                <div layout="row" layout-fill layout-align="center">
+                                    No ticket
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody data-ng-if="!dashboard.loaders.ticketsEscalated && dashboard.ticketsEscalated.length > 0">
+                        <tr data-ng-repeat="ticket in dashboard.ticketsEscalated"
+                            class="row-clickable">
+                            <td data-title="ID">
+                                <a ui-sref="ticket.activities({id: ticket.id})">{{::ticket.id}}</a>
+                            </td>
+                            <td data-title="Category">
+                                <a ui-sref="ticket.activities({id: ticket.id})">{{::ticket.category}}</a>
+                            </td>
+                            <td data-title="Status">
+                                <a ui-sref="ticket.activities({id: ticket.id})">{{::ticket.status}}</a>
+                            </td>
+                            <td data-title="Email">
+                                <a ui-sref="ticket.activities({id: ticket.id})">{{::ticket.defendant.email}}</a>
+                            </td>
+                            <td data-title="Date">
+                                 <a ui-sref="ticket.activities({id: ticket.id})">{{::ticket.modificationDate * 1000 | amDateFormat:'DD/MM/YY HH:mm'}}</a>
+                            </td>
+                            <td data-title="Priority">
+                                <a ui-sref="ticket.activities({id: ticket.id})">
+                                    <span class="badge" data-ng-class="{
+                                                                       'error': ticket.priority === 'High',
+                                                                       'info': ticket.priority === 'Normal',
+                                                                       'success' : ticket.priority === 'Low'}">
+                                        {{::ticket.priority}}
+                                    </span>
+                                </a>
+                            </td>                       
+                        </tr>
+                    </tbody>
+                </table>
+            </md-content>
+
+            <div class="pagination" layout="row" layout-align="space-around"
+                 data-ng-if="dashboard.ticketsEscalatedCount > dashboard.pagination.escalated.resultsPerPage">
+                <paging class="small"
+                        page="dashboard.pagination.escalated.currentPage"
+                        page-size="dashboard.pagination.escalated.resultsPerPage"
+                        total="dashboard.ticketsEscalatedCount"
+                        adjacent="2"
+                        dots="..."
+                        scroll-top="true"
+                        hide-if-empty="true"
+                        ul-class="pagination"
+                        active-class="active"
+                        disabled-class="disabled"
+                        show-prev-next="true"
+                        paging-action="dashboard.pagination.escalated.currentPage = page;dashboard.getTicketsEscalated();">
+                </paging>              
+            </div>
+        </md-content>
+
+        <md-content flex class="md-whiteframe-z1" data-ng-if="dashboard.ticketsModeratedCount ">
+            <md-toolbar md-theme="white" class="no-shadow">
+                <h3 class="md-toolbar-tools" layout="row" layout-align="space-between">
+                    <span class="zmdi zmdi-whatshot grey"></span>
+                    <span flex>Moderated tickets</span>
+                    <div flex></div>
+                </h3>
+            </md-toolbar>
+            
+            <table class="table table-medium table-hover table-mc-indigo">
+                <thead>
+                    <tr>
+                        <th>
+                            <a href="" data-ng-show="dashboard.sortBy.field !== 'id'"
+                               data-ng-click="dashboard.sortBy.field = 'id'; dashboard.getTicketsModerated()">
+                                ID
+                                <i class="zmdi zmdi-unfold-more"></i>
+                            </a>
+                            <a href=""
+                               data-ng-show="dashboard.sortBy.field === 'id' && dashboard.sortBy.order === 1"
+                               data-ng-click="dashboard.sortBy.order = -1; dashboard.getTicketsModerated()">
+                                ID
+                                <i class="zmdi zmdi-caret-up"></i>
+                            </a>
+                            <a href=""
+                               data-ng-show="dashboard.sortBy.field === 'id'  && dashboard.sortBy.order === -1"
+                               data-ng-click="dashboard.sortBy.order = 1; dashboard.getTicketsModerated()">
+                                ID
+                                <i class="zmdi zmdi-caret-down"></i>
+                            </a>
+                        </th>
+                        <th>
+                            <a href="" data-ng-show="dashboard.sortBy.field !== 'category'"
+                               data-ng-click="dashboard.sortBy.field = 'category'; dashboard.getTicketsModerated()">
+                                Category
+                                <i class="zmdi zmdi-unfold-more"></i>
+                            </a>
+                            <a href=""
+                               data-ng-show="dashboard.sortBy.field == 'category' && dashboard.sortBy.order == 1"
+                               data-ng-click="dashboard.sortBy.order = -1; dashboard.getTicketsModerated()">
+                                Category
+                                <i class="zmdi zmdi-caret-up"></i>
+                            </a>
+                            <a href=""
+                               data-ng-show="dashboard.sortBy.field == 'category'  && dashboard.sortBy.order == -1"
+                               data-ng-click="dashboard.sortBy.order = 1; dashboard.getTicketsModerated()">
+                                Category
+                                <i class="zmdi zmdi-caret-down"></i>
+                            </a>
+                        </th>
+
+                        <th>
+                            <a href="" data-ng-show="dashboard.sortBy.field !== 'status'"
+                               data-ng-click="dashboard.sortBy.field = 'status'; dashboard.getTicketsModerated()">
+                                Status
+                                <i class="zmdi zmdi-unfold-more"></i>
+                            </a>
+                            <a href=""
+                               data-ng-show="dashboard.sortBy.field == 'status' && dashboard.sortBy.order == 1"
+                               data-ng-click="dashboard.sortBy.order = -1; dashboard.getTicketsModerated()">
+                                Status
+                                <i class="zmdi zmdi-caret-up"></i>
+                            </a>
+                            <a href=""
+                               data-ng-show="dashboard.sortBy.field == 'status'  && dashboard.sortBy.order == -1"
+                               data-ng-click="dashboard.sortBy.order = 1; dashboard.getTicketsModerated()">
+                                Status
+                                <i class="zmdi zmdi-caret-down"></i>
+                            </a>
+                        </th>
+
+                        <th>Defendant</th>
+                        <th>
+                            <a href="" data-ng-show="dashboard.sortBy.field !== 'modificationDate'"
+                               data-ng-click="dashboard.sortBy.field = 'modificationDate'; dashboard.getMyTickets()">
+                                Date
+                                <i class="zmdi zmdi-unfold-more"></i>
+                            </a>
+                            <a href=""
+                               data-ng-show="dashboard.sortBy.field == 'modificationDate' && dashboard.sortBy.order == 1"
+                               data-ng-click="dashboard.sortBy.order = -1; dashboard.getMyTickets()">
+                                Date
+                                <i class="zmdi zmdi-caret-up"></i>
+                            </a>
+                            <a href=""
+                               data-ng-show="dashboard.sortBy.field == 'modificationDate'  && dashboard.sortBy.order == -1"
+                               data-ng-click="dashboard.sortBy.order = 1; dashboard.getMyTickets()">
+                                Date
+                                <i class="zmdi zmdi-caret-down"></i>
+                            </a>
+                        </th>
+                     
+                        <th>
+                            <a href="" data-ng-show="dashboard.sortBy.field !== 'priority'"
+                               data-ng-click="dashboard.sortBy.field = 'priority'; dashboard.getMyTickets()">
+                                Priority
+                                <i class="zmdi zmdi-unfold-more"></i>
+                            </a>
+                            <a href=""
+                               data-ng-show="dashboard.sortBy.field == 'priority' && dashboard.sortBy.order == 1"
+                               data-ng-click="dashboard.sortBy.order = -1; dashboard.getMyTickets()">
+                                Priority
+                                <i class="zmdi zmdi-caret-up"></i>
+                            </a>
+                            <a href=""
+                               data-ng-show="dashboard.sortBy.field == 'priority'  && dashboard.sortBy.order == -1"
+                               data-ng-click="dashboard.sortBy.order = 1; dashboard.getMyTickets()">
+                                Priority
+                                <i class="zmdi zmdi-caret-down"></i>
+                            </a>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody data-ng-if="dashboard.loaders.tickets">
+                    <tr>
+                        <td colspan="9">
+                            <div layout="row" layout-fill layout-align="center">
+                                <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody data-ng-if="!dashboard.loaders.tickets && dashboard.ticketsModerated.length <= 0">
+                    <tr>
+                        <td colspan="9">
+                            <div layout="row" layout-fill layout-align="center">
+                                No ticket
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody data-ng-if="!dashboard.loaders.tickets && dashboard.ticketsModerated.length > 0">
+                    <tr data-ng-repeat="ticket in dashboard.ticketsModerated"
+                        class="row-clickable">
+                        <td data-title="ID">
+                            <a ui-sref="ticket.activities({id: ticket.id})">{{::ticket.id}}</a>
+                        </td>
+                        <td data-title="Category">
+                            <a ui-sref="ticket.activities({id: ticket.id})">{{::ticket.category}}</a>
+                        </td>
+                        <td data-title="Status">
+                            <a ui-sref="ticket.activities({id: ticket.id})">{{::ticket.status}}</a>
+                        </td>
+                        <td data-title="Email">
+                            <a ui-sref="ticket.activities({id: ticket.id})">{{::ticket.defendant.email}}</a>
+                        </td>
+                        <td data-title="Date">
+                            <a ui-sref="ticket.activities({id: ticket.id})">
+                                {{::ticket.modificationDate * 1000 | amDateFormat:'DD/MM/YY HH:mm'}}
+                            </a>
+                        </td>
+                        <td data-title="Priority">
+                            <a ui-sref="ticket.activities({id: ticket.id})">
+                                <span class="badge" data-ng-class="{
+                                                                   'error': ticket.priority === 'High',
+                                                                   'info': ticket.priority === 'Normal',
+                                                                   'success' : ticket.priority === 'Low'}">
+                                    {{::ticket.priority}}
+                                </span>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="pagination" layout="row" layout-align="space-around"
+                 data-ng-if="dashboard.ticketsModerated > dashboard.pagination.moderated.resultsPerPage">
+                <paging class="small"
+                        page="dashboard.pagination.moderated.currentPage"
+                        page-size="dashboard.pagination.moderated.resultsPerPage"
+                        total="dashboard.ticketsModeratedCount"
+                        adjacent="2"
+                        dots="..."
+                        scroll-top="true"
+                        hide-if-empty="true"
+                        ul-class="pagination"
+                        active-class="active"
+                        disabled-class="disabled"
+                        show-prev-next="true"
+                        paging-action="dashboard.pagination.moderated.currentPage = page;dashboard.getTicketsModerated();">
+                </paging>
+                <div flex></div>
+                <input type="number"
+                       data-ng-model="dashboard.pagination.moderated.currentPage" data-ng-change="dashboard.getTicketsModerated()"
+                       data-ng-model-options="{debounce: {'default': 500}}" max="{{ctrl.ceil(dashboard.ticketsModeratedCount / dashboard.pagination.moderated.resultsPerPage)}}" min="1"  />
+                <md-select data-ng-model="dashboard.pagination.moderated.resultsPerPage"
+                           data-ng-change="dashboard.getTicketsModerated()">
+                    <md-option value="10" data-ng-show="dashboard.ticketsModeratedCount >= 10">10</md-option>
+                    <md-option value="15" data-ng-show="dashboard.ticketsModeratedCount >= 15">15</md-option>
+                    <md-option value="20" data-ng-show="dashboard.ticketsModeratedCount >= 20">20</md-option>
+                    <md-option value="50" data-ng-show="dashboard.ticketsModeratedCount >= 50">50</md-option>
+                    <md-option value="100" data-ng-show="dashboard.ticketsModeratedCount >= 100">100</md-option>
+                </md-select>
+            </div>
+        </md-content>
+    </md-content>
+
+    <div layout="row" layout-sm="column" layout-xs="column" layout-margin>
+
+        <md-content flex layout="row" layout-align="center center" layout-fill data-ng-if="dashboard.loaders.top20">
+            <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+        </md-content>
+
+        <md-content class="md-whiteframe-z1 md-padding" flex
+                    data-ng-if="!dashboard.loaders.top20">
+            <md-toolbar md-theme="white" class="no-shadow">
+                <h3 class="md-toolbar-tools" layout="row" layout-align="space-between">
+                    <i class="zmdi zmdi-fire grey"></i>
+                    &nbsp;
+                    <span flex>Tickets by defendant</span>
+                </h3>
+            </md-toolbar>
+            <md-list>
+                <md-list-item data-ng-repeat="current in dashboard.getTop20Page('ticket') track by $index">
+                    <p>
+                        <span class="medallion info">{{
+                                (dashboard.pagination.top20.ticket.currentPage - 1) * dashboard.pagination.top20.ticket.resultsPerPage
+                                + $index + 1
+                              }}</span>
+                        <a href="{{dashboard.searchByDefendant('tickets', current.customerId)}}" 
+                           title="Show defendant tickets" data-ng-bind="current.email"></a>
+                    </p>
+                    <span data-ng-bind="current.count"></span>
+                    <md-divider data-ng-if="!$last"></md-divider>
+                </md-list-item>
+            </md-list>
+
+            <div class="pagination" layout="row" layout-align="space-around">
+                <paging class="small"
+                        page="dashboard.pagination.top20.ticket.currentPage"
+                        page-size="dashboard.pagination.top20.ticket.resultsPerPage"
+                        total="dashboard.top20.ticket.length"
+                        adjacent="2"
+                        dots="..."
+                        scroll-top="true"
+                        hide-if-empty="true"
+                        ul-class="pagination"
+                        active-class="active"
+                        disabled-class="disabled"
+                        show-prev-next="true"
+                        paging-action="dashboard.pagination.top20.ticket.currentPage = page;">
+                </paging>
+            </div>
+        </md-content>
+
+        <md-content class="md-whiteframe-z1 md-padding" flex
+                    data-ng-if="!dashboard.loaders.top20">
+            <md-toolbar md-theme="white" class="no-shadow">
+                <h3 class="md-toolbar-tools" layout="row" layout-align="space-between">
+                    <i class="zmdi zmdi-fire grey"></i>
+                    &nbsp;
+                    <span flex>Reports by defendant</span>
+                </h3>
+            </md-toolbar>
+            <md-list>
+                <md-list-item data-ng-repeat="current in dashboard.getTop20Page('report') track by $index">
+                    <p>
+                        <span class="medallion info">{{
+                                (dashboard.pagination.top20.report.currentPage - 1) * dashboard.pagination.top20.report.resultsPerPage
+                                + $index + 1
+                              }}</span>
+                        <a href="{{dashboard.searchByDefendant('reports', current.customerId)}}" 
+                           title="Show defendant reports" data-ng-bind="current.email"></a>
+                    </p>
+                    <span data-ng-bind="current.count"></span>
+                    <md-divider data-ng-if="!$last"></md-divider>
+                </md-list-item>
+            </md-list>
+
+            <div class="pagination" layout="row" layout-align="space-around">
+                <paging class="small"
+                        page="dashboard.pagination.top20.report.currentPage"
+                        page-size="dashboard.pagination.top20.report.resultsPerPage"
+                        total="dashboard.top20.report.length"
+                        adjacent="2"
+                        dots="..."
+                        scroll-top="true"
+                        hide-if-empty="true"
+                        ul-class="pagination"
+                        active-class="active"
+                        disabled-class="disabled"
+                        show-prev-next="true"
+                        paging-action="dashboard.pagination.top20.report.currentPage = page;">
+                </paging>
+            </div>
+        </md-content>
+    </div>
+
+    <div layout="row" layout-sm="column" layout-xs="column" layout-margin
+        data-ng-if="dashboard.stats">
+
+        <md-content class="md-whiteframe-z1 md-padding no-overflow" flex
+                    data-ng-if="!dashboard.loaders.stats">
+            <md-toolbar md-theme="white" class="no-shadow">
+                <h3 class="md-toolbar-tools" layout="row" layout-align="space-between">
+                    <i class="zmdi zmdi-trending-up grey"></i>
+                    <span flex>Tickets Stats</span>
+                </h3>
+            </md-toolbar>
+            <div layout="column" layout-sm="column" layout-xs="column">
+                <md-list>
+                    <md-list-item data-ng-repeat="category in dashboard.stats.categories">
+                        <img class="category-ico" data-ng-src="assets/images/icons/grey/{{category}}.svg" width="20" />
+                        <p>
+                            <a data-ng-href="search?filters=%7B%22type%22:%22tickets%22,%22category%22:%5B%22{{category}}%22%5D%7D"
+                               title="Show {{category}} tickets"
+                               data-ng-bind="::category">
+                            </a>
+                        </p>
+                            
+                        <span data-ng-bind="dashboard.stats.ticketsByCategory.idle[$index] + dashboard.stats.ticketsByCategory.pending[$index] + dashboard.stats.ticketsByCategory.waiting[$index]"></span>
+                        <md-divider data-ng-if="!$last"></md-divider>
+                    </md-list-item>
+                </md-list>
+                <highchart config="dashboard.ticketsChart" flex></highchart>
+            </div>
+        </md-content>
+
+        <md-content class="md-whiteframe-z1  md-padding no-overflow" flex
+                    data-ng-if="!dashboard.loaders.stats">
+            <md-toolbar md-theme="white" class="no-shadow">
+                <h3 class="md-toolbar-tools" layout="row" layout-align="space-between">
+                    <i class="zmdi zmdi-trending-up grey"></i>
+                    <span flex>Reports Stats</span>
+                </h3>
+            </md-toolbar>
+
+            <div layout="column"  layout-sm="column" layout-xs="column">
+                <md-list flex>
+                <md-list-item data-ng-repeat="(category,data) in dashboard.stats.reportsByCategory | orderBy:'data':true">
+                        <img class="category-ico" data-ng-src="assets/images/icons/grey/{{category}}.svg" width="20" />
+                        
+                        <p>
+                            <a data-ng-href="search?filters=%7B%22type%22:%22reports%22,%22category%22:%5B%22{{category}}%22%5D%7D"
+                               title="Show {{category}} reports" data-ng-bind="::category">
+                            </a>
+                        </p>
+                                                
+                        <span data-ng-bind="::data"></span>
+                        
+                        <md-divider data-ng-if="!$last"></md-divider>
+                    </md-list-item>                   
+                </md-list>
+                <highchart config="dashboard.reportsChart" flex></highchart>
+            </div>
+        </md-content>
+
+    </div>
+
+    <div layout="row" layout-sm="column" layout-margin layout-xs="column"
+        data-ng-if="dashboard.stats">
+
+        <md-content class="md-whiteframe-z1 md-padding" flex
+                    data-ng-if="!dashboard.loaders.stats">
+            <md-toolbar md-theme="white" class="no-shadow">
+                <h3 class="md-toolbar-tools" layout="row" layout-align="space-between">
+                    <i class="zmdi zmdi-trending-up grey"></i>
+                    <span flex>Tickets Stats per status</span>
+                </h3>
+            </md-toolbar>
+            <div layout="column" layout-sm="column" layout-xs="column">
+                <md-list>
+                    <md-list-item data-ng-repeat="(status,data) in dashboard.stats.ticketsByStatus | orderBy:'data':true">
+                        <i class="zmdi grey mr10"
+                           data-ng-class="{
+                                          'zmdi-alarm-snooze': status === 'WaitingAnswer',
+                                          'zmdi-phone-forwarded' : status === 'ToCall',
+                                          'zmdi-phone-in-talk' : status === 'Answered',
+                                          'zmdi-close' : status === 'Closed',
+                                          'zmdi-alert-polygon': status === 'Open',
+                                          'zmdi-pause': status === 'Paused',
+                                          'zmdi-rotate-left': status === 'Reopened',
+                                          'zmdi-alarm': status === 'Alarm',
+                                          'zmdi-block': status === 'AntihackError'
+                                          }">
+                        </i>
+                        <p>
+                            <a data-ng-href="search?filters=%7B%22type%22:%22tickets%22,%22status%22:%5B%22{{status}}%22%5D%7D"
+                               title="Show {{status}} tickets"
+                               data-ng-bind="::status">
+                            </a>
+                        </p>
+                            
+                        <span data-ng-bind="::data"></span>
+                        <md-divider data-ng-if="!$last"></md-divider>
+                    </md-list-item>
+                </md-list>
+            </div>
+        </md-content>
+
+        <md-content class="md-whiteframe-z1  md-padding" flex
+                    data-ng-if="!dashboard.loaders.stats">
+            <md-toolbar md-theme="white" class="no-shadow">
+                <h3 class="md-toolbar-tools" layout="row" layout-align="space-between">
+                    <i class="zmdi zmdi-trending-up grey"></i>
+                    <span flex>Reports Stats per status</span>
+                </h3>
+            </md-toolbar>
+
+            <div layout="column"  layout-sm="column" layout-xs="column">
+                <md-list flex>
+                    <md-list-item data-ng-repeat="(status,data) in dashboard.stats.reportsByStatus | orderBy:'data':true"
+                                  aria-label="Report by status"
+                                  data-ng-href="search?filters=%7B%22type%22:%22reports%22,%22status%22:%5B%22{{status}}%22%5D%7D">
+                        <i class="zmdi grey mr10"
+                           data-ng-class="{
+                                          'zmdi-attachment': status === 'Attached',
+                                          'zmdi-archive' : status === 'Archived',
+                                          'zmdi-alert-polygon' : status === 'New',
+                                          'zmdi-check' : status === 'Validated',
+                                          'zmdi-close' : status === 'Closed',
+                                          'zmdi-search' : status === 'PhishToCheck'
+                                          }">                                        
+                        </i>
+                        <p>
+                            <a data-ng-href="search?filters=%7B%22type%22:%22reports%22,%22status%22:%5B%22{{status}}%22%5D%7D"
+                               title="Show {{status}} reports" data-ng-bind="::status">
+                            </a>
+                        </p>
+                                                
+                        <span data-ng-bind="::data"></span>
+                        
+                        <md-divider data-ng-if="!$last"></md-divider>
+                    </md-list-item>                   
+                </md-list>
+            </div>
+        </md-content>
+
+    </div>
+
+</md-content>

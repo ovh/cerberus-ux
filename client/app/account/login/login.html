@@ -1,0 +1,39 @@
+<md-toolbar class="md-medium">
+    <h1 class="md-toolbar-tools">       
+        <md-button  hide-gt-md data-ng-click="toggleMenu()" aria-label="Menu">
+            <span class="icon navigation-menu white"></span>
+        </md-button>
+        Authentication
+        <div flex></div>
+    </h1>    
+</md-toolbar>
+
+<md-content class="md-padding" data-ng-init="ctrl.init()">
+    <form class="form" name="form" data-ng-submit="ctrl.login(form)" novalidate layout="column" layout-align="center center">
+        <md-input-container>
+            <label>username</label>
+            <input data-ng-model="ctrl.user.name">
+        </md-input-container>
+        <md-input-container>
+            <label>password</label>
+            <input data-ng-model="ctrl.user.password" type="password" />
+        </md-input-container>
+        <md-button class="md-raised md-primary"  type="submit" aria-label="Connection">
+            <i class="mdi mdi-done white"></i>
+            Connection
+        </md-button>
+    </form>
+    <!-- 
+    <div layout="row" layout-fill layout-align="center" data-ng-show="ctrl.loaders.init">
+        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+        <p>Connection</p>
+    </div>
+
+    <div layout="row" layout-fill layout-align="center" data-ng-if="!ctrl.loaders.init">
+        <md-button class="md-raised md-primary" aria-label="Connection" data-ng-click="ctrl.init()">
+            <i class="mdi mdi-done white"></i>
+            Connection
+        </md-button>
+    </div>
+    -->
+</md-content>

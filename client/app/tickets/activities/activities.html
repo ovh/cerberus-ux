@@ -1,0 +1,29 @@
+<div role="tabpanel" id="tab-activity" data-ng-init="ctrlActivities.init()">
+
+    <md-input-container md-no-float flex>
+        <md-icon md-font-icon="zmdi zmdi-search zmdi-hc-2x grey"></md-icon>
+        <input  type="text" placeholder="Filter" data-ng-model="ctrlActivities.txtFilter"
+        />
+    </md-input-container>
+    
+    <md-list>
+        <md-list-item data-ng-repeat="history in ctrl.ticket.history | filter:ctrlActivities.txtFilter">
+            <md-icon md-font-icon="zmdi grey"
+                     data-ng-class="{
+                                    'zmdi-comment': history.action === 'add comment',
+                                    'zmdi-time-restore': history.action !== 'add comment'
+                                    }">
+            </md-icon>
+
+            <div class="md-list-item-text">
+                <em data-ng-bind="history.username"></em> : 
+                <strong data-ng-bind="history.action"></strong>
+            </div>
+
+            <span flex></span>
+            <span data-ng-bind="history.date * 1000 | amDateFormat:'DD/MM/YY HH:mm'"></span>
+
+            <md-divider data-ng-if="!$last"></md-divider>
+        </md-list-item>
+    </md-list>
+</div>

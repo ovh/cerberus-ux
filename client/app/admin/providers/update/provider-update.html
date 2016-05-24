@@ -1,0 +1,41 @@
+<md-dialog aria-label="Update provider" flex>
+    <md-dialog-content class="md-dialog-content">
+        <h2>Update Source</h2>
+        <md-input-container>
+            <label>Name</label>
+            <input ng-model="provider.name">
+        </md-input-container>
+        <md-input-container>
+            <label>email</label>
+            <input ng-model="provider.email">
+        </md-input-container>
+        <md-select ng-model="provider.defaultCategory" placeholder="Category">
+            <md-select-label>{{ provider.defaultCategory || 'Default Category' }}</md-select-label>
+            <md-option></md-option>
+            <md-option ng-value="cat.name" ng-repeat="cat in categories">{{ cat.name }}</md-option>
+        </md-select>
+        <md-select ng-model="provider.priority" placeholder="Priority">
+            <md-select-label>{{ provider.priority || 'Default Priority' }}</md-select-label>
+            <md-option ng-value="priority.label" ng-repeat="priority in priorities">{{ priority.label }}</md-option>
+        </md-select>
+        <md-checkbox ng-model="provider.trusted" aria-label="Trusted">
+            Trusted
+        </md-checkbox>
+
+        <h4>Tags</h4>
+        <div layout="row" data-ng-show="!loaders.tags" style="margin-bottom: 5px">
+            <a href="" data-ng-repeat="tag in tags"
+               class="badge mini" flex
+               data-ng-class="{'error': providerHasTag(tag)}"
+               data-ng-click="addOrRemoveProviderTag(tag)"
+               data-ng-bind="tag.name">
+                <md-tooltip>Tag this provider as {{tag.name}}</md-tooltip>
+            </a>
+        </div>        
+    </md-dialog-content>
+    <md-dialog-actions layout="horizontal" layout-align="end">
+        <md-button  ng-click="cancel()" aria-label="Cancel">Cancel</md-button>
+        <md-button  class="md-primary" ng-click="hide()" aria-label="Save"
+                    ng-disabled="provider.name === '' || provider.email === ''">Save</md-button>
+    </md-dialog-actions>
+</md-dialog>

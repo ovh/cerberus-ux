@@ -1,0 +1,388 @@
+<md-dialog id="interact-dialog" aria-label="Interact" data-ng-init="init()" flex>
+    <md-dialog-content class="md-dialog-content">
+        <h1>
+            <i class="zmdi zmdi-accounts grey"></i>
+            Interact
+        </h1>
+
+        <div layout="row" layout-align="center" data-ng-show="loaders.init || loaders.start">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+        </div>
+
+        <md-content data-ng-if="!loaders.init && !loaders.start">
+            <!-- Presets -->
+            <md-card>
+                <a flex class="badge" href="#" data-ng-click="collapseAllExcept('presets')">Presets</a>
+                <md-card-content layout="column" layout-align="center center" layout-padding data-ng-if="toggle.presets"  layout-wrap>
+                    <md-content layout="row" layout-align="center center" layout-wrap
+                                data-ng-repeat="group in interactionPresets">
+                        <md-button class="md-raised"
+                                   data-ng-repeat="preset in group.presets track by preset.id"
+                                   data-ng-bind="::preset.name"
+                                   data-ng-class="{'md-primary': currentPreset.id === preset.id}"
+                                   data-ng-click="onPresetChange(preset)"
+                                   aria-label="::preset.name">
+                        </md-button>
+                    </md-content>
+                </md-card-content>
+            </md-card>
+
+
+            <!-- Emails -->
+            <md-card>
+                <a flex class="badge" href="#" data-ng-click="collapseAllExcept('emails')">Emails</a>
+                <md-card-content layout-padding data-ng-if="toggle.emails">
+                    <md-content layout="row" layout-align="start start" class="no-overflow">
+                        <md-checkbox data-ng-model="data.templates.plaintiff.send" 
+                                     class="no-margin" flex="25">
+                            Send mail to plaintiff
+                        </md-checkbox>
+
+                        <!-- Cannot include these elements in previous tag since <md-checkbox> does not forward mouse events. -->
+                        <span flex="5"></span>
+
+                        <md-input-container class="no-padding no-margin" flex>
+                            <label>Plaintiff emails</label>
+                            <input type="text" data-ng-disabled="!data.templates.plaintiff.send"
+                                               data-ng-model="data.templates.plaintiff.to"
+                                               list="plaintiffs">
+
+                            <datalist id="plaintiffs">
+                                <option data-ng-repeat="to in recipients.plaintiff" value="{{to}}">{{to}}</option>
+                            </datalist>
+
+                        </md-input-container>
+
+                        <span flex="10"></span>
+
+                        <md-select data-ng-disabled="!data.templates.plaintiff.send"
+                                   data-ng-model="data.templates.plaintiff.id"
+                                   data-ng-change="preRenderEmail('plaintiff')"
+                                   flex class="no-margin"
+                                   aria-label="Plaintiff template">
+                            <md-option data-ng-repeat="template in getPlaintiffTemplates()"
+                                       data-ng-value="template.id"
+                                       data-ng-bind="::template.name">
+                            </md-option>
+                        </md-select>
+                    </md-content>
+
+                    <md-content layout="row" layout-align="start start" class="no-overflow">
+                        <md-checkbox data-ng-model="data.templates.defendant.send"
+                                     class="no-margin" flex="25">
+                            Send mail to defendant
+                        </md-checkbox>
+
+                        <!-- Cannot include these elements in previous tag since <md-checkbox> does not forward mouse events. -->
+                        <span flex="5"></span>
+
+                        <md-input-container class="no-padding no-margin" flex>
+                            <label>Defendant emails</label>
+                            <input type="text" data-ng-disabled="!data.templates.defendant.send"
+                                               data-ng-model="data.templates.defendant.to"
+                                               list="defendants">
+
+                            <datalist id="defendants">
+                                <option data-ng-repeat="to in recipients.defendant" value="{{to}}">{{to}}</option>
+                            </datalist>
+                        </md-input-container>
+
+                       <span flex="10"></span>
+
+                        <md-select data-ng-disabled="!data.templates.defendant.send"
+                                   data-ng-model="data.templates.defendant.id"
+                                   data-ng-change="preRenderEmail('defendant')"
+                                   flex class="no-margin"
+                                   aria-label="Defendant template">
+                            <md-option data-ng-repeat="template in getDefendantTemplates()"
+                                       data-ng-value="template.id"
+                                       data-ng-bind="::template.name">
+                            </md-option>
+                        </md-select>
+                    </md-content>
+
+                    <md-content layout="row" layout-align="start start" class="no-overflow">
+                        <md-checkbox data-ng-model="data.templates.other.send"
+                                     class="no-margin" flex="25">
+                            Send mail to third party
+                        </md-checkbox>
+
+                        <!-- Cannot include these elements in previous tag since <md-checkbox> does not forward mouse events. -->
+                        <span flex="5"></span>
+
+                        <md-input-container class="no-padding no-margin" flex>
+                            <label>Third party emails</label>
+                            <input type="text" data-ng-disabled="!data.templates.other.send"
+                                               data-ng-model="data.templates.other.to">
+                        </md-input-container>
+
+                        <span flex="10"></span>
+
+                        <md-select data-ng-disabled="!data.templates.other.send"
+                                   data-ng-model="data.templates.other.id"
+                                   data-ng-change="preRenderEmail('other')"
+                                   flex class="no-margin"
+                                   aria-label="Third party template">
+                            <md-option data-ng-repeat="template in getThirdPartyTemplates()"
+                                       data-ng-value="template.id"
+                                       data-ng-bind="::template.name">
+                            </md-option>
+                        </md-select>
+                    </md-content>
+                </md-card-content>
+            </md-card>
+
+
+            <!-- Emails preview -->
+            <md-card>
+                <a flex class="badge" href="#" data-ng-click="collapseAllExcept('preview')">Emails preview</a>
+                <md-card-content layout-padding data-ng-if="toggle.preview && getEmailsToSend().length > 0">
+                    <md-tabs md-dynamic-height>
+                        <md-tab data-ng-repeat="email in getEmailsToSend()" label="{{email}}">
+                            <md-content layout-fill layout="column">
+                                <md-input-container>
+                                    <label>Subject</label>
+                                    <input type="text" data-ng-model="data.templates[email].subject">
+                                </md-input-container>
+                                <md-input-container>
+                                    <label>Mail content</label>
+                                    <textarea data-ng-model="data.templates[email].body"></textarea>
+                                 </md-input-container>
+                            </md-content>
+                        </md-tab>
+                    </md-tabs>
+                </md-card-content>
+                <md-card-content layout="row" layout-align="center center" layout-padding
+                                 data-ng-if="toggle.preview && getEmailsToSend().length === 0">
+                    <p>No preview available.</p>
+                </md-card-content>
+            </md-card>
+            
+
+            <!-- Actions -->
+            <md-card>
+                <a flex class="badge" href="#" data-ng-click="collapseAllExcept('actions')">Actions</a>
+                <md-card-content layout-padding data-ng-if="toggle.actions">
+                    <md-radio-group data-ng-model="data.action.codename" layout="column" flex>
+
+                        <md-content flex layout="row" layout-align="start center" class="no-margin">
+                            <md-radio-button value="waiting_answer" class="no-margin">
+                                <span>Wait answer within</span>
+                            </md-radio-button>
+                            <!-- Cannot include these elements in previous tag since <md-radio-button> does not
+                                    forward mouse events. -->
+                            <md-content layout="row" layout-align="start center" class="no-margin">
+                                <md-input-container class="no-margin duration">
+                                    <label>Duration</label>
+                                    <input type="number" data-ng-disabled="data.action.codename !== 'waiting_answer'"
+                                                 min="1" data-ng-model="data.action.params.snoozeDuration">
+                                </md-input-container>
+                                <span>hours.</span>
+                            </md-content>
+                        </md-content>
+
+                        <md-content flex layout="row" layout-align="start center" class="no-margin">
+                            <md-radio-button value="close_with_resolution" class="no-margin">
+                                <span>Close ticket with resolution</span>
+                            </md-radio-button>
+                            <!-- Cannot include these elements in previous tag since <md-radio-button> does not
+                                    forward mouse events. -->
+                            <md-content layout="row" layout-align="start start" layout-padding>
+                                <md-select data-ng-model="data.action.params.resolution"
+                                           data-ng-disabled="data.action.codename !== 'close_with_resolution'"
+                                           aria-label="Resolution" class="no-margin">
+                                    <md-option data-ng-repeat="resolution in resolutions"
+                                               data-ng-value="resolution.id"
+                                               data-ng-bind="resolution.codename" flex>
+                                    </md-option>
+                                </md-select>
+                            </md-content>
+                        </md-content>
+
+                        <md-content flex layout="row" layout-align="start center" class="no-margin">
+                            <md-radio-button value="pause_ticket" class="no-margin">
+                                <span>Pause ticket for</span>
+                            </md-radio-button>
+                            <!-- Cannot include these elements in previous tag since <md-radio-button> does not
+                                    forward mouse events. -->
+                            <md-content layout="row" layout-align="start center" layout-margin>
+                                <md-input-container class="no-margin duration">
+                                    <label>Duration</label>
+                                    <input type="number" data-ng-disabled="data.action.codename !== 'pause_ticket'"
+                                                 min="1" data-ng-model="data.action.params.pauseDuration">
+                                </md-input-container>
+                                <span>hours.</span>
+                            </md-content>
+                        </md-content>
+
+                        <md-content flex layout="row" layout-align="start center" class="no-margin">
+                            <md-radio-button value="waiting_answer_then_action" class="no-margin">
+                                <span>Wait answer within</span>
+                            </md-radio-button>
+                            <!-- Cannot include these elements in previous tag since <md-radio-button> does not
+                                    forward mouse events. -->
+                            <md-content layout="row" layout-align="start center" layout-margin>
+                                <md-input-container class="no-margin duration">
+                                    <label>Duration</label>
+                                    <input type="number" data-ng-disabled="data.action.codename !== 'waiting_answer_then_action'"
+                                                 min="1" data-ng-model="data.action.params.snoozeDuration">
+                                </md-input-container>
+                                <span>hours then if no reply do</span>
+                            </md-content>
+                            <md-content layout="row" layout-align="start start" layout-margin class="no-overflow" flex>
+                                <md-select data-ng-model="data.action.params.action"
+                                           data-ng-disabled="data.action.codename !== 'waiting_answer_then_action'"
+                                           class="no-margin" aria-label="Action" flex>
+                                    <md-option data-ng-repeat="action in actions"
+                                               data-ng-value="action.id"
+                                               data-ng-bind="::action.name">
+                                    </md-option>
+                                </md-select>
+                                <span>on</span>
+                                <md-select data-ng-model="data.action.params.ip" 
+                                           data-ng-disabled="data.action.codename !== 'waiting_answer_then_action' || items.length === 1"
+                                           class="no-margin" aria-label="IP" flex>
+                                    <md-option data-ng-repeat="ip in items"
+                                               data-ng-value="ip"
+                                               data-ng-bind="ip">
+                                    </md-option>
+                                </md-select>
+                            </md-content>
+                        </md-content>
+
+                        <md-content flex layout="row" layout-align="start center" class="no-margin" layout-wrap>
+                            <md-radio-button value="waiting_answer_then_action_and_close" class="no-margin">
+                                <span>Wait answer within</span>
+                            </md-radio-button>
+                            <md-content layout="row" layout-align="start center" layout-margin>
+                                <md-input-container class="no-margin duration">
+                                    <label>Duration</label>
+                                    <input type="number" data-ng-disabled="data.action.codename !== 'waiting_answer_then_action_and_close'"
+                                                 min="1" data-ng-model="data.action.params.snoozeDuration">
+                                </md-input-container>
+                                <span>hours then if no reply do</span>
+                            </md-content>
+                            <md-content layout="row" layout-align="end start" layout-margin class="no-overflow" flex>
+                                <md-select data-ng-model="data.action.params.action"
+                                           data-ng-disabled="data.action.codename !== 'waiting_answer_then_action_and_close'"
+                                           flex class="no-margin" aria-label="Action">
+                                    <md-option data-ng-repeat="action in actions"
+                                               data-ng-value="action.id"
+                                               data-ng-bind="action.name">
+                                    </md-option>
+                                </md-select>
+                                <span>on</span>
+                                <md-select data-ng-model="data.action.params.ip" 
+                                           data-ng-disabled="data.action.codename !== 'waiting_answer_then_action_and_close' || items.length === 1"
+                                           class="no-margin" aria-label="IP" flex>
+                                    <md-option data-ng-repeat="ip in items"
+                                               data-ng-value="ip"
+                                               data-ng-bind="ip">
+                                    </md-option>
+                                </md-select>
+                            </md-content>
+                            <md-content layout="row" layout-align="end start" layout-margin layout-fill>
+                                <span>and close ticket with resolution</span>
+                                <md-select data-ng-model="data.action.params.resolution"
+                                           data-ng-disabled="data.action.codename !== 'waiting_answer_then_action_and_close'"
+                                           class="no-margin" aria-label="Resolution">
+                                    <md-option data-ng-repeat="resolution in resolutions"
+                                               data-ng-value="resolution.id"
+                                               data-ng-bind="resolution.codename">
+                                    </md-option>
+                                </md-select>
+                            </md-content>
+                        </md-content>
+
+                        <md-content flex layout="row" layout-align="start center" class="no-margin">
+                            <md-radio-button value="action_then_waiting_answer" class="no-margin">
+                                <span>Do</span>
+                            </md-radio-button>
+                            <md-content layout="row" layout-align="end start" layout-margin class="no-overflow" flex>
+                                <md-select data-ng-model="data.action.params.action"
+                                           data-ng-disabled="data.action.codename !== 'action_then_waiting_answer'"
+                                           flex class="no-margin" aria-label="Action">
+                                    <md-option data-ng-repeat="action in actions"
+                                               data-ng-value="action.id"
+                                               data-ng-bind="action.name">
+                                    </md-option>
+                                </md-select>
+                                <span>on</span>
+                                <md-select data-ng-model="data.action.params.ip" 
+                                           data-ng-disabled="data.action.codename !== 'action_then_waiting_answer' || items.length === 1"
+                                           class="no-margin" aria-label="IP" flex>
+                                    <md-option data-ng-repeat="ip in items"
+                                               data-ng-value="ip"
+                                               data-ng-bind="ip">
+                                    </md-option>
+                                </md-select>
+                           </md-content>
+                           <md-content layout="row" layout-align="start center" layout-margin>
+                                <span> then wait answer within </span>
+                                <md-input-container class="no-margin duration">
+                                    <label>Duration</label>
+                                    <input type="number" data-ng-disabled="data.action.codename !== 'action_then_waiting_answer'"
+                                                 min="1" data-ng-model="data.action.params.snoozeDuration">
+                                </md-input-container>
+                                <span>hours.</span>
+                           </md-content>
+                        </md-content>
+
+                        <md-content flex layout="row" layout-align="start center" class="no-margin">
+                            <md-radio-button value="action_then_close">
+                                <span>Do</span>
+                            </md-radio-button>
+                            <md-content layout="row" layout-align="end start" layout-margin class="no-overflow" flex>
+                                <md-select data-ng-model="data.action.params.action"
+                                           data-ng-disabled="data.action.codename !== 'action_then_close'"
+                                           flex class="no-margin" aria-label="Action">
+                                    <md-option data-ng-repeat="action in actions"
+                                               data-ng-value="action.id"
+                                               data-ng-bind="action.name">
+                                    </md-option>
+                                </md-select>
+                                <span>on</span>
+                                <md-select data-ng-model="data.action.params.ip" 
+                                           data-ng-disabled="data.action.codename !== 'action_then_close' || items.length === 1"
+                                           class="no-margin" aria-label="IP" flex>
+                                    <md-option data-ng-repeat="ip in items"
+                                               data-ng-value="ip"
+                                               data-ng-bind="ip">
+                                    </md-option>
+                                </md-select>
+                                <span> and close ticket</span>
+                                <md-select data-ng-model="data.action.params.resolution"
+                                           data-ng-disabled="data.action.codename !== 'action_then_close'"
+                                           flex class="no-margin" aria-label="Resolution">
+                                    <md-option data-ng-repeat="resolution in resolutions"
+                                               data-ng-value="resolution.id"
+                                               data-ng-bind="::resolution.codename">
+                                    </md-option>
+                                </md-select>
+                           </md-content>
+                        </md-content>
+
+                    </md-radio-group>
+                </md-card-content>
+            </md-card>
+        </md-content>
+
+    </md-dialog-content>
+
+    <md-dialog-actions layout="horizontal">
+        <div layout="horizontal" layout-align="start" flex>
+            <md-button data-ng-click="cancel()">Cancel</md-button>
+            <md-button data-ng-click="reset()">Reset</md-button>
+        </div>
+        <div layout="horizontal" layout-align="end" flex>
+            <md-button class="md-primary" data-ng-click="validate('stay')"
+                       data-ng-disabled="!data.action.codename || !data.action.params">
+                Stay here.
+            </md-button>
+            <md-button class="md-primary" data-ng-click="validate('next')"
+                       data-ng-disabled="!data.action.codename || !data.action.params">
+                Next !
+            </md-button>
+        </div>
+    </md-dialog-actions>
+</md-dialog>
