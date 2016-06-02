@@ -59,7 +59,7 @@ angular
         function readBookmarks () {
             var result;
             try {
-                var bookmark = localStorageService.get(SEARCH.BOOKMARK) || "{}";
+                var bookmark = localStorageService.get(SEARCH.BOOKMARK) || "[]";
                 result = JSON.parse(bookmark);
             } catch (err) {
                 Toast.error("Unable to load bookmarked searches.");
