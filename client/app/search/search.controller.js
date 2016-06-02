@@ -2,7 +2,7 @@
 
 angular
     .module("abuseApp")
-    .controller("SearchCtrl", function ($scope, Reports, Tickets, Status, Categories, Providers, Priorities, $location, Toast, Auth, User, Search, $q, Tags, $mdDialog) {
+    .controller("SearchCtrl", function ($scope, Reports, Tickets, Status, Categories, Providers, Priorities, $location, Toast, Auth, User, Search, $q, Tags, $mdDialog, localStorageService, SEARCH) {
         var ctrl = this;
 
         ctrl.markupQL = [
@@ -30,10 +30,10 @@ angular
         ctrl.sortBy = { field: "creationDate", order:  -1 };
         ctrl.round = Math.round;
         ctrl.ceil = Math.ceil;
-        ctrl.filtersExpanded = true;
         ctrl.providerCount = 0;
         ctrl.searchText = "";
         ctrl.ql = "";
+        ctrl.bookmarkedSearch = {};
 
         ctrl.selectedItems = [];
         ctrl.bulk = {};
@@ -45,6 +45,9 @@ angular
                     if (!ctrl.filters.type) {
                         ctrl.filters.type = "tickets";
                     }
+
+                    // Force providers to be displayed in md-autocomplete
+                    ctrl.searchText = ctrl.filters.providers;
                 } catch (err) {
                     Toast.error(err);
                 }
@@ -53,16 +56,31 @@ angular
             }
         }
 
+        function readBookmarks () {
+            var result;
+            try {
+                var bookmark = localStorageService.get(SEARCH.BOOKMARK) || "{}";
+                result = JSON.parse(bookmark);
+            } catch (err) {
+                Toast.error("Unable to load bookmarked searches.");
+            }
+
+            return result;
+        }
+
         ctrl.init = function () {
+            readFiltersFromUrl();
+
             $q.all([
                 ctrl.getCategories(),
                 ctrl.getPriorities(),
                 ctrl.getUsers(),
                 ctrl.getTags(),
-                ctrl.getProviderCount()
+                ctrl.getProviderCount(),
+                ctrl.getBookmarkedSearch(),
+                ctrl.getStatus()
             ]).then(function () {
-                readFiltersFromUrl();
-                ctrl.currentPage = parseInt($location.search().page) || 1;
+                ctrl.search();
             });
         };
 
@@ -146,10 +164,19 @@ angular
             );
         };
 
+        ctrl.getBookmarkedSearch = function () {
+            ctrl.bookmarkedSearch = readBookmarks();
+        };
+
+        ctrl.changeSearchType = function (type) {
+            ctrl.filters = { type: type };
+            // Refresh status since they are different then relaunch the search
+            ctrl.getStatus().then(ctrl.search);
+        };
+
         ctrl.searchTextChange = function () {
             if (!ctrl.searchText) {
                 delete ctrl.filters.providers;
-                ctrl.searchReports();
             }
         };
 
@@ -402,8 +429,14 @@ angular
             ctrl.appendQuery(query, "like", "searchText", { body: [ctrl.filters.searchText] });
             ctrl.appendQuery(query, "like", "customerId", { defendant: [ctrl.filters.customerId] });
             ctrl.appendQuery(query, "like", "ip", { item: [ctrl.filters.ip] });
-            ctrl.appendQuery(query, "in", "category", { category: ctrl.filters.category });
             ctrl.appendQuery(query, "in", "defendantTag", { defendantTag: [ctrl.filters.defendantTag] });
+            ctrl.appendQuery(query, "in", "providers", { providerEmail: [ctrl.filters.providers] });
+
+            if (ctrl.filters.category && ctrl.filters.category.length !== 0) {
+                ctrl.appendQuery(query, "in", "category", { category: ctrl.filters.category });
+            } else {
+                delete ctrl.filters.category;
+            }
 
             if (ctrl.filters.status && ctrl.filters.status.length > 0) {
                 if (!query.where.in) {
@@ -412,15 +445,6 @@ angular
                 query.where.in.push({ status: Array.isArray(ctrl.filters.status) ? ctrl.filters.status : [ctrl.filters.status] });
             } else {
                 delete ctrl.filters.status;
-            }
-
-            if (ctrl.filters.providers) {
-                if (!query.where.in) {
-                    query.where.in = [];
-                }
-                query.where.in.push({ providerEmail: [ctrl.filters.providers.email] });
-            } else {
-                delete ctrl.filters.providers;
             }
         };
 
@@ -548,6 +572,69 @@ angular
             });
         };
 
+        ctrl.saveSearch = function (ev) {
+            $mdDialog.show({
+                controller: "SearchBookmarkCtrl",
+                templateUrl: "app/search/bookmark/bookmark.html",
+                targetEvent: ev
+            }).then(
+                function (data) {
+                    var bookmark = readBookmarks();
+                    if (!bookmark) {
+                        return;
+                    }
+
+                    // Check name is not already taken
+                    var alreadyExists = false;
+                    _.forEach(bookmark, function (current) {
+                        if (current.name === data) {
+                            alreadyExists = true;
+                            return false;
+                        }
+                    });
+
+                    if (alreadyExists) {
+                        Toast.error("A bookmark with this name already exists.");
+                        return;
+                    }
+
+                    readFiltersFromUrl();
+                    bookmark.push({
+                        name: data,
+                        filters: ctrl.filters
+                    });
+
+                    localStorageService.set(SEARCH.BOOKMARK, angular.toJson(bookmark));
+                    ctrl.bookmarkedSearch = bookmark;
+
+                    Toast.success("This search has been bookmarked.");
+                }
+            );
+        };
+
+        ctrl.loadSearch = function (bookmark) {
+            ctrl.filters = bookmark.filters;
+            ctrl.search();
+
+            Toast.success([bookmark.name, " loaded."].join(""));
+        };
+
+        ctrl.removeSearch = function (bookmarkToRemove) {
+            var bookmark = readBookmarks();
+            if (!bookmark) {
+                return;
+            }
+
+            bookmark = _.filter(bookmark, function (current) {
+                return current.name !== bookmarkToRemove.name;
+            });
+
+            localStorageService.set(SEARCH.BOOKMARK, angular.toJson(bookmark));
+            ctrl.bookmarkedSearch = bookmark;
+
+            Toast.success("Bookmark removed.");
+        };
+
         $scope.$watchCollection(function () {
             return $location.search().filters;
         }, function (newVal, oldVal) {
@@ -557,32 +644,5 @@ angular
             }
 
             readFiltersFromUrl();
-        });
-
-        $scope.$watchCollection(function () {
-            return ctrl.filters;
-        }, function (newVal, oldVal) {
-            if (newVal === oldVal) {
-                return;
-            }
-
-            // Clear input on new search if no suggestion chosen
-            if (ctrl.searchText && !ctrl.filters.providers) {
-                ctrl.searchText = "";
-            }
-
-            if (newVal && oldVal && newVal.type !== oldVal.type) {
-                if (!angular.equals(oldVal, {})) {
-                    ctrl.filters.status = undefined;
-                    delete ctrl.filters.status;
-                }
-
-                ctrl.currentReportPage = 1;
-                ctrl.currentPage = 1;
-                ctrl.getStatus()
-                    .then(ctrl.search);
-            } else {
-                ctrl.search();
-            }
         });
     });

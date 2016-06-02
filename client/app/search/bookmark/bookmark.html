@@ -1,0 +1,22 @@
+<md-dialog aria-label="Bookmark a search">
+    <md-dialog-content class="md-dialog-content">
+        <h1>
+            <i class="zmdi zmdi-bookmark grey"></i>
+            Bookmark a search
+        </h1>
+
+        <div layout="row" flex>
+            <md-input-container flex>
+                <label>My bookmark name</label>
+                <input required type="text" data-ng-model="bookmarkName" />
+            </md-input-container>
+        </div>        
+    </md-dialog-content>
+    <md-dialog-actions layout="horizontal" layout-align="end">
+        <md-button data-ng-click="cancel()">Cancel</md-button>
+        <md-button class="md-primary" data-ng-click="hide()"
+                   data-ng-disabled="!bookmarkName">
+            Valid
+        </md-button>
+    </md-dialog-actions>
+</md-dialog>
