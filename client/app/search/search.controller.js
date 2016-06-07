@@ -169,7 +169,23 @@ angular
         };
 
         ctrl.changeSearchType = function (type) {
-            ctrl.filters = { type: type };
+            // Keep the same filters except the specific ones.
+            ctrl.filters.type = type;
+
+            delete ctrl.filters.status;
+            if (type === "tickets") {
+                delete ctrl.filters.reportTag;
+                delete ctrl.filters.notAttached;
+                delete ctrl.filters.subject;
+            } else {
+                delete ctrl.filters.treatedBy;
+                delete ctrl.filters.ticketTag;
+                delete ctrl.filters.escalated;
+                delete ctrl.filters.moderation;
+                delete ctrl.filters.confidential;
+                delete ctrl.filters.ticketIds;
+            }
+
             // Refresh status since they are different then relaunch the search
             ctrl.getStatus().then(ctrl.search);
         };
