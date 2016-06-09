@@ -146,7 +146,7 @@
                             </md-fab-actions>
                         </md-fab-speed-dial>
                     </div>
-                    <div layout="row" layout-sm="row" layout-align="start start"layout-fill class="no-margin">
+                    <div layout="row" layout-sm="row" layout-align="start start" layout-fill class="no-margin">
                         <!-- External system data -->
                         <md-fab-speed-dial md-direction="right" class="md-scale reputation">
                             <md-fab-trigger>
@@ -199,6 +199,11 @@
                                 </span>
                             </md-fab-actions>
                         </md-fab-speed-dial>
+
+                        <!-- cURL -->
+                        <md-button aria-label="cURL" class="reputation md-raised md-mini" data-ng-show="item.itemType === 'URL'" data-ng-click="ctrlItems.getURLHeaders(item.rawItem, $event)">
+                           cURL
+                        </md-button>
                     </div>
                 </td>
                 <td>

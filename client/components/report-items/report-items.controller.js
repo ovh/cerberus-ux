@@ -197,6 +197,15 @@ angular
                 });
         };
 
+        ctrlItems.getURLHeaders = function (item, ev) {
+            $mdDialog.show({
+                controller: "CurlResultDialogCtrl",
+                templateUrl: "components/report-items/curl/curl.html",
+                targetEvent: ev,
+                locals: {url: item}
+            });
+        };
+
         ctrlItems.removeReportItem = function (item) {
             ctrlItems.loaders.items = true;
             Reports.deleteItem({Id: item.report, itemId: item.id}).$promise.then(
@@ -352,5 +361,21 @@ angular
                     ctrlItems.loaders.items = false;
                 });
             }
+        };
+
+        ctrlItems.rootCtrl.getURLHeaders = function (ev) {
+            if (!window.getSelection().toString()) {
+                return;
+            }
+
+            var selectedText = window.getSelection().toString().trim();
+
+            selectedText = selectedText.trim().replace(/\[\.\]/g, ".").replace(/hxxp/i,"http").replace(/httpx/i,"https").replace(/\s/g,"");
+
+            if (!validator.isURL(selectedText)) {
+                Toast.error({message: "Selected text is not a valid URL."});
+            }
+
+            ctrlItems.getURLHeaders(selectedText, ev);
         };
     });

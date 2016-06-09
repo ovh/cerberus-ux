@@ -1,0 +1,22 @@
+<md-dialog aria-label="cURL Result" data-ng-init="init()" flex>
+    <md-dialog-content class="md-dialog-content">
+        <h1>
+            <i class="zmdi zmdi-wifi-alt grey"></i>
+            cURL Result
+        </h1>
+
+        <md-content layout="row" layout-align="center center" class="md-padding" data-ng-if="loading">
+            <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
+        </md-content>
+
+        <md-content data-ng-if="!loading">
+            <p>Headers of <em data-ng-bind="result.url"></em>.</p>
+
+            <pre data-ng-bind="result.headers"></pre>
+        <md-content>
+
+    </md-dialog-content>
+    <md-dialog-actions layout="horizontal" layout-align="end">
+        <md-button data-ng-click="cancel()">Close</md-button>
+    </md-dialog-actions>
+</md-dialog>
