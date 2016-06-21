@@ -12,6 +12,7 @@ angular
         ctrl.currentPage = parseInt($location.search().page) || 1;
         ctrl.resultsPerPage = 10;
         ctrl.showSearchForm = false;
+        ctrl.onlyUnassigned = false;
         ctrl.round = Math.round;
         ctrl.ceil = Math.ceil;
 
@@ -36,7 +37,8 @@ angular
         ctrl.getTodoTickets = function () {
 
             var queryFilter = {
-                paginate: { resultsPerPage: ctrl.resultsPerPage, currentPage: ctrl.currentPage }
+                paginate: { resultsPerPage: ctrl.resultsPerPage, currentPage: ctrl.currentPage },
+                onlyUnassigned: ctrl.onlyUnassigned
             };
 
             return Search.todoTicketList({ filters: queryFilter }).$promise.then(
@@ -209,4 +211,8 @@ angular
         ctrl.searchTickets = function () {
             ctrl.getTodoTickets();
         };
+
+        $scope.$watch("ctrl.onlyUnassigned", function () {
+            ctrl.getTodoTickets();
+        });
     });

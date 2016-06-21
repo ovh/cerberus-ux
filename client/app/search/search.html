@@ -236,6 +236,12 @@
         </form>
     </md-content>
 
+    <md-content data-ng-if="!ctrl.showSearchForm"   layout="row" layout-align="end">
+        <md-switch data-ng-model="ctrl.onlyUnassigned" class="no-margin no-overflow" aria-label="Only unassigned">
+            Only unassigned
+        </md-switch>
+    </md-content>
+
     <md-content layout="row" layout-align="center" data-ng-show="ctrl.loaders.search">
         <md-progress-circular md-mode="indeterminate" class="md-accent"></md-progress-circular>
     </md-content>
