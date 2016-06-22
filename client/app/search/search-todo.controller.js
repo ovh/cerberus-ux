@@ -10,9 +10,9 @@ angular
         };
 
         ctrl.currentPage = parseInt($location.search().page) || 1;
-        ctrl.resultsPerPage = 10;
+        ctrl.resultsPerPage = parseInt($location.search().results) || 10;
         ctrl.showSearchForm = false;
-        ctrl.onlyUnassigned = false;
+        ctrl.onlyUnassigned = $location.search().onlyUnassigned === "true";
         ctrl.round = Math.round;
         ctrl.ceil = Math.ceil;
 
@@ -30,6 +30,8 @@ angular
                 ctrl.getUsers()
             ]).then(function () {
                 ctrl.currentPage = parseInt($location.search().page) || 1;
+                ctrl.resultsPerPage = parseInt($location.search().results) || 10;
+                ctrl.onlyUnassigned = $location.search().onlyUnassigned === "true";
                 ctrl.loaders.search = false;
             });
         };
@@ -44,7 +46,11 @@ angular
             return Search.todoTicketList({ filters: queryFilter }).$promise.then(
                 function (results) {
                     ctrl.results = results;
-                    $location.search({ page: ctrl.currentPage });
+                    $location.search({
+                        page: ctrl.currentPage,
+                        results: ctrl.resultsPerPage,
+                        onlyUnassigned: String(ctrl.onlyUnassigned)
+                    });
 
                     ctrl.results.tickets.forEach(function (ticket) {
                         Tickets.getItems({ Id: ticket.id }).$promise.then(
