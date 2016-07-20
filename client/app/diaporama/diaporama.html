@@ -236,10 +236,10 @@
                             </strong>
                         </span>
                     </li>
-                    <li data-ng-if="ctrl.currentScreenshot.screenshots[ctrl.screenshotHistoryIndex].phishingGrade">
+                    <li data-ng-if="ctrl.currentScreenshot.screenshots[ctrl.screenshotHistoryIndex].phishingGradeDetails || ctrl.currentScreenshot.screenshots[ctrl.screenshotHistoryIndex].phishingGradeDetails.grade === 0">
                         Phishing rating:
                         <strong>
-                            {{ctrl.currentScreenshot.screenshots[ctrl.screenshotHistoryIndex].phishingGrade * 100}}%
+                            {{ctrl.currentScreenshot.screenshots[ctrl.screenshotHistoryIndex].phishingGradeDetails.grade * 100 | number : 2}}%
                         </strong>
                     </li>
                 </ul>
