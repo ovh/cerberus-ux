@@ -10,6 +10,11 @@ angular.module('abuseApp').factory('Tools', function ($resource, URLS) {
                 method: 'GET',
                 url: [URLS.API, 'tools/curl'].join('/'),
                 isArray: false
+            },
+            whois: {
+                method: 'GET',
+                url: [URLS.API, 'tools/whois'].join('/'),
+                isArray: false
             }
         }
     );

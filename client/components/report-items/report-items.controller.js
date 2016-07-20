@@ -2,7 +2,7 @@
 
 angular
     .module("abuseApp")
-    .controller("ReportItemsCtrl", function ($scope, Tickets, Reports, Auth, Toast, Reputation, $q, URLS, $http, $mdDialog, $stateParams) {
+    .controller("ReportItemsCtrl", function ($scope, Tickets, Reports, Auth, Toast, Reputation, $q, URLS, $http, $mdDialog, $stateParams, Tools) {
 
         var ctrlItems = this;
         $scope.ctrlItems = ctrlItems;
@@ -206,6 +206,30 @@ angular
             });
         };
 
+        ctrlItems.whois = function (item) {
+            Tools.whois({item: item}).$promise.then(
+                function (answer) {
+                    var message;
+
+                    switch (answer.ipCategory) {
+                        case "managed":
+                            message = "This IP is managed by us.";
+                            break;
+                        case "cloudflare":
+                            message = "This IP is managed by Cloudflare.";
+                            break;
+                        default:
+                            message = "This IP is managed by another AS.";
+                    }
+
+                    Toast.open(message);
+                },
+                function (err) {
+                    Toast.error(err);
+                }
+            );
+        };
+
         ctrlItems.removeReportItem = function (item) {
             ctrlItems.loaders.items = true;
             Reports.deleteItem({Id: item.report, itemId: item.id}).$promise.then(
@@ -377,5 +401,20 @@ angular
             }
 
             ctrlItems.getURLHeaders(selectedText, ev);
+        };
+
+        ctrlItems.rootCtrl.whois = function () {
+            if (!window.getSelection().toString()) {
+                return;
+            }
+
+            var selectedText = window.getSelection().toString().trim();
+            selectedText = selectedText.trim().replace(/\[\.\]/g, ".").replace(/hxxp/i,"http").replace(/httpx/i,"https").replace(/\s/g,"");
+
+            if (validator.isURL(selectedText) || validator.isIP(selectedText) || validator.isFQDN(selectedText)) {
+                ctrlItems.whois(selectedText);
+            } else {
+                Toast.error({message: "Selection is not a valid input."});
+            }
         };
     });
