@@ -1,7 +1,7 @@
 /*global angular */
 'use strict';
 
-angular.module('abuseApp').factory('authInterceptor', function ($rootScope, $q, $cookieStore, $location) {
+angular.module('abuseApp').factory('authInterceptor', function ($rootScope, $q, $cookieStore) {
     return {
         // Add authorization token to headers
         request: function (config) {
@@ -17,7 +17,6 @@ angular.module('abuseApp').factory('authInterceptor', function ($rootScope, $q, 
         // Intercept 401s and redirect you to login
         responseError: function(response) {
             if (response.status === 401) {
-                $location.path('/login');
                 // remove any stale tokens
                 $cookieStore.remove('token');
                 return $q.reject(response);

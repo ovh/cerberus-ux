@@ -14,7 +14,8 @@ angular.module('abuseApp')
 
         Auth.isLoggedInAsync(function(loggedIn) {
             if (next.authenticate && !loggedIn) {
-                $location.path('/login');
+                var requestedUrl = window.encodeURIComponent($location.url());
+                $location.url(['/login?url=', requestedUrl].join(""));
             }
             if (next.admin && !Auth.isAdmin()) {
                 $location.path('/');

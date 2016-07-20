@@ -17,15 +17,16 @@ angular
                     name: ctrl.user.name,
                     password: ctrl.user.password
                 }).then(function () {
-                    // Logged in, redirect to home
-                    $location.path("/");
+                    // Logged in, redirect to the requested page
+                    var params = $location.search();
+                    if (params && params.url) {
+                        $location.url(window.decodeURIComponent(params.url));
+                    } else {
+                        $location.path("/");
+                    }
                 })["catch"](function (err) {
                     Toast.error(err);
                 });
             }
-        };
-
-        ctrl.loginOauth = function (provider) {
-            $window.location.href = "/auth/" + provider;
         };
     });
