@@ -54,6 +54,11 @@ angular
             } else {
                 ctrl.filters.type = "tickets";
             }
+
+            if ($location.search() && $location.search().forceReload) {
+                $location.search("forceReload", null);
+                ctrl.search();
+            }
         }
 
         function readBookmarks () {

@@ -24,28 +24,28 @@ angular.module('abuseApp')
         }
 
         $scope.searchMyTickets = function () {
-            return ['search?filters=', window.encodeURI(JSON.stringify({
+            return ['search?forceReload&filters=', window.encodeURI(JSON.stringify({
                 treatedBy: Auth.getCurrentUser().username,
                 status: ['Open','Alarm','Reopened','Paused','Answered','WaitingAnswer', 'ActionError']
             }))].join('');
         };
 
         $scope.searchMyTicketsAnswered = function () {
-            return ['search?filters=', window.encodeURI(JSON.stringify({
+            return ['search?forceReload&filters=', window.encodeURI(JSON.stringify({
                 treatedBy: Auth.getCurrentUser().username,
                 status: ['Answered']
             }))].join('');
         };
 
         $scope.searchMyTicketsTodo = function () {
-            return ['search?filters=', window.encodeURI(JSON.stringify({
+            return ['search?forceReload&filters=', window.encodeURI(JSON.stringify({
                 treatedBy: Auth.getCurrentUser().username,
                 status: ['Open','Alarm','Reopened', 'ActionError']
             }))].join('');
         };
 
         $scope.searchMyTicketsSleeping = function () {
-            return ['search?filters=', window.encodeURI(JSON.stringify({
+            return ['search?forceRealod&filters=', window.encodeURI(JSON.stringify({
                 treatedBy: Auth.getCurrentUser().username,
                 status: ['WaitingAnswer','Paused']
             }))].join('');
