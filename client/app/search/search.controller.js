@@ -261,6 +261,8 @@ angular
             ctrl.selectAll = false;
             ctrl.selectedItems = [];
             ctrl.resetBulkFields();
+            ctrl.currentPage = 1;
+
             switch (ctrl.filters.type) {
             case "tickets":
                 ctrl.searchTickets();
