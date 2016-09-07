@@ -29,7 +29,7 @@ angular
             };
 
             if (!!ctrl.searchText) {
-                query.paginate.currentPage = 1;
+                query.paginate.currentPage = ctrl.providersPagination.currentPage;
                 query.where = {
                     like: [{ email : [ctrl.searchText] }]
                 };
@@ -59,24 +59,8 @@ angular
         };
 
         ctrl.queryProviders = function () {
-            ctrl.loaders.providers = true;
-            var query = {};
-
-            if (!!ctrl.searchText) {
-                query.where = {
-                    like: [{ email : [ctrl.searchText] }]
-                };
-            }
-
-            var promise = Providers.query({ filters: JSON.stringify(query) }).$promise;
-            promise.then(function (providers) {
-                if (providers.length === 1) {
-                    ctrl.selectedItem = providers.providers[0];
-                    ctrl.getProviders();
-                }
-            });
-
-            return promise;
+            ctrl.providersPagination.currentPage = 1;
+            ctrl.getProviders();
         };
 
         ctrl.updateProvider = function (ev, provider) {
