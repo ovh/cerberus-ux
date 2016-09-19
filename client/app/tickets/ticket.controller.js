@@ -608,6 +608,12 @@ angular
             );
         };
 
+        ctrl.getMatchingDefendantTags = function (query) {
+            return ctrl.defendantTags.filter(function (tag) {
+                return ~tag.name.indexOf(query);
+            });
+        };
+
         ctrl.addTicketTag = function (tag) {
             var tagExists = ctrl.ticketTags.filter(function (t) {
                 return t.id === tag.id;

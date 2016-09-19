@@ -280,6 +280,12 @@ angular
             );
         };
 
+        ctrl.getMatchingDefendantTags = function (query) {
+            return ctrl.defendantTags.filter(function (tag) {
+                return ~tag.name.indexOf(query);
+            });
+        };
+
         ctrl.addReportTag = function (tag) {
             var tagExists = ctrl.reportTags.filter(function (t) {
                 return t.id === tag.id;
